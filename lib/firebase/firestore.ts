@@ -1509,6 +1509,20 @@ export async function signPetition(
     currentSignatures: signatures.length + 1,
     updatedAt: Timestamp.now(),
   })
+
+  // Non-blocking admin notification for new petition signatures.
+  try {
+    const signerName = signature.anonymous ? 'Anonymous signer' : signature.name
+    await createNotification({
+      type: 'new_petition',
+      title: 'New Petition Signature',
+      message: `${signerName} signed "${petitionData.title}".`,
+      link: '/dashboard/admin/petition-signatures',
+      audience: 'admin',
+    })
+  } catch (error) {
+    console.error('Failed to create petition signature notification:', error)
+  }
 }
 
 // Cart operations
