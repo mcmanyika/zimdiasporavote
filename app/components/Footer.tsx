@@ -32,6 +32,7 @@ export default function Footer() {
               <li><Link href="/leadership" className="hover:text-white transition-colors">Leadership</Link></li>
               <li><Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
               <li><Link href="/surveys" className="hover:text-white transition-colors">Surveys</Link></li>
+              <li><Link href="/membership-application" className="hover:text-white transition-colors">Join DCP</Link></li>
             </ul>
           </div>
 
@@ -43,7 +44,6 @@ export default function Footer() {
               <li><Link href="/videos" className="hover:text-white transition-colors">Videos</Link></li>
               <li><Link href="/twitter-live" className="hover:text-white transition-colors">Twitter Live</Link></li>
               <li><Link href="/#contact" className="hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/membership-application" className="hover:text-white transition-colors">Join DCP</Link></li>
             </ul>
           </div>
 
