@@ -40,6 +40,7 @@ export default function Footer() {
             <ul className="space-y-1.5 text-xs text-slate-400">
               <li><Link href="/shop" className="hover:text-white transition-colors">Shop</Link></li>
               <li><Link href="/news" className="hover:text-white transition-colors">Articles</Link></li>
+              <li><Link href="/videos" className="hover:text-white transition-colors">Videos</Link></li>
               <li><Link href="/twitter-live" className="hover:text-white transition-colors">Twitter Live</Link></li>
               <li><Link href="/#contact" className="hover:text-white transition-colors">Contact</Link></li>
               <li><Link href="/membership-application" className="hover:text-white transition-colors">Join DCP</Link></li>

@@ -150,6 +150,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Videos collection
+    match /videos/{videoId} {
+      // Everyone can read published videos
+      allow read: if resource.data.isPublished == true;
+      // Admins can read all videos (published and unpublished)
+      allow read: if isAdmin();
+      // Only admins can create, update, or delete videos
+      allow create: if isAdmin() &&
+                     request.resource.data.keys().hasAll(['title', 'youtubeUrl', 'youtubeVideoId', 'category', 'isPublished', 'isFeatured', 'order', 'createdBy']) &&
+                     request.resource.data.title is string &&
+                     request.resource.data.youtubeUrl is string &&
+                     request.resource.data.youtubeVideoId is string &&
+                     request.resource.data.category is string &&
+                     request.resource.data.isPublished is bool &&
+                     request.resource.data.isFeatured is bool &&
+                     request.resource.data.order is number &&
+                     request.resource.data.createdBy is string &&
+                     request.resource.data.title.size() > 0 &&
+                     request.resource.data.youtubeUrl.size() > 0 &&
+                     request.resource.data.youtubeVideoId.size() > 0;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // Carts collection
     match /carts/{userId} {
       // Users can only read and write their own cart
@@ -415,6 +439,32 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if isAdmin();
+    }
+
+    // Youth Profiles collection
+    match /youthProfiles/{userId} {
+      // Users can read and write their own youth profile
+      allow read, create, update: if isOwner(userId);
+      // Admins can read all youth profiles
+      allow read: if isAdmin();
+    }
+
+    // Youth Missions collection
+    match /youthMissions/{missionId} {
+      // Any authenticated user can read active missions
+      allow read: if isAuthenticated();
+      // Admins manage youth missions
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Youth Mission Submissions collection
+    match /youthMissionSubmissions/{submissionId} {
+      // Authenticated users can create their own submissions
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Users can read their own submissions
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Admins can read and update all submissions (for moderation/review)
+      allow read, update: if isAdmin();
     }
 
     // Inbound Emails collection (received via Resend webhook)

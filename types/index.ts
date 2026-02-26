@@ -109,6 +109,26 @@ export interface News {
   updatedAt: Timestamp | Date
 }
 
+export type VideoCategory = 'constitution' | 'rights' | 'governance' | 'youth' | 'civic_education' | 'general'
+
+export interface Video {
+  id: string
+  title: string
+  description?: string
+  youtubeUrl: string
+  youtubeVideoId: string
+  thumbnailUrl?: string
+  category: VideoCategory
+  tags?: string[]
+  durationLabel?: string
+  isPublished: boolean
+  isFeatured: boolean
+  order: number
+  createdBy: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
 export interface CartItem {
   productId: string
   product: Product
@@ -318,6 +338,49 @@ export interface MembershipApplication {
 
   createdAt: Timestamp | Date
   updatedAt: Timestamp | Date
+}
+
+// Youth module types
+export type YouthAgeBand = 'under_18' | '18_21' | '22_25' | '26_30' | '31_plus'
+export type YouthMissionCategory = 'civic_education' | 'mobilization' | 'digital_advocacy' | 'community_service' | 'leadership'
+export type YouthMissionSubmissionStatus = 'submitted' | 'approved' | 'rejected'
+
+export interface YouthProfile {
+  userId: string
+  ageBand: YouthAgeBand
+  province: string
+  district?: string
+  institution?: string
+  interests: string[]
+  goals?: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
+export interface YouthMission {
+  id: string
+  title: string
+  description: string
+  category: YouthMissionCategory
+  points: number
+  estimatedMinutes: number
+  isActive: boolean
+  dueDate?: Timestamp | Date
+  createdBy: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
+export interface YouthMissionSubmission {
+  id: string
+  missionId: string
+  userId: string
+  notes?: string
+  proofUrl?: string
+  status: YouthMissionSubmissionStatus
+  submittedAt: Timestamp | Date
+  reviewedAt?: Timestamp | Date
+  reviewedBy?: string
 }
 
 // Admin Notification types

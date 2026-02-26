@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -1307,6 +1307,100 @@ export async function deleteNews(newsId: string): Promise<void> {
   await deleteDoc(doc(db, 'news', newsId))
 }
 
+// Video functions
+export async function createVideo(video: Omit<Video, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  const videoRef = doc(collection(requireDb(), 'videos'))
+  const cleanVideo: any = {}
+  if (video.title !== undefined) cleanVideo.title = video.title
+  if (video.description !== undefined && video.description !== '') cleanVideo.description = video.description
+  if (video.youtubeUrl !== undefined) cleanVideo.youtubeUrl = video.youtubeUrl
+  if (video.youtubeVideoId !== undefined) cleanVideo.youtubeVideoId = video.youtubeVideoId
+  if (video.thumbnailUrl !== undefined && video.thumbnailUrl !== '') cleanVideo.thumbnailUrl = video.thumbnailUrl
+  if (video.category !== undefined) cleanVideo.category = video.category
+  if (video.tags !== undefined) cleanVideo.tags = video.tags
+  if (video.durationLabel !== undefined && video.durationLabel !== '') cleanVideo.durationLabel = video.durationLabel
+  if (video.isPublished !== undefined) cleanVideo.isPublished = video.isPublished
+  if (video.isFeatured !== undefined) cleanVideo.isFeatured = video.isFeatured
+  if (video.order !== undefined) cleanVideo.order = video.order
+  if (video.createdBy !== undefined) cleanVideo.createdBy = video.createdBy
+
+  await setDoc(videoRef, {
+    ...cleanVideo,
+    id: videoRef.id,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  })
+  return videoRef.id
+}
+
+export async function getVideos(publishedOnly: boolean = true): Promise<Video[]> {
+  if (!db) {
+    console.warn('Firestore not initialized')
+    return []
+  }
+
+  const mapDocs = (snapshot: any): Video[] =>
+    snapshot.docs.map((docSnap: any) => {
+      const data = docSnap.data()
+      return {
+        ...data,
+        id: docSnap.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as Video
+    })
+
+  try {
+    let q = query(collection(requireDb(), 'videos'), orderBy('order', 'asc'), orderBy('createdAt', 'desc'))
+    if (publishedOnly) {
+      q = query(q, where('isPublished', '==', true))
+    }
+    const snapshot = await getDocs(q)
+    return mapDocs(snapshot)
+  } catch (error: any) {
+    console.error('Error fetching videos:', error)
+    // Fallback for missing composite index
+    if (error?.code === 'failed-precondition') {
+      try {
+        const snapshot = await getDocs(collection(requireDb(), 'videos'))
+        const videos = mapDocs(snapshot)
+        const filtered = publishedOnly ? videos.filter((v) => v.isPublished) : videos
+        filtered.sort((a, b) => {
+          if ((a.order || 0) !== (b.order || 0)) return (a.order || 0) - (b.order || 0)
+          const aDate = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()
+          const bDate = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime()
+          return bDate - aDate
+        })
+        return filtered
+      } catch (fallbackError: any) {
+        console.error('Error in fallback video query:', fallbackError)
+        return []
+      }
+    }
+    return []
+  }
+}
+
+export async function updateVideo(videoId: string, data: Partial<Video>): Promise<void> {
+  const updateData: any = { updatedAt: Timestamp.now() }
+  if (data.title !== undefined) updateData.title = data.title
+  if (data.description !== undefined) updateData.description = data.description || null
+  if (data.youtubeUrl !== undefined) updateData.youtubeUrl = data.youtubeUrl
+  if (data.youtubeVideoId !== undefined) updateData.youtubeVideoId = data.youtubeVideoId
+  if (data.thumbnailUrl !== undefined) updateData.thumbnailUrl = data.thumbnailUrl || null
+  if (data.category !== undefined) updateData.category = data.category
+  if (data.tags !== undefined) updateData.tags = data.tags
+  if (data.durationLabel !== undefined) updateData.durationLabel = data.durationLabel || null
+  if (data.isPublished !== undefined) updateData.isPublished = data.isPublished
+  if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured
+  if (data.order !== undefined) updateData.order = data.order
+  await updateDoc(doc(requireDb(), 'videos', videoId), updateData)
+}
+
+export async function deleteVideo(videoId: string): Promise<void> {
+  await deleteDoc(doc(requireDb(), 'videos', videoId))
+}
+
 // Petition operations
 export async function createPetition(
   petition: Omit<Petition, 'id' | 'createdAt' | 'updatedAt' | 'currentSignatures' | 'signatures'>
@@ -2418,6 +2512,170 @@ export async function updateMembershipApplication(
 
 export async function deleteMembershipApplication(applicationId: string): Promise<void> {
   await deleteDoc(doc(requireDb(), 'membershipApplications', applicationId))
+}
+
+// ====================== Youth Module Operations ======================
+
+export async function upsertYouthProfile(
+  userId: string,
+  profile: Omit<YouthProfile, 'userId' | 'createdAt' | 'updatedAt'>
+): Promise<void> {
+  const db = requireDb()
+  const ref = doc(db, 'youthProfiles', userId)
+  const existing = await getDoc(ref)
+
+  const payload: Record<string, any> = {
+    userId,
+    ageBand: profile.ageBand,
+    province: profile.province,
+    interests: profile.interests || [],
+    updatedAt: Timestamp.now(),
+  }
+
+  if (profile.district !== undefined) payload.district = profile.district
+  if (profile.institution !== undefined) payload.institution = profile.institution
+  if (profile.goals !== undefined) payload.goals = profile.goals
+  if (!existing.exists()) payload.createdAt = Timestamp.now()
+
+  await setDoc(ref, payload, { merge: true })
+}
+
+export async function getYouthProfile(userId: string): Promise<YouthProfile | null> {
+  const db = requireDb()
+  const snapshot = await getDoc(doc(db, 'youthProfiles', userId))
+  if (!snapshot.exists()) return null
+  const data = snapshot.data()
+  return {
+    ...data,
+    userId: snapshot.id,
+    createdAt: toDate(data.createdAt),
+    updatedAt: toDate(data.updatedAt),
+  } as YouthProfile
+}
+
+export async function createYouthMission(
+  mission: Omit<YouthMission, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const ref = doc(collection(db, 'youthMissions'))
+  await setDoc(ref, {
+    ...mission,
+    id: ref.id,
+    dueDate: mission.dueDate ? Timestamp.fromDate(new Date(mission.dueDate as any)) : null,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  })
+  return ref.id
+}
+
+export async function updateYouthMission(
+  missionId: string,
+  data: Partial<YouthMission>
+): Promise<void> {
+  const db = requireDb()
+  const payload: Record<string, any> = { updatedAt: Timestamp.now() }
+  if (data.title !== undefined) payload.title = data.title
+  if (data.description !== undefined) payload.description = data.description
+  if (data.category !== undefined) payload.category = data.category
+  if (data.points !== undefined) payload.points = data.points
+  if (data.estimatedMinutes !== undefined) payload.estimatedMinutes = data.estimatedMinutes
+  if (data.isActive !== undefined) payload.isActive = data.isActive
+  if (data.dueDate !== undefined) {
+    payload.dueDate = data.dueDate ? Timestamp.fromDate(new Date(data.dueDate as any)) : null
+  }
+  await updateDoc(doc(db, 'youthMissions', missionId), payload)
+}
+
+export async function deleteYouthMission(missionId: string): Promise<void> {
+  await deleteDoc(doc(requireDb(), 'youthMissions', missionId))
+}
+
+export async function getYouthMissions(activeOnly: boolean = true): Promise<YouthMission[]> {
+  const db = requireDb()
+  try {
+    let q = query(collection(db, 'youthMissions'), orderBy('createdAt', 'desc'))
+    if (activeOnly) q = query(q, where('isActive', '==', true))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        ...data,
+        id: d.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+        dueDate: data.dueDate ? toDate(data.dueDate) : undefined,
+      } as YouthMission
+    })
+  } catch (error: any) {
+    // Fallback for missing composite index.
+    if (error?.code !== 'failed-precondition') throw error
+    const snapshot = await getDocs(collection(db, 'youthMissions'))
+    const missions = snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        ...data,
+        id: d.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+        dueDate: data.dueDate ? toDate(data.dueDate) : undefined,
+      } as YouthMission
+    })
+    const filtered = activeOnly ? missions.filter((m) => m.isActive) : missions
+    filtered.sort((a, b) => {
+      const dateA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()
+      const dateB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime()
+      return dateB - dateA
+    })
+    return filtered
+  }
+}
+
+export async function submitYouthMission(
+  missionId: string,
+  userId: string,
+  data?: { notes?: string; proofUrl?: string }
+): Promise<string> {
+  const db = requireDb()
+  const submissionId = `${missionId}_${userId}`
+  const ref = doc(db, 'youthMissionSubmissions', submissionId)
+  const existing = await getDoc(ref)
+  if (existing.exists()) {
+    throw new Error('You have already submitted this mission.')
+  }
+
+  const payload: Record<string, any> = {
+    id: submissionId,
+    missionId,
+    userId,
+    status: 'submitted',
+    submittedAt: Timestamp.now(),
+  }
+  if (data?.notes) payload.notes = data.notes
+  if (data?.proofUrl) payload.proofUrl = data.proofUrl
+
+  await setDoc(ref, payload)
+  return submissionId
+}
+
+export async function getYouthMissionSubmissionsByUser(userId: string): Promise<YouthMissionSubmission[]> {
+  const db = requireDb()
+  const q = query(collection(db, 'youthMissionSubmissions'), where('userId', '==', userId))
+  const snapshot = await getDocs(q)
+  const submissions = snapshot.docs.map((d) => {
+    const data = d.data()
+    return {
+      ...data,
+      id: d.id,
+      submittedAt: toDate(data.submittedAt),
+      reviewedAt: data.reviewedAt ? toDate(data.reviewedAt) : undefined,
+    } as YouthMissionSubmission
+  })
+  submissions.sort((a, b) => {
+    const aTime = a.submittedAt instanceof Date ? a.submittedAt.getTime() : new Date(a.submittedAt as any).getTime()
+    const bTime = b.submittedAt instanceof Date ? b.submittedAt.getTime() : new Date(b.submittedAt as any).getTime()
+    return bTime - aTime
+  })
+  return submissions
 }
 
 // ====================== Notification Operations ======================

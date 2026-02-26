@@ -63,7 +63,7 @@ export default function PetitionDetailPage() {
           email: payload.email,
           name: payload.name,
           subject: 'Thank you for signing the petition',
-          body: `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded and helps strengthen this constitutional campaign.\n\nView petition: ${window.location.origin}/petitions/${payload.petitionId}\n\nFor inquiries please do not hesitate to reach out.\n\nWarm regards,\n\nP. Manyika\n\nDefend the Constitution Platform\n\nwww.dcpzim.com`,
+          body: `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded and helps strengthen this constitutional campaign.\n\nView petition: ${window.location.origin}/petitions/${payload.petitionId}\n\nFor inquiries please do not hesitate to reach out.`,
         }),
       })
 
