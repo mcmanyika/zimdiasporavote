@@ -92,7 +92,6 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           <Link href="/petitions" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Petitions</Link>
           <Link href="/news" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Articles</Link>
           <Link href="/videos" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Videos</Link>
-          <Link href="/shop" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Shop</Link>
           <Link href="/membership-application" className="rounded-full bg-yellow-500 px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-yellow-400 transition-colors sm:text-sm">Join DCP</Link>
           <button
             onClick={(e) => {
@@ -250,13 +249,6 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
               className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
             >
               Videos
-            </Link>
-            <Link
-              href="/shop"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              Shop
             </Link>
             <Link
               href="/membership-application"
