@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
+import RichTextEditor from '@/app/components/RichTextEditor'
 
 function ComposeEmailContent() {
   const { user, userProfile } = useAuth()
@@ -35,9 +36,17 @@ function ComposeEmailContent() {
     setError('')
     setSuccess(false)
 
+    const htmlToPlainText = (html: string) => {
+      const temp = document.createElement('div')
+      temp.innerHTML = html
+      return (temp.textContent || temp.innerText || '').trim()
+    }
+
+    const plainBody = htmlToPlainText(body)
+
     if (!to.trim()) return setError('Recipient email is required.')
     if (!subject.trim()) return setError('Subject is required.')
-    if (!body.trim()) return setError('Message body is required.')
+    if (!plainBody) return setError('Message body is required.')
 
     try {
       setSending(true)
@@ -48,7 +57,8 @@ function ComposeEmailContent() {
           email: to.trim(),
           name: name.trim() || 'Recipient',
           subject: subject.trim(),
-          body: body.trim(),
+          body: plainBody,
+          htmlBody: body,
           userId: userProfile?.uid,
         }),
       })
@@ -156,18 +166,11 @@ function ComposeEmailContent() {
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
               Message <span className="text-red-400">*</span>
             </label>
-            <textarea
+            <RichTextEditor
               value={body}
-              onChange={(e) => setBody(e.target.value)}
+              onChange={setBody}
               placeholder="Write your message..."
-              rows={10}
-              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
-              style={{ minHeight: '200px', height: 'auto', overflow: 'hidden' }}
-              onInput={(e) => {
-                const el = e.currentTarget
-                el.style.height = 'auto'
-                el.style.height = el.scrollHeight + 'px'
-              }}
+              className="rounded-xl border border-slate-200 bg-slate-50 p-1"
             />
           </div>
         </div>

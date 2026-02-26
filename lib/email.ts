@@ -43,18 +43,20 @@ export async function sendCustomEmail({
   name,
   subject,
   body,
+  htmlBody,
 }: {
   to: string
   name: string
   subject: string
   body: string
+  htmlBody?: string
 }) {
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [to],
       subject,
-      html: buildCustomEmailHtml({ name, subject, body }),
+      html: buildCustomEmailHtml({ name, subject, body, htmlBody }),
     })
 
     if (error) {
@@ -70,9 +72,9 @@ export async function sendCustomEmail({
   }
 }
 
-function buildCustomEmailHtml({ name, subject, body }: { name: string; subject: string; body: string }) {
+function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string; subject: string; body: string; htmlBody?: string }) {
   // Convert newlines to <br> for plain-text body
-  const htmlBody = body.replace(/\n/g, '<br />')
+  const renderedBody = htmlBody && htmlBody.trim() ? htmlBody : body.replace(/\n/g, '<br />')
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -102,7 +104,7 @@ function buildCustomEmailHtml({ name, subject, body }: { name: string; subject: 
                 Dear <strong style="color:#0f172a;">${name}</strong>,
               </p>
               <div style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 24px;">
-                ${htmlBody}
+                ${renderedBody}
               </div>
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">
                 Warm regards,

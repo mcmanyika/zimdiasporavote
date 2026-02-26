@@ -19,7 +19,7 @@ function getErrorMessage(error: unknown): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, subject, body, userId } = await request.json()
+    const { email, name, subject, body, htmlBody, userId } = await request.json()
 
     if (!email || !email.trim()) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
@@ -27,14 +27,15 @@ export async function POST(request: NextRequest) {
     if (!subject || !subject.trim()) {
       return NextResponse.json({ error: 'Subject is required' }, { status: 400 })
     }
-    if (!body || !body.trim()) {
+    if ((!body || !body.trim()) && (!htmlBody || !htmlBody.trim())) {
       return NextResponse.json({ error: 'Message body is required' }, { status: 400 })
     }
 
     const trimmedEmail = email.trim()
     const trimmedName = (name || '').trim() || 'Volunteer'
     const trimmedSubject = subject.trim()
-    const trimmedBody = body.trim()
+    const trimmedBody = (body || '').trim()
+    const trimmedHtmlBody = (htmlBody || '').trim()
 
     if (!process.env.RESEND_API_KEY) {
       console.warn('RESEND_API_KEY is not configured. Skipping email.')
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
       name: trimmedName,
       subject: trimmedSubject,
       body: trimmedBody,
+      htmlBody: trimmedHtmlBody || undefined,
     })
 
     // Log email
