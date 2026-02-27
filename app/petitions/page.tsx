@@ -102,19 +102,21 @@ export default function PetitionsPage() {
                 >
                   Red Alert!!
                 </p>
-                <p className="mt-3 text-base leading-relaxed text-slate-800">
+                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Did you know?
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
                   Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
-                  personnel are camped outside 24/7.
+                  personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been
+                  marked.
                 </p>
-                <p className="mt-3 text-base leading-relaxed text-slate-800">
-                  Please make their sacrifices mean something. After signing the petition, share it with your family
-                  and friends. We need the numbers.
+                <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Please make their sacrifices mean something. Share this petition with your family and friends. We
+                  need the numbers.
                 </p>
-                <p className="mt-3 text-base leading-relaxed text-slate-800">
-                  Thank you.
-                </p>
-                <p className="mt-4 text-sm text-slate-700">
-                  Your donation strengthens civic voices when they’re under threat.
+                <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Consider making a donation of any amount. Every contribution helps strengthen civic voices when they
+                  are under threat.
                 </p>
                 <div className="mt-5">
                   <Link

@@ -56,6 +56,21 @@ export default function PetitionDetailPage() {
 
   const sendPetitionConfirmationEmail = async (payload: { name: string; email: string; petitionTitle: string; petitionId: string }) => {
     try {
+      const baseUrl = window.location.origin
+      const donateUrl = `${baseUrl}/#donate`
+      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nSome of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.\n\nConsider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.\n\nDonate: ${donateUrl}`
+      const htmlBody = `
+        <p>Thank you for signing "${payload.petitionTitle}".</p>
+        <p>Your voice has been recorded, and it strengthens this constitutional campaign.</p>
+        <p><strong>Did you know?</strong></p>
+        <p>Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.</p>
+        <p>Please make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.</p>
+        <p>Consider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.</p>
+        <p style="margin:20px 0 0;">
+          <a href="${donateUrl}" style="display:inline-block;background-color:#0f172a;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Donate</a>
+        </p>
+      `.trim()
+
       const res = await fetch('/api/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -63,7 +78,8 @@ export default function PetitionDetailPage() {
           email: payload.email,
           name: payload.name,
           subject: 'Thank you for signing the petition',
-          body: `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded and helps strengthen this constitutional campaign.\n\nView petition: ${window.location.origin}/petitions/${payload.petitionId}\n\nFor inquiries please do not hesitate to reach out.`,
+          body: bodyText,
+          htmlBody,
         }),
       })
 
@@ -257,15 +273,20 @@ export default function PetitionDetailPage() {
                   Red Alert!!
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
-                  personnel are camped outside 24/7.
+                  Did you know?
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Please make their sacrifices mean something. After signing this petition, share it with your family
-                  and friends. We need the numbers.
+                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
+                  personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been
+                  marked.
                 </p>
-                <p className="mt-3 text-sm text-slate-700">
-                  Your donation strengthens civic voices when they’re under threat.
+                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Please make their sacrifices mean something. Share this petition with your family and friends. We
+                  need the numbers.
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Consider making a donation of any amount. Every contribution helps strengthen civic voices when they
+                  are under threat.
                 </p>
                 <div className="mt-4">
                   <Link
