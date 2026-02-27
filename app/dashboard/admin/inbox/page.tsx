@@ -8,6 +8,28 @@ import type { InboundEmail } from '@/types'
 
 const ITEMS_PER_PAGE = 20
 
+function htmlToPlainText(html?: string): string {
+  if (!html) return ''
+  if (typeof window === 'undefined') {
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+  }
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+    return (doc.body?.textContent || '').replace(/\s+/g, ' ').trim()
+  } catch {
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+  }
+}
+
+function getDisplayBody(email: InboundEmail): string {
+  const body = (email.body || '').trim()
+  if (body) return body
+  const htmlText = htmlToPlainText(email.html)
+  if (htmlText) return htmlText
+  return '(No message body)'
+}
+
 export default function AdminInboxPage() {
   const { user, userProfile } = useAuth()
   const router = useRouter()
@@ -106,7 +128,7 @@ export default function AdminInboxPage() {
       e.from.toLowerCase().includes(term) ||
       (e.fromName || '').toLowerCase().includes(term) ||
       e.subject.toLowerCase().includes(term) ||
-      e.body.toLowerCase().includes(term)
+      getDisplayBody(e).toLowerCase().includes(term)
     if (filter === 'unread') return matchesSearch && !e.isRead
     if (filter === 'starred') return matchesSearch && e.isStarred
     return matchesSearch
@@ -263,7 +285,7 @@ export default function AdminInboxPage() {
                       {email.subject}
                     </p>
                     <p className="mt-0.5 truncate text-[11px] text-slate-400">
-                      {email.body.slice(0, 80)}...
+                      {getDisplayBody(email).slice(0, 80)}...
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1">
@@ -351,16 +373,9 @@ export default function AdminInboxPage() {
               </div>
               {/* Detail body */}
               <div className="flex-1 overflow-auto px-6 py-5">
-                {selectedEmail.html ? (
-                  <div
-                    className="prose prose-sm max-w-none text-slate-700"
-                    dangerouslySetInnerHTML={{ __html: selectedEmail.html }}
-                  />
-                ) : (
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 font-sans">
-                    {selectedEmail.body}
-                  </pre>
-                )}
+                <pre className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 font-sans">
+                  {getDisplayBody(selectedEmail)}
+                </pre>
               </div>
             </div>
           ) : (
