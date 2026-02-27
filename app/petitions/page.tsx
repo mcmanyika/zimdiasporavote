@@ -95,10 +95,57 @@ export default function PetitionsPage() {
               {petitions.map((petition) => (
                 <PetitionCard key={petition.id} petition={petition} onSign={loadPetitions} />
               ))}
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 shadow-sm">
+                <p
+                  className="text-xl font-bold uppercase tracking-wide sm:text-2xl"
+                  style={{ animation: 'redAlertPulse 1.4s ease-in-out infinite alternate' }}
+                >
+                  Red Alert!!
+                </p>
+                <p className="mt-3 text-base leading-relaxed text-slate-800">
+                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
+                  personnel are camped outside 24/7.
+                </p>
+                <p className="mt-3 text-base leading-relaxed text-slate-800">
+                  Please make their sacrifices mean something. After signing the petition, share it with your family
+                  and friends. We need the numbers.
+                </p>
+                <p className="mt-3 text-base leading-relaxed text-slate-800">
+                  Thank you.
+                </p>
+                <p className="mt-4 text-sm text-slate-700">
+                  Your donation strengthens civic voices when they’re under threat.
+                </p>
+                <div className="mt-5">
+                  <Link
+                    href="/#donate"
+                    className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
+                  >
+                    Donate
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </section>
+
+      <style jsx>{`
+        @keyframes redAlertPulse {
+          0% {
+            color: #92400e;
+            text-shadow: 0 0 0 rgba(220, 38, 38, 0);
+          }
+          50% {
+            color: #dc2626;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.35);
+          }
+          100% {
+            color: #991b1b;
+            text-shadow: 0 0 14px rgba(153, 27, 27, 0.45);
+          }
+        }
+      `}</style>
 
       {/* CTA Section */}
       <CTASection />

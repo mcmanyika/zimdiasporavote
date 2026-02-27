@@ -252,6 +252,30 @@ export default function PetitionDetailPage() {
                   </button>
                 </div>
               </div>
+              <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-4">
+                <p className="text-lg font-extrabold uppercase tracking-wide text-red-700 animate-pulse sm:text-xl">
+                  Red Alert!!
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
+                  personnel are camped outside 24/7.
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  Please make their sacrifices mean something. After signing this petition, share it with your family
+                  and friends. We need the numbers.
+                </p>
+                <p className="mt-3 text-sm text-slate-700">
+                  Your donation strengthens civic voices when they’re under threat.
+                </p>
+                <div className="mt-4">
+                  <Link
+                    href="/#donate"
+                    className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
+                  >
+                    Donate
+                  </Link>
+                </div>
+              </div>
               {shareSuccess && (
                 <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm text-green-600">
                   Link copied to clipboard!
