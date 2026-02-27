@@ -57,18 +57,13 @@ export default function PetitionDetailPage() {
   const sendPetitionConfirmationEmail = async (payload: { name: string; email: string; petitionTitle: string; petitionId: string }) => {
     try {
       const baseUrl = window.location.origin
-      const donateUrl = `${baseUrl}/#donate`
-      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nOur leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.\n\nConsider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.\n\nDonate: ${donateUrl}`
+      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nOur leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.`
       const htmlBody = `
         <p>Thank you for signing "${payload.petitionTitle}".</p>
         <p>Your voice has been recorded, and it strengthens this constitutional campaign.</p>
         <p><strong>Did you know?</strong></p>
         <p>Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.</p>
         <p>Please make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.</p>
-        <p>Consider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.</p>
-        <p style="margin:20px 0 0;">
-          <a href="${donateUrl}" style="display:inline-block;background-color:#0f172a;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Donate</a>
-        </p>
       `.trim()
 
       const res = await fetch('/api/email/send', {
@@ -283,18 +278,6 @@ export default function PetitionDetailPage() {
                   Please make their sacrifices mean something. Share this petition with your family and friends. We
                   need the numbers.
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Consider making a donation of any amount. Every contribution helps strengthen civic voices when they
-                  are under threat.
-                </p>
-                <div className="mt-4">
-                  <Link
-                    href="/#donate"
-                    className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
-                  >
-                    Donate
-                  </Link>
-                </div>
               </div>
               {shareSuccess && (
                 <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm text-green-600">

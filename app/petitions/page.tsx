@@ -113,18 +113,6 @@ export default function PetitionsPage() {
                   Please make their sacrifices mean something. Share this petition with your family and friends. We
                   need the numbers.
                 </p>
-                <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Consider making a donation of any amount. Every contribution helps strengthen civic voices when they
-                  are under threat.
-                </p>
-                <div className="mt-5">
-                  <Link
-                    href="/#donate"
-                    className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
-                  >
-                    Donate
-                  </Link>
-                </div>
               </div>
             </div>
           )}
