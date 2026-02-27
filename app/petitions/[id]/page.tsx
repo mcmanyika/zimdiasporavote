@@ -264,10 +264,7 @@ export default function PetitionDetailPage() {
                 </div>
               </div>
               <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-4">
-                <p className="text-lg font-extrabold uppercase tracking-wide text-red-700 animate-pulse sm:text-xl">
-                  Red Alert!!
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
+                <p className="text-sm leading-relaxed text-slate-800 sm:text-base">
                   Did you know?
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">

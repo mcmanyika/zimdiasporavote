@@ -96,13 +96,7 @@ export default function PetitionsPage() {
                 <PetitionCard key={petition.id} petition={petition} onSign={loadPetitions} />
               ))}
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 shadow-sm">
-                <p
-                  className="text-xl font-bold uppercase tracking-wide sm:text-2xl"
-                  style={{ animation: 'redAlertPulse 1.4s ease-in-out infinite alternate' }}
-                >
-                  Red Alert!!
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
+                <p className="text-sm leading-relaxed text-slate-800 sm:text-base">
                   Did you know?
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
@@ -118,23 +112,6 @@ export default function PetitionsPage() {
           )}
         </div>
       </section>
-
-      <style jsx>{`
-        @keyframes redAlertPulse {
-          0% {
-            color: #92400e;
-            text-shadow: 0 0 0 rgba(220, 38, 38, 0);
-          }
-          50% {
-            color: #dc2626;
-            text-shadow: 0 0 10px rgba(220, 38, 38, 0.35);
-          }
-          100% {
-            color: #991b1b;
-            text-shadow: 0 0 14px rgba(153, 27, 27, 0.45);
-          }
-        }
-      `}</style>
 
       {/* CTA Section */}
       <CTASection />
