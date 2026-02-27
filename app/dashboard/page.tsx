@@ -8,9 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { getPurchasesByUser, getProductById, getAllUsers, getNews, getPetitions, getProducts, getAllPurchases, getAllVolunteerApplications, getAllDonations, getMembershipApplications } from '@/lib/firebase/firestore'
 import type { Purchase, Product, UserProfile as UserProfileType, News, Petition, Donation, VolunteerApplication, MembershipApplication } from '@/types'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-const AdminCharts = dynamic(() => import('@/app/components/AdminCharts'), { ssr: false })
+import AdminCharts from '@/app/components/AdminCharts'
 
 export default function DashboardPage() {
   return (

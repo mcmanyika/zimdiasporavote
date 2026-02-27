@@ -58,12 +58,12 @@ export default function PetitionDetailPage() {
     try {
       const baseUrl = window.location.origin
       const donateUrl = `${baseUrl}/#donate`
-      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nSome of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.\n\nConsider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.\n\nDonate: ${donateUrl}`
+      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nOur leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.\n\nConsider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.\n\nDonate: ${donateUrl}`
       const htmlBody = `
         <p>Thank you for signing "${payload.petitionTitle}".</p>
         <p>Your voice has been recorded, and it strengthens this constitutional campaign.</p>
         <p><strong>Did you know?</strong></p>
-        <p>Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.</p>
+        <p>Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.</p>
         <p>Please make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.</p>
         <p>Consider making a donation of any amount. Every contribution helps strengthen civic voices when they are under threat.</p>
         <p style="margin:20px 0 0;">
@@ -276,9 +276,8 @@ export default function PetitionDetailPage() {
                   Did you know?
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
-                  personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been
-                  marked.
+                  Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator
+                  Jameson Timba and Dr Ibbo Mandaza have been marked.
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
                   Please make their sacrifices mean something. Share this petition with your family and friends. We

@@ -106,9 +106,8 @@ export default function PetitionsPage() {
                   Did you know?
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Some of our leaders, including Jacob Ngarivhume, can no longer live in their own homes. Security
-                  personnel are camped outside 24/7. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been
-                  marked.
+                  Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator
+                  Jameson Timba and Dr Ibbo Mandaza have been marked.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
                   Please make their sacrifices mean something. Share this petition with your family and friends. We

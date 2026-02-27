@@ -629,6 +629,7 @@ export default function AdminMembershipApplicationsPage() {
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Applicant</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Type</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Province</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Phone</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Date</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</th>
@@ -639,6 +640,7 @@ export default function AdminMembershipApplicationsPage() {
                     const name = app.type === 'individual' ? app.fullName : app.organisationName
                     const email = app.emailAddress || app.representativeEmail
                     const province = app.type === 'individual' ? app.province : app.provincesOfOperation
+                    const phone = app.type === 'individual' ? app.mobileNumber : app.representativeMobile
                     return (
                       <tr key={app.id} className={`hover:bg-slate-50 transition-colors cursor-pointer ${app.emailedAt ? 'bg-blue-50/50 border-l-2 border-l-blue-400' : ''} ${selectedIds.has(app.id) ? 'bg-blue-50' : ''}`} onClick={() => openDetail(app)}>
                         <td className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -665,6 +667,17 @@ export default function AdminMembershipApplicationsPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-600">{province || '—'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600">
+                          {phone ? (
+                            <a
+                              href={`tel:${phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-blue-600 hover:underline"
+                            >
+                              {phone}
+                            </a>
+                          ) : '—'}
+                        </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[app.status]}`}>
