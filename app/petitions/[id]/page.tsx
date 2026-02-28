@@ -57,13 +57,11 @@ export default function PetitionDetailPage() {
   const sendPetitionConfirmationEmail = async (payload: { name: string; email: string; petitionTitle: string; petitionId: string }) => {
     try {
       const baseUrl = window.location.origin
-      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nDid you know?\n\nOur leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.\n\nPlease make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.`
+      const bodyText = `Thank you for signing "${payload.petitionTitle}".\n\nYour voice has been recorded, and it strengthens this constitutional campaign.\n\nShare this petition with your family and friends. We need the numbers.`
       const htmlBody = `
         <p>Thank you for signing "${payload.petitionTitle}".</p>
         <p>Your voice has been recorded, and it strengthens this constitutional campaign.</p>
-        <p><strong>Did you know?</strong></p>
-        <p>Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator Jameson Timba and Dr Ibbo Mandaza have been marked.</p>
-        <p>Please make their sacrifices mean something. Share this petition with your family and friends. We need the numbers.</p>
+        <p>Share this petition with your family and friends. We need the numbers.</p>
       `.trim()
 
       const res = await fetch('/api/email/send', {
