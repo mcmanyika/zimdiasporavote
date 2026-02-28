@@ -96,16 +96,19 @@ export default function PetitionsPage() {
                 <PetitionCard key={petition.id} petition={petition} onSign={loadPetitions} />
               ))}
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 shadow-sm">
-                <p className="text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Did you know?
+                <p className="text-sm font-semibold leading-relaxed text-slate-900 sm:text-base">
+                  Call to Action
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Our leaders, like Jacob Ngarivhume are now under 24/7 security survellence. The homes of Senator
-                  Jameson Timba and Dr Ibbo Mandaza have been marked.
+                  If a referendum is denied, citizens reserve the democratic right to organise a People's Referendum
+                  through peaceful civic means.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Please make their sacrifices mean something. Share this petition with your family and friends. We
-                  need the numbers.
+                  Join the Defend the Constitution Platform in demanding a referendum.
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
+                  I support a national referendum before any extension of presidential or parliamentary tenure. No
+                  referendum, no legitimacy.
                 </p>
               </div>
             </div>
