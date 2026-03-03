@@ -680,9 +680,9 @@ export default function AdminMembershipApplicationsPage() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap items-center gap-1.5">
-                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[app.status]}`}>
-                              {app.status}
-                            </span>
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[app.status]}`}>
+                            {app.status}
+                          </span>
                             {app.emailedAt && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600" title={`Emailed ${formatDate(app.emailedAt)}`}>
                                 <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1007,7 +1007,7 @@ export default function AdminMembershipApplicationsPage() {
               {cashSuccess && (
                 <div className="mt-4 rounded-lg bg-emerald-50 border border-emerald-200 p-3">
                   <p className="text-sm font-semibold text-emerald-700">{cashSuccess}</p>
-                </div>
+      </div>
               )}
               {cashError && (
                 <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3">

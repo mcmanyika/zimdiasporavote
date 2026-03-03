@@ -4,18 +4,67 @@ import { useState, useEffect, Suspense } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import RichTextEditor from '@/app/components/RichTextEditor'
+import { uploadFile } from '@/lib/firebase/storage'
+import { getPetitions } from '@/lib/firebase/firestore'
+
+type SendMode = 'single' | 'bulk'
+
+interface ParsedRecipient {
+  email: string
+  name: string
+}
+
+function parseBulkRecipients(input: string): ParsedRecipient[] {
+  const lines = input
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  const recipients: ParsedRecipient[] = []
+  const seen = new Set<string>()
+
+  for (const line of lines) {
+    // Supported formats:
+    // 1) name,email@example.com
+    // 2) email@example.com
+    const parts = line.split(',').map((p) => p.trim()).filter(Boolean)
+    let email = ''
+    let name = 'Recipient'
+
+    if (parts.length >= 2) {
+      name = parts[0] || 'Recipient'
+      email = parts[1] || ''
+    } else {
+      email = parts[0] || ''
+    }
+
+    if (!email || !email.includes('@')) continue
+    const key = email.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    recipients.push({ email, name })
+  }
+
+  return recipients
+}
 
 function ComposeEmailContent() {
   const { user, userProfile } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  const [sendMode, setSendMode] = useState<SendMode>('single')
   const [to, setTo] = useState('')
   const [name, setName] = useState('')
+  const [bulkRecipients, setBulkRecipients] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [loadingPetitionSigners, setLoadingPetitionSigners] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [bulkDone, setBulkDone] = useState<{ sent: number; failed: number; total: number } | null>(null)
+  const [bulkLoadMsg, setBulkLoadMsg] = useState('')
   const [error, setError] = useState('')
 
   // Pre-fill from search params (e.g. from inbox reply)
@@ -35,6 +84,7 @@ function ComposeEmailContent() {
   const handleSend = async () => {
     setError('')
     setSuccess(false)
+    setBulkDone(null)
 
     const htmlToPlainText = (html: string) => {
       const temp = document.createElement('div')
@@ -43,39 +93,158 @@ function ComposeEmailContent() {
     }
 
     const plainBody = htmlToPlainText(body)
+    const hasInlineImage = /<img\b/i.test(body)
 
-    if (!to.trim()) return setError('Recipient email is required.')
+    const parsedRecipients = sendMode === 'bulk' ? parseBulkRecipients(bulkRecipients) : []
+
+    if (sendMode === 'single' && !to.trim()) return setError('Recipient email is required.')
+    if (sendMode === 'bulk' && parsedRecipients.length === 0) {
+      return setError('Please add at least one valid recipient.')
+    }
     if (!subject.trim()) return setError('Subject is required.')
-    if (!plainBody) return setError('Message body is required.')
+    if (!plainBody && !hasInlineImage) return setError('Message body is required.')
 
     try {
       setSending(true)
-      const res = await fetch('/api/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: to.trim(),
-          name: name.trim() || 'Recipient',
-          subject: subject.trim(),
-          body: plainBody,
-          htmlBody: body,
-          userId: userProfile?.uid,
-        }),
-      })
-      const data = await res.json()
-      if (data.success) {
+
+      if (sendMode === 'single') {
+        const res = await fetch('/api/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: to.trim(),
+            name: name.trim() || 'Recipient',
+            subject: subject.trim(),
+            body: plainBody || 'Image content',
+            htmlBody: body,
+            userId: userProfile?.uid,
+          }),
+        })
+        const data = await res.json()
+        if (!data.success) {
+          setError(data.error || 'Failed to send email.')
+          return
+        }
         setSuccess(true)
         setTo('')
         setName('')
         setSubject('')
         setBody('')
       } else {
-        setError(data.error || 'Failed to send email.')
+        const total = parsedRecipients.length
+        let sent = 0
+        let failed = 0
+
+        for (const recipient of parsedRecipients) {
+          try {
+            const res = await fetch('/api/email/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: recipient.email,
+                name: recipient.name || 'Recipient',
+                subject: subject.trim(),
+                body: plainBody || 'Image content',
+                htmlBody: body,
+                userId: userProfile?.uid,
+              }),
+            })
+            const data = await res.json()
+            if (res.ok && data.success) sent++
+            else failed++
+          } catch {
+            failed++
+          }
+          setBulkDone({ sent, failed, total })
+        }
+
+        if (sent > 0) setSuccess(true)
+        if (failed > 0 && sent === 0) setError('No emails were sent. Please check recipients or try again.')
+
+        setBulkRecipients('')
+        if (sent > 0) {
+          setSubject('')
+          setBody('')
+        }
       }
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {
       setSending(false)
+    }
+  }
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files || files.length === 0) return
+
+    setError('')
+    setUploadingImage(true)
+    try {
+      const uploadedTags: string[] = []
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) {
+          throw new Error(`"${file.name}" is not an image file.`)
+        }
+        if (file.size > 8 * 1024 * 1024) {
+          throw new Error(`"${file.name}" exceeds 8MB limit.`)
+        }
+        const timestamp = Date.now()
+        const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+        const path = `email-images/${timestamp}-${safeName}`
+        const url = await uploadFile(file, path)
+        uploadedTags.push(
+          `<p style="text-align:center;"><img src="${url}" alt="${safeName}" style="display:inline-block;width:100%;max-width:420px;height:auto;border-radius:8px;" /></p>`
+        )
+      }
+
+      setBody((prev) => `${prev}${prev ? '<br />' : ''}${uploadedTags.join('')}`)
+    } catch (err: any) {
+      setError(err?.message || 'Failed to upload image.')
+    } finally {
+      setUploadingImage(false)
+      event.target.value = ''
+    }
+  }
+
+  const handleLoadPetitionSigners = async () => {
+    setError('')
+    setBulkLoadMsg('')
+    setSuccess(false)
+    setBulkDone(null)
+    try {
+      setLoadingPetitionSigners(true)
+      const petitions = await getPetitions(false, false)
+      const seen = new Set<string>()
+      const recipients: ParsedRecipient[] = []
+
+      for (const petition of petitions) {
+        for (const sig of petition.signatures || []) {
+          const email = (sig.email || '').trim()
+          if (!email) continue
+          const key = email.toLowerCase()
+          if (seen.has(key)) continue
+          seen.add(key)
+          recipients.push({
+            email,
+            name: sig.anonymous ? 'Supporter' : (sig.name || 'Supporter'),
+          })
+        }
+      }
+
+      if (recipients.length === 0) {
+        setBulkLoadMsg('No petition signers with email were found.')
+        return
+      }
+
+      const lines = recipients.map((r) => `${r.name},${r.email}`).join('\n')
+      setSendMode('bulk')
+      setBulkRecipients(lines)
+      setBulkLoadMsg(`Loaded ${recipients.length} unique petition signer email${recipients.length !== 1 ? 's' : ''}.`)
+    } catch (err: any) {
+      setError(err?.message || 'Failed to load petition signers.')
+    } finally {
+      setLoadingPetitionSigners(false)
     }
   }
 
@@ -107,6 +276,14 @@ function ComposeEmailContent() {
             <p className="text-sm font-medium text-emerald-800">Email sent successfully!</p>
           </div>
         )}
+        {bulkDone && (
+          <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <p className="text-sm font-medium text-slate-800">
+              Bulk send result: <span className="font-semibold text-emerald-700">{bulkDone.sent} sent</span>,{' '}
+              <span className="font-semibold text-red-600">{bulkDone.failed} failed</span> (total {bulkDone.total})
+            </p>
+          </div>
+        )}
 
         {/* Error banner */}
         {error && (
@@ -119,33 +296,92 @@ function ComposeEmailContent() {
         )}
 
         <div className="space-y-5">
-          {/* To */}
+          {/* Send mode */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              To <span className="text-red-400">*</span>
+              Send Mode
             </label>
-            <input
-              type="email"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              placeholder="recipient@example.com"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                <button
+                  type="button"
+                  onClick={() => setSendMode('single')}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    sendMode === 'single' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSendMode('bulk')}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    sendMode === 'bulk' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  Bulk
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleLoadPetitionSigners}
+                disabled={loadingPetitionSigners}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+              >
+                {loadingPetitionSigners ? 'Loading signers...' : 'Load Petition Signers'}
+              </button>
+            </div>
+            {bulkLoadMsg && (
+              <p className="mt-2 text-xs font-medium text-slate-600">{bulkLoadMsg}</p>
+            )}
           </div>
 
-          {/* Recipient name */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Recipient Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
-            />
-          </div>
+          {/* To */}
+          {sendMode === 'single' ? (
+            <>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  To <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
+                  placeholder="recipient@example.com"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Recipient Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                />
+              </div>
+            </>
+          ) : (
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Recipients <span className="text-red-400">*</span>
+              </label>
+              <textarea
+                value={bulkRecipients}
+                onChange={(e) => setBulkRecipients(e.target.value)}
+                placeholder={'one per line:\nJohn Doe,john@example.com\njane@example.com'}
+                rows={7}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+              />
+              <p className="mt-1.5 text-xs text-slate-500">
+                Use one recipient per line. Format: <code>name,email</code> or <code>email</code>.
+              </p>
+            </div>
+          )}
 
           {/* Subject */}
           <div>
@@ -172,13 +408,38 @@ function ComposeEmailContent() {
               placeholder="Write your message..."
               className="rounded-xl border border-slate-200 bg-slate-50 p-1"
             />
+            <div className="mt-3 flex items-center gap-3">
+              <label className="inline-flex cursor-pointer items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
+                {uploadingImage ? 'Uploading image...' : 'Upload Image'}
+              </label>
+              <span className="text-xs text-slate-500">
+                Uploaded images are embedded into the email body.
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
           <button
-            onClick={() => { setTo(''); setName(''); setSubject(''); setBody(''); setSuccess(false); setError('') }}
+            onClick={() => {
+              setTo('')
+              setName('')
+              setBulkRecipients('')
+              setSubject('')
+              setBody('')
+              setSuccess(false)
+              setBulkDone(null)
+              setError('')
+            }}
             className="rounded-lg px-4 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
             Clear

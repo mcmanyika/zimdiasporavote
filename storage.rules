@@ -84,6 +84,18 @@ service firebase.storage {
       // Only admins can delete gallery images
       allow delete: if isAdmin();
     }
+
+    // Email compose inline images - only admins can upload/delete, anyone can read
+    match /email-images/{imageId} {
+      // Anyone can read so recipients can load images in emails
+      allow read: if true;
+      // Only admins can upload inline email images
+      allow write: if isAdmin() &&
+                     request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                     request.resource.contentType.matches('image/.*');
+      // Only admins can delete inline email images
+      allow delete: if isAdmin();
+    }
     
     // Resource files (PDFs/documents) - only admins can upload/delete, authenticated users can read
     match /resources/{resourceId} {
