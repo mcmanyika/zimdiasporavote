@@ -44,19 +44,26 @@ export async function sendCustomEmail({
   subject,
   body,
   htmlBody,
+  usePlatformTemplate = true,
 }: {
   to: string
   name: string
   subject: string
   body: string
   htmlBody?: string
+  usePlatformTemplate?: boolean
 }) {
   try {
+    const rawBody = htmlBody && htmlBody.trim() ? htmlBody : body.replace(/\n/g, '<br />')
+    const html = usePlatformTemplate
+      ? buildCustomEmailHtml({ name, subject, body, htmlBody })
+      : applyEmailImageCap(rawBody)
+
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [to],
       subject,
-      html: buildCustomEmailHtml({ name, subject, body, htmlBody }),
+      html,
     })
 
     if (error) {

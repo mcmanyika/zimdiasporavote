@@ -19,7 +19,7 @@ function getErrorMessage(error: unknown): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, subject, body, htmlBody, userId } = await request.json()
+    const { email, name, subject, body, htmlBody, userId, usePlatformTemplate } = await request.json()
 
     if (!email || !email.trim()) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
       subject: trimmedSubject,
       body: trimmedBody,
       htmlBody: trimmedHtmlBody || undefined,
+      usePlatformTemplate: usePlatformTemplate !== false,
     })
 
     // Log email

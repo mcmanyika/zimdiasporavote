@@ -8,10 +8,18 @@ import { uploadFile } from '@/lib/firebase/storage'
 import { getPetitions } from '@/lib/firebase/firestore'
 
 type SendMode = 'single' | 'bulk'
+type EmailTemplateId = 'blank_default' | 'blank_alt' | 'petition_followup'
 
 interface ParsedRecipient {
   email: string
   name: string
+}
+
+interface EmailTemplate {
+  id: EmailTemplateId
+  label: string
+  subject: string
+  htmlBody: string
 }
 
 function parseBulkRecipients(input: string): ParsedRecipient[] {
@@ -48,12 +56,35 @@ function parseBulkRecipients(input: string): ParsedRecipient[] {
   return recipients
 }
 
+const EMAIL_TEMPLATES: EmailTemplate[] = [
+  {
+    id: 'blank_default',
+    label: 'Blank Template',
+    subject: '',
+    htmlBody: '',
+  },
+  {
+    id: 'blank_alt',
+    label: 'Blank Template (Alt)',
+    subject: '',
+    htmlBody: '<p><br /></p>',
+  },
+  {
+    id: 'petition_followup',
+    label: 'Petition Follow-up',
+    subject: 'Thank you for signing the petition',
+    htmlBody:
+      '<p>Thank you for signing the petition.</p><p>Your support strengthens constitutional democracy.</p>',
+  },
+]
+
 function ComposeEmailContent() {
   const { user, userProfile } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [sendMode, setSendMode] = useState<SendMode>('single')
+  const [selectedTemplateId, setSelectedTemplateId] = useState<EmailTemplateId>('blank_default')
   const [to, setTo] = useState('')
   const [name, setName] = useState('')
   const [bulkRecipients, setBulkRecipients] = useState('')
@@ -81,6 +112,17 @@ function ComposeEmailContent() {
     return null
   }
 
+  const applyTemplate = (templateId: EmailTemplateId) => {
+    const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId)
+    if (!tpl) return
+    setSelectedTemplateId(templateId)
+    setSubject(tpl.subject)
+    setBody(tpl.htmlBody)
+    setSuccess(false)
+    setBulkDone(null)
+    setError('')
+  }
+
   const handleSend = async () => {
     setError('')
     setSuccess(false)
@@ -106,6 +148,7 @@ function ComposeEmailContent() {
 
     try {
       setSending(true)
+      const isBlankTemplate = selectedTemplateId === 'blank_default' || selectedTemplateId === 'blank_alt'
 
       if (sendMode === 'single') {
         const res = await fetch('/api/email/send', {
@@ -118,6 +161,7 @@ function ComposeEmailContent() {
             body: plainBody || 'Image content',
             htmlBody: body,
             userId: userProfile?.uid,
+            usePlatformTemplate: !isBlankTemplate,
           }),
         })
         const data = await res.json()
@@ -147,6 +191,7 @@ function ComposeEmailContent() {
                 body: plainBody || 'Image content',
                 htmlBody: body,
                 userId: userProfile?.uid,
+                usePlatformTemplate: !isBlankTemplate,
               }),
             })
             const data = await res.json()
@@ -382,6 +427,33 @@ function ComposeEmailContent() {
               </p>
             </div>
           )}
+
+          {/* Template picker */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Email Template
+            </label>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => setSelectedTemplateId(e.target.value as EmailTemplateId)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+              >
+                {EMAIL_TEMPLATES.map((tpl) => (
+                  <option key={tpl.id} value={tpl.id}>
+                    {tpl.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => applyTemplate(selectedTemplateId)}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                Apply Template
+              </button>
+            </div>
+          </div>
 
           {/* Subject */}
           <div>
