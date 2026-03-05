@@ -55,9 +55,15 @@ export async function sendCustomEmail({
 }) {
   try {
     const rawBody = htmlBody && htmlBody.trim() ? htmlBody : body.replace(/\n/g, '<br />')
+    const personalizedRawBody = personalizeEmailBody(rawBody, name)
     const html = usePlatformTemplate
-      ? buildCustomEmailHtml({ name, subject, body, htmlBody })
-      : applyEmailImageCap(rawBody)
+      ? buildCustomEmailHtml({
+          name,
+          subject,
+          body: personalizeEmailBody(body, name),
+          htmlBody: htmlBody ? personalizedRawBody : undefined,
+        })
+      : applyEmailImageCap(personalizedRawBody)
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -77,6 +83,13 @@ export async function sendCustomEmail({
     console.error('Failed to send custom email:', err)
     return { success: false, error: err.message }
   }
+}
+
+function personalizeEmailBody(content: string, name: string): string {
+  const safeName = (name || '').trim() || 'Recipient'
+  return content
+    .replace(/\[Name\]/gi, safeName)
+    .replace(/\{\{name\}\}/gi, safeName)
 }
 
 function applyEmailImageCap(html: string): string {
