@@ -72,6 +72,19 @@ export async function createStripeCustomerId(
 // Donation operations
 export async function createDonation(donation: Omit<Donation, 'id' | 'createdAt'>): Promise<string> {
   const db = requireDb()
+  // Idempotency guard: avoid duplicate donation rows for the same Stripe payment intent.
+  const existingDonationQuery = query(
+    collection(db, 'donations'),
+    where('stripePaymentIntentId', '==', donation.stripePaymentIntentId),
+    limit(1)
+  )
+  const existingDonationSnapshot = await getDocs(existingDonationQuery)
+  if (!existingDonationSnapshot.empty) {
+    const existingId = existingDonationSnapshot.docs[0].id
+    console.log('Donation already exists for payment intent:', donation.stripePaymentIntentId, existingId)
+    return existingId
+  }
+
   const donationRef = doc(collection(db, 'donations'))
   try {
     // Ensure all required fields are present and valid

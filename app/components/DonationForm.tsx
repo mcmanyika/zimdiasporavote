@@ -43,7 +43,6 @@ function DonationFormContent({ onSuccess }: DonationFormContentProps) {
               userEmail: user?.email || null,
               userName: user?.displayName || null,
               type: 'donation',
-              description: description || undefined,
             }),
           })
 
@@ -70,7 +69,7 @@ function DonationFormContent({ onSuccess }: DonationFormContentProps) {
     } else {
       setClientSecret('')
     }
-  }, [amount, customAmount, user?.uid, user?.email, user?.displayName, description])
+  }, [amount, customAmount, user?.uid, user?.email, user?.displayName])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

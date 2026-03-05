@@ -61,13 +61,15 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
     id: 'blank_default',
     label: 'Blank Template',
     subject: '',
-    htmlBody: '',
+    htmlBody:
+      '<p>Dear [Name],</p><p>Join us by spreading the petition to ALL Zimbabweans, here at home and across the world.</p><p><a href="https://dcpzim.com/petitions">https://dcpzim.com/petitions</a></p>',
   },
   {
     id: 'blank_alt',
     label: 'Blank Template (Alt)',
     subject: '',
-    htmlBody: '<p><br /></p>',
+    htmlBody:
+      '<p>Dear [Name],</p><p><br /></p><p>Join us by spreading the petition to ALL Zimbabweans, here at home and across the world.</p><p><a href="https://dcpzim.com/petitions">https://dcpzim.com/petitions</a></p>',
   },
   {
     id: 'petition_followup',
