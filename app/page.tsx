@@ -388,8 +388,64 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Sponsored Merchandise Section */}
+        <section id="sponsored-merchandise" className="bg-white py-10 sm:py-14">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+              <div className="grid items-stretch md:grid-cols-2">
+                <div className="relative min-h-[280px] bg-slate-100">
+                  <img
+                    src="/images/store/pack.png"
+                    alt="Sponsored merchandise pack ready for delivery"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-col justify-center p-6 sm:p-8">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                    Sponsored Merchandise
+                  </p>
+                  <h2 className="mb-3 text-2xl font-bold text-slate-900 sm:text-3xl">
+                    Buy item for Someone
+                  </h2>
+                  <p className="mb-4 text-sm leading-relaxed text-slate-600 sm:text-base">
+                    You can now sponsor DCP merchandise for others and help us spread the message.
+                  </p>
+                  <ul className="mb-6 space-y-2 text-sm text-slate-700">
+                    {[
+                      'Choose a merchandise pack and complete checkout',
+                      'We direct sponsored packs to identified recipients',
+                      'Your purchase strengthens outreach in underserved areas',
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                    <button
+                      onClick={() => setDonationModalOpen(true)}
+                      className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 sm:w-auto"
+                    >
+                      Sponser Item
+                    </button>
+                    <Link
+                      href="/shop"
+                      className="inline-flex w-full items-center justify-center rounded-md border-2 border-slate-900 px-6 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100 sm:w-auto"
+                    >
+                      Browse Merchandise
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Shop Products Section */}
-        <section id="shop-section" className="bg-slate-50 py-8 sm:py-12">
+        <section id="shop-section" className="hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             {productsLoading ? (
               <div className="flex items-center justify-center py-8">
