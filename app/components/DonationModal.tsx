@@ -1,17 +1,15 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import DonationForm from './DonationForm'
 
 interface DonationModalProps {
   isOpen: boolean
   onClose: () => void
+  initialMessage?: string
 }
 
-export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
-  const router = useRouter()
-
+export default function DonationModal({ isOpen, onClose, initialMessage = '' }: DonationModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -70,7 +68,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
         {/* Content */}
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-6">
-          <DonationForm onSuccess={handleSuccess} />
+          <DonationForm onSuccess={handleSuccess} initialMessage={initialMessage} />
         </div>
       </div>
     </div>

@@ -9,9 +9,10 @@ import { createDonation, createStripeCustomerId, createNotification } from '@/li
 
 interface DonationFormContentProps {
   onSuccess?: () => void
+  initialMessage?: string
 }
 
-function DonationFormContent({ onSuccess }: DonationFormContentProps) {
+function DonationFormContent({ onSuccess, initialMessage = '' }: DonationFormContentProps) {
   const [amount, setAmount] = useState('')
   const [customAmount, setCustomAmount] = useState('')
   const [description, setDescription] = useState('')
@@ -24,6 +25,10 @@ function DonationFormContent({ onSuccess }: DonationFormContentProps) {
   const elements = useElements()
 
   const presetAmounts = [5, 10, 25, 50, 100]
+
+  useEffect(() => {
+    setDescription(initialMessage)
+  }, [initialMessage])
 
   useEffect(() => {
     // Create payment intent when amount is selected
@@ -264,12 +269,13 @@ function DonationFormContent({ onSuccess }: DonationFormContentProps) {
 
 interface DonationFormProps {
   onSuccess?: () => void
+  initialMessage?: string
 }
 
-export default function DonationForm({ onSuccess }: DonationFormProps) {
+export default function DonationForm({ onSuccess, initialMessage = '' }: DonationFormProps) {
   return (
     <Elements stripe={stripePromise}>
-      <DonationFormContent onSuccess={onSuccess} />
+      <DonationFormContent onSuccess={onSuccess} initialMessage={initialMessage} />
     </Elements>
   )
 }

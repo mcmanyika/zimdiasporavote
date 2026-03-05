@@ -35,6 +35,7 @@ export default function Home() {
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [billDownloadCount, setBillDownloadCount] = useState(0)
   const [contactOpen, setContactOpen] = useState(false)
+  const [donationPrefillMessage, setDonationPrefillMessage] = useState('')
 
   // Declaration cards scroll-in animation
   const declarationCardsRef = useRef<HTMLDivElement>(null)
@@ -135,6 +136,16 @@ export default function Home() {
     }
   }
 
+  const openDonationModal = (prefillMessage = '') => {
+    setDonationPrefillMessage(prefillMessage)
+    setDonationModalOpen(true)
+  }
+
+  const closeDonationModal = () => {
+    setDonationModalOpen(false)
+    setDonationPrefillMessage('')
+  }
+
   const visibleProducts = products.slice(productStartIndex, productStartIndex + productsPerView)
   const canGoLeft = productStartIndex > 0
   const canGoRight = productStartIndex + productsPerView < products.length
@@ -210,7 +221,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
-      <Header onDonateClick={() => setDonationModalOpen(true)} onContactClick={() => setContactOpen(true)} startAtBottom />
+      <Header onDonateClick={() => openDonationModal()} onContactClick={() => setContactOpen(true)} startAtBottom />
 
       <div className="hidden md:block">
         <HeroSection />
@@ -321,7 +332,7 @@ export default function Home() {
                   </ul>
                   <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
-                      onClick={() => setDonationModalOpen(true)}
+                      onClick={() => openDonationModal()}
                       className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 sm:w-auto"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +390,7 @@ export default function Home() {
                 Join the Platform
               </Link>
               <button
-                onClick={() => setDonationModalOpen(true)}
+                onClick={() => openDonationModal()}
                 className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-5 py-2.5 text-xs font-semibold hover:bg-white/10 transition-colors sm:w-auto sm:px-6 sm:py-3 sm:text-sm"
               >
                 Support Our Work
@@ -426,7 +437,7 @@ export default function Home() {
                   </ul>
                   <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
-                      onClick={() => setDonationModalOpen(true)}
+                      onClick={() => openDonationModal('Sponsered merchandise')}
                       className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 sm:w-auto"
                     >
                       Sponser Item
@@ -946,7 +957,8 @@ export default function Home() {
       {/* Donation Modal */}
       <DonationModal
         isOpen={donationModalOpen}
-        onClose={() => setDonationModalOpen(false)}
+        onClose={closeDonationModal}
+        initialMessage={donationPrefillMessage}
       />
 
       {/* Chatbot */}
