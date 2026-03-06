@@ -9,11 +9,23 @@ import ContactForm from './components/ContactForm';
 import DonationModal from './components/DonationModal';
 import Chatbot from './components/Chatbot';
 import TwitterEmbed from './components/TwitterEmbed';
-import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
-import type { Product, GalleryImage } from '@/types';
+import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, getOrganizations, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
+import type { Product, GalleryImage, Organization } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
+
+const fallbackOrganizations = [
+  'Transform Zimbabwe - TZ',
+  'CCC Citizens Coalition for Change - CCC Progressive',
+  'National Democratic Working Group - NDWG',
+  'International Socialist Organisation - ISO',
+  'Zimbabwe National Students Union - ZINASU',
+  'Amalgamation of Rural Teachers Union of Zimbabwe - ARTUZ',
+  'SAPES Trust',
+  'ZCTU',
+  'Mine Workers Union of Zimbabwe',
+]
 
 export default function Home() {
   const { user } = useAuth()
@@ -33,6 +45,7 @@ export default function Home() {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [galleryLoading, setGalleryLoading] = useState(true)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [billDownloadCount, setBillDownloadCount] = useState(0)
   const [contactOpen, setContactOpen] = useState(false)
   const [donationPrefillMessage, setDonationPrefillMessage] = useState('')
@@ -101,6 +114,18 @@ export default function Home() {
       }
     }
     loadGallery()
+  }, [])
+
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      try {
+        const orgs = await getOrganizations(true)
+        setOrganizations(orgs)
+      } catch (error) {
+        console.error('Error loading organizations:', error)
+      }
+    }
+    loadOrganizations()
   }, [])
 
   // Responsive products per view: 1 on mobile, 2 on tablet, 4 on desktop
@@ -664,6 +689,34 @@ export default function Home() {
               </div>
             </div>
           )}
+        </section>
+
+        {/* Affiliated Organizations Section */}
+        <section id="affiliates-section" className="bg-white py-10 sm:py-14 border-t border-slate-200">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mb-8 text-center sm:mb-10">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                Partnerships
+              </p>
+              <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+                Organisations Affiliated to Us
+              </h2>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {(organizations.length > 0
+                ? organizations.map((org) => org.acronym ? `${org.name} - ${org.acronym}` : org.name)
+                : fallbackOrganizations
+              ).map((org) => (
+                <div
+                  key={org}
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-800"
+                >
+                  {org}
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* Gallery Section */}

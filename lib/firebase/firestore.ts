@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3047,6 +3047,63 @@ export async function updateLeader(leaderId: string, data: Partial<Leader>): Pro
 
 export async function deleteLeader(leaderId: string): Promise<void> {
   await deleteDoc(doc(requireDb(), 'leaders', leaderId))
+}
+
+// ─── Organizations (affiliates) ───────────────────────────────────────────────
+
+export async function getOrganizations(activeOnly: boolean = true): Promise<Organization[]> {
+  if (!db) {
+    console.warn('Firestore not initialized')
+    return []
+  }
+
+  try {
+    let q
+    if (activeOnly) {
+      q = query(
+        collection(db, 'organizations'),
+        where('isActive', '==', true),
+        orderBy('order', 'asc')
+      )
+    } else {
+      q = query(collection(db, 'organizations'), orderBy('order', 'asc'))
+    }
+
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((docSnap) => {
+      const data = docSnap.data()
+      return {
+        ...data,
+        id: docSnap.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as Organization
+    })
+  } catch (error: any) {
+    if (error?.code === 'failed-precondition') {
+      console.warn('Composite index not ready for organizations, using fallback query')
+      try {
+        const snapshot = await getDocs(collection(db, 'organizations'))
+        const organizations = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data()
+          return {
+            ...data,
+            id: docSnap.id,
+            createdAt: toDate(data.createdAt),
+            updatedAt: toDate(data.updatedAt),
+          } as Organization
+        })
+        const filtered = activeOnly ? organizations.filter((org) => org.isActive) : organizations
+        return filtered.sort((a, b) => a.order - b.order)
+      } catch (fallbackError: any) {
+        console.error('Error in fallback organizations query:', fallbackError)
+        return []
+      }
+    }
+
+    console.error('Error fetching organizations:', error)
+    return []
+  }
 }
 
 // ─── Referral Operations ──────────────────────────────────────────────────────

@@ -456,6 +456,16 @@ export interface Leader {
   updatedAt: Timestamp | Date
 }
 
+export interface Organization {
+  id: string
+  name: string
+  acronym?: string
+  order: number
+  isActive: boolean
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
 // Referral types
 export type ReferralStatus = 'signed_up' | 'applied' | 'paid'
 
