@@ -11,6 +11,7 @@ const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 // In-memory conversation history (for production, use Firestore)
 const conversationHistory: Map<string, { role: 'user' | 'assistant'; content: string }[]> = new Map()
 const reportModeUsers: Map<string, number> = new Map()
+const pendingIncidentReportByUser: Map<string, string> = new Map()
 
 // Maximum history length per conversation
 const MAX_HISTORY_LENGTH = 10
@@ -50,7 +51,7 @@ function parseSignCommand(text: string) {
   // Plain format: "Name,email"
   if (!raw.toUpperCase().startsWith('SIGN|') && raw.includes(',')) {
     const [namePart, emailPart] = raw.split(',', 2).map((p) => p.trim())
-    if (namePart && emailPart) {
+    if (namePart && emailPart && emailPart.includes('@')) {
       return {
         petitionId: undefined as string | undefined,
         name: namePart,
@@ -204,11 +205,45 @@ export async function POST(request: NextRequest) {
         // 0) Reporting mode command
         if (upperText === 'REPORT' || upperText === 'START REPORT') {
           reportModeUsers.set(from, Date.now())
+          pendingIncidentReportByUser.delete(from)
           await sendWhatsAppMessage(
             from,
             'Report mode activated.\n\nPlease send an image of the incident. ' +
               'Then send location, date/time, and a short description when safe.'
           )
+          return NextResponse.json({ success: true })
+        }
+
+        // 0.1) If user is in report mode, treat follow-up text as incident details
+        if (reportModeUsers.has(from)) {
+          const pendingReportId = pendingIncidentReportByUser.get(from)
+
+          if (!pendingReportId) {
+            await sendWhatsAppMessage(
+              from,
+              'Report mode is active. Please send an image first, then send location/date/time/description.'
+            )
+            return NextResponse.json({ success: true })
+          }
+
+          try {
+            await updateIncidentReport(pendingReportId, {
+              description: trimmedText,
+              errorMessage: undefined,
+            })
+            await sendWhatsAppMessage(
+              from,
+              `Thank you. Additional details have been added to your report (Ref: ${pendingReportId}).`
+            )
+            pendingIncidentReportByUser.delete(from)
+            reportModeUsers.delete(from)
+          } catch (updateError) {
+            console.error('Failed to append report details:', updateError)
+            await sendWhatsAppMessage(
+              from,
+              'I could not save these details right now. Please try sending them again shortly.'
+            )
+          }
           return NextResponse.json({ success: true })
         }
 
@@ -363,7 +398,7 @@ export async function POST(request: NextRequest) {
             `Thank you. Your image report has been received and logged (Ref: ${reportId}).` +
               '\n\nIf safe, reply with location, date/time, and a short description.'
           )
-          reportModeUsers.delete(from)
+          pendingIncidentReportByUser.set(from, reportId)
         } catch (error: any) {
           console.error('Error saving WhatsApp image report:', error)
           try {
@@ -379,6 +414,7 @@ export async function POST(request: NextRequest) {
           } catch (createError) {
             console.error('Failed to store failed incident report record:', createError)
           }
+          pendingIncidentReportByUser.delete(from)
           await sendWhatsAppMessage(
             from,
             'We received your image but could not save the report right now. Please try again shortly.'
