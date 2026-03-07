@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processChat } from '@/lib/chat-service'
-import { createIncidentReport, getPetitions, signPetition } from '@/lib/firebase/firestore'
+import { createIncidentReport, getPetitions, signPetition, updateIncidentReport } from '@/lib/firebase/firestore'
 import { uploadBufferToStorage } from '@/lib/firebase/admin'
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN
@@ -325,23 +325,7 @@ export async function POST(request: NextRequest) {
             throw new Error('Could not resolve WhatsApp image URL')
           }
 
-          let uploadedMediaUrl = mediaMeta.url
-          let uploadedStoragePath: string | undefined
-          let uploadErrorMessage: string | undefined
-
-          const { buffer, contentType } = await downloadWhatsAppMedia(mediaMeta.url)
-          try {
-            const extension = getExtensionFromMimeType(contentType)
-            const datePrefix = new Date().toISOString().slice(0, 10)
-            const storagePath = `incident-reports/${datePrefix}/${Date.now()}-${mediaId}.${extension}`
-            const { downloadUrl } = await uploadBufferToStorage(buffer, storagePath, contentType)
-            uploadedMediaUrl = downloadUrl
-            uploadedStoragePath = storagePath
-          } catch (uploadError: any) {
-            uploadErrorMessage = uploadError?.message || 'Storage upload failed'
-            console.error('Storage upload failed, using WhatsApp media URL fallback:', uploadError)
-          }
-
+          // Create the incident report first, then save the image.
           const reportId = await createIncidentReport({
             source: 'whatsapp',
             reporterPhone: from,
@@ -351,12 +335,28 @@ export async function POST(request: NextRequest) {
             mediaMimeType: mediaMeta?.mime_type || undefined,
             mediaSha256: mediaMeta?.sha256 || undefined,
             mediaFileSize: mediaMeta?.file_size || undefined,
-            mediaUrl: uploadedMediaUrl,
-            storagePath: uploadedStoragePath,
+            mediaUrl: mediaMeta?.url || undefined,
             caption: caption || undefined,
             status: 'new',
-            errorMessage: uploadErrorMessage,
           })
+
+          const { buffer, contentType } = await downloadWhatsAppMedia(mediaMeta.url)
+          try {
+            const extension = getExtensionFromMimeType(contentType)
+            const datePrefix = new Date().toISOString().slice(0, 10)
+            const storagePath = `incident-reports/${datePrefix}/${Date.now()}-${mediaId}.${extension}`
+            const { downloadUrl } = await uploadBufferToStorage(buffer, storagePath, contentType)
+            await updateIncidentReport(reportId, {
+              mediaUrl: downloadUrl,
+              storagePath,
+            })
+          } catch (uploadError: any) {
+            const uploadErrorMessage = uploadError?.message || 'Storage upload failed'
+            console.error('Storage upload failed, using WhatsApp media URL fallback:', uploadError)
+            await updateIncidentReport(reportId, {
+              errorMessage: uploadErrorMessage,
+            })
+          }
 
           await sendWhatsAppMessage(
             from,

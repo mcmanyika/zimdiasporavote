@@ -3128,6 +3128,28 @@ export async function createIncidentReport(
   }
 }
 
+export async function updateIncidentReport(
+  reportId: string,
+  data: Partial<IncidentReport>
+): Promise<void> {
+  const updateData: any = { updatedAt: Timestamp.now() }
+
+  if (data.messageId !== undefined) updateData.messageId = data.messageId
+  if (data.whatsappMediaId !== undefined) updateData.whatsappMediaId = data.whatsappMediaId
+  if (data.whatsappMediaUrl !== undefined) updateData.whatsappMediaUrl = data.whatsappMediaUrl
+  if (data.mediaMimeType !== undefined) updateData.mediaMimeType = data.mediaMimeType
+  if (data.mediaSha256 !== undefined) updateData.mediaSha256 = data.mediaSha256
+  if (data.mediaFileSize !== undefined) updateData.mediaFileSize = data.mediaFileSize
+  if (data.mediaUrl !== undefined) updateData.mediaUrl = data.mediaUrl
+  if (data.storagePath !== undefined) updateData.storagePath = data.storagePath
+  if (data.caption !== undefined) updateData.caption = data.caption
+  if (data.description !== undefined) updateData.description = data.description
+  if (data.status !== undefined) updateData.status = data.status
+  if (data.errorMessage !== undefined) updateData.errorMessage = data.errorMessage
+
+  await updateDoc(doc(requireDb(), 'incidentReports', reportId), updateData)
+}
+
 // ─── Referral Operations ──────────────────────────────────────────────────────
 
 /**
