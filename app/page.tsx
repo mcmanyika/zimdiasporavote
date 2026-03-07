@@ -16,15 +16,15 @@ import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
 
 const fallbackOrganizations = [
-  'Transform Zimbabwe - TZ',
-  'CCC Citizens Coalition for Change - CCC Progressive',
-  'National Democratic Working Group - NDWG',
-  'International Socialist Organisation - ISO',
-  'Zimbabwe National Students Union - ZINASU',
-  'Amalgamation of Rural Teachers Union of Zimbabwe - ARTUZ',
+  'Transform Zimbabwe',
+  'CCC Citizens Coalition for Change',
+  'National Democratic Working Group',
+  'International Socialist Organisation',
+  'Zimbabwe National Students Union',
+  'Amalgamation of Rural Teachers Union of Zimbabwe',
   'SAPES Trust',
   'ZCTU',
-  'Mine Workers Union of Zimbabwe',
+  'Mine Workers Union of Zimbabwe'
 ]
 
 export default function Home() {
@@ -705,7 +705,7 @@ export default function Home() {
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {(organizations.length > 0
-                ? organizations.map((org) => org.acronym ? `${org.name} - ${org.acronym}` : org.name)
+                ? organizations.map((org) => org.name)
                 : fallbackOrganizations
               ).map((org) => (
                 <div
