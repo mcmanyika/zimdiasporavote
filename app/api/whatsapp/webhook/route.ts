@@ -208,8 +208,8 @@ export async function POST(request: NextRequest) {
           pendingIncidentReportByUser.delete(from)
           await sendWhatsAppMessage(
             from,
-            'Report mode activated.\n\nPlease send an image of the incident. ' +
-              'Then send location, date/time, and a short description when safe.'
+            'Report mode activated.\n\nYou can send details now (location/date/time/description), ' +
+              'with or without an image.'
           )
           return NextResponse.json({ success: true })
         }
@@ -219,10 +219,35 @@ export async function POST(request: NextRequest) {
           const pendingReportId = pendingIncidentReportByUser.get(from)
 
           if (!pendingReportId) {
-            await sendWhatsAppMessage(
-              from,
-              'Report mode is active. Please send an image first, then send location/date/time/description.'
-            )
+            if (!trimmedText) {
+              await sendWhatsAppMessage(
+                from,
+                'Report mode is active. Please send location/date/time/description, or send an image.'
+              )
+              return NextResponse.json({ success: true })
+            }
+
+            try {
+              const reportId = await createIncidentReport({
+                source: 'whatsapp',
+                reporterPhone: from,
+                messageId: message.id || undefined,
+                description: trimmedText,
+                status: 'new',
+              })
+
+              await sendWhatsAppMessage(
+                from,
+                `Thank you. Your incident report has been recorded (Ref: ${reportId}).`
+              )
+              reportModeUsers.delete(from)
+            } catch (createError) {
+              console.error('Failed to create text-only incident report:', createError)
+              await sendWhatsAppMessage(
+                from,
+                'I could not save your report details right now. Please try again shortly.'
+              )
+            }
             return NextResponse.json({ success: true })
           }
 
