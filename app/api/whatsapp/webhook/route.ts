@@ -10,6 +10,7 @@ const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 
 // In-memory conversation history (for production, use Firestore)
 const conversationHistory: Map<string, { role: 'user' | 'assistant'; content: string }[]> = new Map()
+const reportModeUsers: Map<string, number> = new Map()
 
 // Maximum history length per conversation
 const MAX_HISTORY_LENGTH = 10
@@ -200,6 +201,17 @@ export async function POST(request: NextRequest) {
         const trimmedText = (text || '').trim()
         const upperText = trimmedText.toUpperCase()
 
+        // 0) Reporting mode command
+        if (upperText === 'REPORT' || upperText === 'START REPORT') {
+          reportModeUsers.set(from, Date.now())
+          await sendWhatsAppMessage(
+            from,
+            'Report mode activated.\n\nPlease send an image of the incident. ' +
+              'Then send location, date/time, and a short description when safe.'
+          )
+          return NextResponse.json({ success: true })
+        }
+
         // 1) Petition helper command: list active petitions with IDs
         if (upperText === 'PETITIONS' || upperText === 'LIST PETITIONS') {
           try {
@@ -339,6 +351,7 @@ export async function POST(request: NextRequest) {
             `Thank you. Your image report has been received and logged (Ref: ${reportId}).` +
               '\n\nIf safe, reply with location, date/time, and a short description.'
           )
+          reportModeUsers.delete(from)
         } catch (error: any) {
           console.error('Error saving WhatsApp image report:', error)
           try {
