@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "backup:firestore": "bash ./scripts/firestore-backup.sh",
+    "restore:firestore": "bash ./scripts/firestore-restore.sh",
+    "backup:firestore:prune-daily": "bash ./scripts/firestore-prune-daily.sh",
+    "backup:firestore:prune-weekly": "bash ./scripts/firestore-prune-weekly.sh"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.4.0",

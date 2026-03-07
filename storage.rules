@@ -1,114 +1,86 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Helper function to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // Helper function to check if user is admin
-    // Note: This requires a Firestore read, which may have performance implications
     function isAdmin() {
       return isAuthenticated() && 
         firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Product images - only admins can upload/delete, everyone can read
     match /products/{productId} {
-      // Anyone can read product images
       allow read: if true;
-      // Only admins can upload product images
       allow write: if isAdmin() && 
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                     request.resource.size < 5 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete product images
       allow delete: if isAdmin();
     }
     
-    // News images - only admins can upload/delete, everyone can read
     match /news/{newsId} {
-      // Anyone can read news images
       allow read: if true;
-      // Only admins can upload news images
       allow write: if isAdmin() && 
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                     request.resource.size < 5 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete news images
       allow delete: if isAdmin();
     }
     
-    // Petition images - only admins can upload/delete, everyone can read
     match /petitions/{petitionId} {
-      // Anyone can read petition images
       allow read: if true;
-      // Only admins can upload petition images
       allow write: if isAdmin() && 
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                     request.resource.size < 5 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete petition images
       allow delete: if isAdmin();
     }
     
-    // Banner images - only admins can upload/delete, everyone can read
     match /banners/{bannerId} {
-      // Anyone can read banner images
       allow read: if true;
-      // Only admins can upload banner images
       allow write: if isAdmin() && 
-                     request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                     request.resource.size < 10 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete banner images
       allow delete: if isAdmin();
     }
     
-    // Leader photos - only admins can upload/delete, everyone can read
     match /leaders/{leaderId} {
-      // Anyone can read leader photos
       allow read: if true;
-      // Only admins can upload leader photos
       allow write: if isAdmin() && 
-                     request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                     request.resource.size < 5 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete leader photos
       allow delete: if isAdmin();
     }
     
-    // Gallery images - only admins can upload/delete, everyone can read
     match /gallery/{imageId} {
-      // Anyone can read gallery images
       allow read: if true;
-      // Only admins can upload gallery images
       allow write: if isAdmin() && 
-                     request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                     request.resource.size < 10 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete gallery images
       allow delete: if isAdmin();
     }
 
-    // Email compose inline images - only admins can upload/delete, anyone can read
     match /email-images/{imageId} {
-      // Anyone can read so recipients can load images in emails
       allow read: if true;
-      // Only admins can upload inline email images
       allow write: if isAdmin() &&
-                     request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                     request.resource.size < 10 * 1024 * 1024 &&
                      request.resource.contentType.matches('image/.*');
-      // Only admins can delete inline email images
       allow delete: if isAdmin();
     }
     
-    // Resource files (PDFs/documents) - only admins can upload/delete, authenticated users can read
     match /resources/{resourceId} {
-      // Authenticated users can read/download resources
       allow read: if isAuthenticated();
-      // Only admins can upload resource files
       allow write: if isAdmin() && 
-                     request.resource.size < 20 * 1024 * 1024; // 20MB max
-      // Only admins can delete resource files
+                     request.resource.size < 20 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    match /incident-reports/{reportId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin() &&
+                     request.resource.size < 15 * 1024 * 1024 &&
+                     request.resource.contentType.matches('image/.*');
       allow delete: if isAdmin();
     }
     
-    // Default: deny all other access
     match /{allPaths=**} {
       allow read, write: if false;
     }
