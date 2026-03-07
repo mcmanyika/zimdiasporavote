@@ -726,7 +726,7 @@ export default function Home() {
               ).map((org) => (
                 <div
                   key={org}
-                  className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-800"
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-800 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm"
                 >
                   {org}
                 </div>
