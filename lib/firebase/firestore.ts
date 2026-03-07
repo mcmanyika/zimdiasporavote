@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, IncidentReport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3103,6 +3103,28 @@ export async function getOrganizations(activeOnly: boolean = true): Promise<Orga
 
     console.error('Error fetching organizations:', error)
     return []
+  }
+}
+
+// ─── Incident Reports (WhatsApp evidence intake) ──────────────────────────────
+
+export async function createIncidentReport(
+  data: Omit<IncidentReport, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const reportRef = doc(collection(db, 'incidentReports'))
+
+  try {
+    await setDoc(reportRef, {
+      ...data,
+      id: reportRef.id,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    })
+    return reportRef.id
+  } catch (error: any) {
+    console.error('Error creating incident report:', error)
+    throw error
   }
 }
 

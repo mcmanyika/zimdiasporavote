@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processChat } from '@/lib/chat-service'
-import { getPetitions, signPetition } from '@/lib/firebase/firestore'
+import { createIncidentReport, getPetitions, signPetition } from '@/lib/firebase/firestore'
+import { uploadBufferToStorage } from '@/lib/firebase/admin'
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 
 // In-memory conversation history (for production, use Firestore)
 const conversationHistory: Map<string, { role: 'user' | 'assistant'; content: string }[]> = new Map()
@@ -78,6 +80,76 @@ function parseSignCommand(text: string) {
     email: parts[3],
     anonymous: false,
   }
+}
+
+async function getWhatsAppMediaMetadata(mediaId: string): Promise<{
+  id: string
+  mime_type?: string
+  sha256?: string
+  file_size?: number
+  url?: string
+} | null> {
+  if (!WHATSAPP_TOKEN || !mediaId) return null
+
+  try {
+    const response = await fetch(`https://graph.facebook.com/v18.0/${mediaId}`, {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+      },
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    return {
+      id: data.id,
+      mime_type: data.mime_type,
+      sha256: data.sha256,
+      file_size: data.file_size,
+      url: data.url,
+    }
+  } catch (error) {
+    console.error('Failed to fetch WhatsApp media metadata:', error)
+    return null
+  }
+}
+
+function getExtensionFromMimeType(mimeType: string): string {
+  const map: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+  }
+  return map[mimeType.toLowerCase()] || 'jpg'
+}
+
+async function downloadWhatsAppMedia(url: string): Promise<{ buffer: Buffer; contentType: string }> {
+  if (!WHATSAPP_TOKEN) {
+    throw new Error('WhatsApp token is not configured')
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to download WhatsApp media (${response.status})`)
+  }
+
+  const contentType = response.headers.get('content-type') || 'application/octet-stream'
+  const arrayBuffer = await response.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+
+  if (!contentType.startsWith('image/')) {
+    throw new Error('Unsupported media type. Only images are accepted.')
+  }
+  if (buffer.byteLength > MAX_IMAGE_BYTES) {
+    throw new Error('Image exceeds maximum size limit (15MB)')
+  }
+
+  return { buffer, contentType }
 }
 
 /**
@@ -226,11 +298,72 @@ export async function POST(request: NextRequest) {
             'Sorry, I encountered an error. Please try again or visit our website at dcpzim.com for assistance.'
           )
         }
-      } else if (messageType === 'image' || messageType === 'audio' || messageType === 'video') {
-        // Handle media messages
+      } else if (messageType === 'image') {
+        const image = message.image
+        const mediaId = image?.id
+        const caption = (image?.caption || '').trim()
+
+        try {
+          if (!mediaId) {
+            throw new Error('Missing image media ID')
+          }
+
+          const mediaMeta = mediaId ? await getWhatsAppMediaMetadata(mediaId) : null
+          if (!mediaMeta?.url) {
+            throw new Error('Could not resolve WhatsApp image URL')
+          }
+
+          const { buffer, contentType } = await downloadWhatsAppMedia(mediaMeta.url)
+          const extension = getExtensionFromMimeType(contentType)
+          const datePrefix = new Date().toISOString().slice(0, 10)
+          const storagePath = `incident-reports/${datePrefix}/${Date.now()}-${mediaId}.${extension}`
+          const { downloadUrl } = await uploadBufferToStorage(buffer, storagePath, contentType)
+
+          const reportId = await createIncidentReport({
+            source: 'whatsapp',
+            reporterPhone: from,
+            messageId: message.id || undefined,
+            whatsappMediaId: mediaId || undefined,
+            whatsappMediaUrl: mediaMeta?.url || undefined,
+            mediaMimeType: mediaMeta?.mime_type || undefined,
+            mediaSha256: mediaMeta?.sha256 || undefined,
+            mediaFileSize: mediaMeta?.file_size || undefined,
+            mediaUrl: downloadUrl,
+            storagePath,
+            caption: caption || undefined,
+            status: 'new',
+          })
+
+          await sendWhatsAppMessage(
+            from,
+            `Thank you. Your image report has been received and logged (Ref: ${reportId}).` +
+              '\n\nIf safe, reply with location, date/time, and a short description.'
+          )
+        } catch (error: any) {
+          console.error('Error saving WhatsApp image report:', error)
+          try {
+            await createIncidentReport({
+              source: 'whatsapp',
+              reporterPhone: from,
+              messageId: message.id || undefined,
+              whatsappMediaId: mediaId || undefined,
+              caption: caption || undefined,
+              status: 'failed',
+              errorMessage: error?.message || 'Failed to store image report',
+            })
+          } catch (createError) {
+            console.error('Failed to store failed incident report record:', createError)
+          }
+          await sendWhatsAppMessage(
+            from,
+            'We received your image but could not save the report right now. Please try again shortly.'
+          )
+        }
+      } else if (messageType === 'audio' || messageType === 'video') {
+        // Handle unsupported media
         await sendWhatsAppMessage(
           from,
-          "I can only process text messages at the moment. Please type your question and I'll be happy to help!"
+          'We currently accept image reports and text only. Please send a photo or type your message.'
         )
       }
     }

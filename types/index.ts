@@ -493,6 +493,28 @@ export interface Resource {
   createdAt: Timestamp | Date
 }
 
+export type IncidentReportStatus = 'new' | 'reviewing' | 'verified' | 'archived' | 'failed'
+
+export interface IncidentReport {
+  id: string
+  source: 'whatsapp'
+  reporterPhone: string
+  messageId?: string
+  whatsappMediaId?: string
+  whatsappMediaUrl?: string
+  mediaMimeType?: string
+  mediaSha256?: string
+  mediaFileSize?: number
+  mediaUrl?: string
+  storagePath?: string
+  caption?: string
+  description?: string
+  status: IncidentReportStatus
+  errorMessage?: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
 // Twitter Embeds
 export interface TwitterEmbedPost {
   id: string
