@@ -325,11 +325,22 @@ export async function POST(request: NextRequest) {
             throw new Error('Could not resolve WhatsApp image URL')
           }
 
+          let uploadedMediaUrl = mediaMeta.url
+          let uploadedStoragePath: string | undefined
+          let uploadErrorMessage: string | undefined
+
           const { buffer, contentType } = await downloadWhatsAppMedia(mediaMeta.url)
-          const extension = getExtensionFromMimeType(contentType)
-          const datePrefix = new Date().toISOString().slice(0, 10)
-          const storagePath = `incident-reports/${datePrefix}/${Date.now()}-${mediaId}.${extension}`
-          const { downloadUrl } = await uploadBufferToStorage(buffer, storagePath, contentType)
+          try {
+            const extension = getExtensionFromMimeType(contentType)
+            const datePrefix = new Date().toISOString().slice(0, 10)
+            const storagePath = `incident-reports/${datePrefix}/${Date.now()}-${mediaId}.${extension}`
+            const { downloadUrl } = await uploadBufferToStorage(buffer, storagePath, contentType)
+            uploadedMediaUrl = downloadUrl
+            uploadedStoragePath = storagePath
+          } catch (uploadError: any) {
+            uploadErrorMessage = uploadError?.message || 'Storage upload failed'
+            console.error('Storage upload failed, using WhatsApp media URL fallback:', uploadError)
+          }
 
           const reportId = await createIncidentReport({
             source: 'whatsapp',
@@ -340,10 +351,11 @@ export async function POST(request: NextRequest) {
             mediaMimeType: mediaMeta?.mime_type || undefined,
             mediaSha256: mediaMeta?.sha256 || undefined,
             mediaFileSize: mediaMeta?.file_size || undefined,
-            mediaUrl: downloadUrl,
-            storagePath,
+            mediaUrl: uploadedMediaUrl,
+            storagePath: uploadedStoragePath,
             caption: caption || undefined,
             status: 'new',
+            errorMessage: uploadErrorMessage,
           })
 
           await sendWhatsAppMessage(
