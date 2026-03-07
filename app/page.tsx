@@ -21,7 +21,7 @@ const fallbackOrganizations = [
   'National Democratic Working Group',
   'International Socialist Organisation',
   'Zimbabwe National Students Union',
-  'Amalgamation of Rural Teachers Union of Zimbabwe',
+  'ARTUZ',
   'SAPES Trust',
   'ZCTU',
   'Mine Workers Union of Zimbabwe'
@@ -48,6 +48,7 @@ export default function Home() {
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [billDownloadCount, setBillDownloadCount] = useState(0)
   const [contactOpen, setContactOpen] = useState(false)
+  const [affiliateJoinModalOpen, setAffiliateJoinModalOpen] = useState(false)
   const [donationPrefillMessage, setDonationPrefillMessage] = useState('')
 
   // Declaration cards scroll-in animation
@@ -444,7 +445,7 @@ export default function Home() {
                     Buy item for Someone
                   </h2>
                   <p className="mb-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                    You can now sponsor DCP merchandise for others and help us spread the message.
+                    You can  sponsor DCP merchandise for others and help us spread the message.
                   </p>
                   <ul className="mb-6 space-y-2 text-sm text-slate-700">
                     {[
@@ -701,11 +702,26 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
                 Organisations Affiliated to Us
               </h2>
+              <div className="mt-4 flex flex-col items-center justify-center gap-2">
+                <span className="text-xs font-medium text-slate-500 sm:text-sm">
+                  Join as an affiliate
+                </span>
+                <button
+                  onClick={() => setAffiliateJoinModalOpen(true)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-700 text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white"
+                  aria-label="Request to join as an affiliate"
+                  title="Request to join"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {(organizations.length > 0
-                ? organizations.map((org) => org.name)
+                ? organizations.map((org) => org.name === 'Amalgamation of Rural Teachers Union of Zimbabwe' ? 'ARTUZ' : org.name)
                 : fallbackOrganizations
               ).map((org) => (
                 <div
@@ -840,6 +856,56 @@ export default function Home() {
               </div>
             )}
           </section>
+        )}
+
+        {/* Affiliate Join Modal */}
+        {affiliateJoinModalOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]"
+            onClick={() => setAffiliateJoinModalOpen(false)}
+          >
+            <div
+              className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-2xl animate-[fadeInScale_0.2s_ease-out]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setAffiliateJoinModalOpen(false)}
+                className="absolute right-3 top-3 rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                aria-label="Close affiliate join modal"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="mb-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Affiliate Requests</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">Interested in Joining Our Affiliates?</h3>
+              </div>
+
+              <p className="text-sm leading-relaxed text-slate-600">
+                If your organisation wants to affiliate with us, please contact us and share your request to join.
+              </p>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setAffiliateJoinModalOpen(false)}
+                  className="inline-flex flex-1 items-center justify-center rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    setAffiliateJoinModalOpen(false)
+                    setContactOpen(true)
+                  }}
+                  className="inline-flex flex-1 items-center justify-center rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
+                >
+                  Contact Us
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Contact Modal */}
