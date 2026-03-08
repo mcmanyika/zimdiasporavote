@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 
 const fallbackOrganizations = [
   'Transform Zimbabwe',
-  'CCC Citizens Coalition for Change',
+  'CCC Progressive',
   'National Democratic Working Group',
   'International Socialist Organisation',
   'Zimbabwe National Students Union',
@@ -26,6 +26,10 @@ const fallbackOrganizations = [
   'ZCTU',
   'Mine Workers Union of Zimbabwe'
 ]
+
+const affiliateLinks: Record<string, string> = {
+  'SAPES Trust': 'https://sapes.org.zw/',
+}
 
 export default function Home() {
   const { user } = useAuth()
@@ -723,14 +727,33 @@ export default function Home() {
               {(organizations.length > 0
                 ? organizations.map((org) => org.name === 'Amalgamation of Rural Teachers Union of Zimbabwe' ? 'ARTUZ' : org.name)
                 : fallbackOrganizations
-              ).map((org) => (
-                <div
-                  key={org}
-                  className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-800 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm"
-                >
-                  {org}
-                </div>
-              ))}
+              ).map((org) => {
+                const link = affiliateLinks[org]
+                const cardClassName = "rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-800 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm"
+
+                if (link) {
+                  return (
+                    <a
+                      key={org}
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${cardClassName} block hover:text-emerald-700`}
+                    >
+                      {org}
+                    </a>
+                  )
+                }
+
+                return (
+                  <div
+                    key={org}
+                    className={cardClassName}
+                  >
+                    {org}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>
