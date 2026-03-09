@@ -179,9 +179,9 @@ function ComposeEmailContent() {
       } else {
         const total = parsedRecipients.length
         let sent = 0
-        let failed = 0
+        let failedRecipients: ParsedRecipient[] = []
 
-        for (const recipient of parsedRecipients) {
+        const sendOne = async (recipient: ParsedRecipient): Promise<boolean> => {
           try {
             const res = await fetch('/api/email/send', {
               method: 'POST',
@@ -197,13 +197,37 @@ function ComposeEmailContent() {
               }),
             })
             const data = await res.json()
-            if (res.ok && data.success) sent++
-            else failed++
+            return !!(res.ok && data.success)
           } catch {
-            failed++
+            return false
           }
-          setBulkDone({ sent, failed, total })
         }
+
+        // First attempt
+        for (const recipient of parsedRecipients) {
+          const ok = await sendOne(recipient)
+          if (ok) sent++
+          else failedRecipients.push(recipient)
+          setBulkDone({ sent, failed: failedRecipients.length, total })
+        }
+
+        // Second attempt only for first-attempt failures
+        if (failedRecipients.length > 0) {
+          await new Promise((resolve) => setTimeout(resolve, 1200))
+          const stillFailed: ParsedRecipient[] = []
+
+          for (const recipient of failedRecipients) {
+            const ok = await sendOne(recipient)
+            if (ok) sent++
+            else stillFailed.push(recipient)
+            setBulkDone({ sent, failed: stillFailed.length, total })
+          }
+
+          failedRecipients = stillFailed
+        }
+
+        const failed = failedRecipients.length
+        setBulkDone({ sent, failed, total })
 
         if (sent > 0) setSuccess(true)
         if (failed > 0 && sent === 0) setError('No emails were sent. Please check recipients or try again.')

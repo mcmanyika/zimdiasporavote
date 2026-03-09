@@ -111,7 +111,12 @@ export default function Home() {
       try {
         setGalleryLoading(true)
         const images = await getGalleryImages(true) // published only
-        setGalleryImages(images.slice(0, 10)) // Show up to 10 images
+        const latestFirst = [...images].sort((a, b) => {
+          const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()
+          const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime()
+          return bTime - aTime
+        })
+        setGalleryImages(latestFirst.slice(0, 10)) // Show latest 10 uploads
       } catch (error) {
         console.error('Error loading gallery:', error)
       } finally {
