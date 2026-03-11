@@ -3649,6 +3649,42 @@ export async function getAllDownloadStats(): Promise<DownloadStat[]> {
 
 export async function createInboundEmail(email: Omit<InboundEmail, 'id' | 'createdAt'>): Promise<string> {
   const db = requireDb()
+  const trimmedResendId = (email.resendEmailId || '').trim()
+
+  // Upsert by resendEmailId to prevent duplicates from webhook + sync.
+  if (trimmedResendId) {
+    try {
+      const existingQ = query(
+        collection(db, 'inboundEmails'),
+        where('resendEmailId', '==', trimmedResendId),
+        limit(1)
+      )
+      const existingSnap = await getDocs(existingQ)
+      if (!existingSnap.empty) {
+        const existingRef = existingSnap.docs[0].ref
+        const updateData: Record<string, any> = {
+          from: email.from,
+          to: email.to,
+          subject: email.subject,
+        }
+
+        if (email.fromName !== undefined) updateData.fromName = email.fromName
+        if (email.body && email.body.trim()) updateData.body = email.body
+        if (email.html && email.html.trim()) updateData.html = email.html
+
+        await updateDoc(existingRef, updateData)
+        return existingRef.id
+      }
+    } catch (error: any) {
+      // In production routes that are unauthenticated against Firestore rules,
+      // querying/updating may be denied while create is still allowed.
+      if (error?.code !== 'permission-denied') {
+        throw error
+      }
+      console.warn('Inbound email upsert skipped due to Firestore permissions; using create-only path.')
+    }
+  }
+
   const ref = doc(collection(db, 'inboundEmails'))
   const payload: Record<string, any> = {
     from: email.from,
@@ -3662,7 +3698,7 @@ export async function createInboundEmail(email: Omit<InboundEmail, 'id' | 'creat
 
   if (email.fromName !== undefined) payload.fromName = email.fromName
   if (email.html !== undefined) payload.html = email.html
-  if (email.resendEmailId !== undefined) payload.resendEmailId = email.resendEmailId
+  if (trimmedResendId) payload.resendEmailId = trimmedResendId
 
   await setDoc(ref, payload)
   return ref.id

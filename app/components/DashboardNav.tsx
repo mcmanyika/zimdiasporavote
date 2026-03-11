@@ -254,8 +254,14 @@ export default function DashboardNav() {
     return true
   })
 
+  // Filter admin content items based on access level
+  const filteredContentItems = adminContentItems.filter((item) => {
+    if (item.href === '/dashboard/admin/petitions' && accessLevel < 5) return false
+    return true
+  })
+
   const allItems = isAdmin
-    ? [...accountItems, ...adminContentItems, ...filteredManageItems]
+    ? [...accountItems, ...filteredContentItems, ...filteredManageItems]
     : accountItems
   const activeItem = allItems.find(item => item.href === pathname)
   const activeLabel = activeItem?.label || 'Dashboard'
@@ -377,7 +383,7 @@ export default function DashboardNav() {
                         Content
                       </h3>
                       <div className="space-y-0.5">
-                        {adminContentItems.map((item) => {
+                        {filteredContentItems.map((item) => {
                           const isActive = pathname === item.href
                           return (
                             <Link key={item.href} href={item.href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-50'}`}>

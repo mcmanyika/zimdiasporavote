@@ -4,6 +4,61 @@ import { createInboundEmail } from '@/lib/firebase/firestore'
 
 const WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET
 
+function pickFirstString(...values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value
+  }
+  return ''
+}
+
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function extractBodyText(data: any): { text: string; html: string } {
+  const directText = pickFirstString(
+    data?.text,
+    data?.textBody,
+    data?.plain,
+    data?.body,
+    data?.snippet,
+    data?.preview,
+    data?.content?.text,
+    data?.payload?.text,
+    data?.email?.text,
+    data?.email?.textBody
+  )
+
+  const directHtml = pickFirstString(
+    data?.html,
+    data?.htmlBody,
+    data?.content?.html,
+    data?.payload?.html,
+    data?.email?.html,
+    data?.email?.htmlBody
+  )
+
+  // Some payloads provide content parts as arrays.
+  const contentParts = Array.isArray(data?.content) ? data.content : []
+  const partText = contentParts
+    .map((part: any) => pickFirstString(part?.text, part?.body, part?.value, part?.content))
+    .find(Boolean) || ''
+  const partHtml = contentParts
+    .map((part: any) => pickFirstString(part?.html))
+    .find(Boolean) || ''
+
+  const html = directHtml || partHtml
+  const text = directText || partText || (html ? htmlToPlainText(html) : '')
+
+  return { text, html }
+}
+
 /**
  * Resend Inbound Email Webhook
  * 
@@ -62,8 +117,9 @@ export async function POST(request: NextRequest) {
 
     const to = Array.isArray(data.to) ? data.to.join(', ') : (data.to || '')
     const subject = data.subject || '(No Subject)'
-    const body_text = data.text || ''
-    const html = data.html || ''
+    const extracted = extractBodyText(data)
+    const body_text = extracted.text
+    const html = extracted.html
 
     // Store in Firestore
     const emailId = await createInboundEmail({
