@@ -270,29 +270,43 @@ export default function Home() {
 
         {/* National Referendum Declaration */}
         <section id="updates" className="bg-white py-16 sm:py-20 border-b border-slate-200">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            {/* Top label */}
-            <div className="mb-10 text-center sm:mb-14">
-              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400">National Referendum Declaration</p>
-              <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
-                Zimbabwe stands at a defining constitutional moment. A proposed constitutional amendment seeks to extend presidential and parliamentary tenure without direct approval by the citizens of Zimbabwe.
-              </p>
-              <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
-                This is not a minor procedural reform. It alters the sovereign right of the people to choose their leaders at regular constitutional intervals. The Constitution of Zimbabwe (2013) was adopted by referendum. Any change affecting the people&apos;s right to elect and replace leadership must therefore return to the people.
-              </p>
-            </div>
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+              <div className="grid gap-0 md:grid-cols-[1.2fr_0.8fr]">
+                <div className="p-6 text-center sm:p-8 md:p-10">
+                  <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400">
+                    National Referendum Declaration
+                  </p>
+                  <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                    Zimbabwe stands at a defining constitutional moment. A proposed constitutional amendment seeks to extend presidential and parliamentary tenure without direct approval by the citizens of Zimbabwe.
+                  </p>
+                  <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                    This is not a minor procedural reform. It alters the sovereign right of the people to choose their leaders at regular constitutional intervals. The Constitution of Zimbabwe (2013) was adopted by referendum. Any change affecting the people&apos;s right to elect and replace leadership must therefore return to the people.
+                  </p>
 
-            {/* CTA */}
-            <div className="mt-10 text-center sm:mt-14">
-              <Link
-                href="/petitions"
-                className="group inline-flex items-center gap-2.5 rounded-full bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <span>Sign Petition</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
+                  <div className="mt-7">
+                    <Link
+                      href="/petitions"
+                      className="group inline-flex items-center gap-2.5 rounded-full bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      <span>Sign Petition</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 bg-white p-5 md:border-l md:border-t-0 md:p-6">
+                  <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+                    <img
+                      src="/downloads/courtCase.jpeg"
+                      alt="Court case filing document"
+                      className="h-auto w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

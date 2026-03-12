@@ -1,18 +1,7 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
-
-// Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-48 rounded-lg border border-slate-300 bg-slate-50 animate-pulse flex items-center justify-center">
-      <span className="text-slate-400 text-sm">Loading editor...</span>
-    </div>
-  ),
-})
 
 interface RichTextEditorProps {
   value: string
@@ -27,6 +16,27 @@ export default function RichTextEditor({
   placeholder = 'Write your content here...',
   className = '',
 }: RichTextEditorProps) {
+  const [QuillComponent, setQuillComponent] = useState<any>(null)
+  const [loadError, setLoadError] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+    import('react-quill')
+      .then((mod) => {
+        if (!isMounted) return
+        setQuillComponent(() => mod.default)
+      })
+      .catch((error) => {
+        console.error('Failed to load rich text editor chunk, using textarea fallback:', error)
+        if (!isMounted) return
+        setLoadError(true)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   const modules = useMemo(
     () => ({
       toolbar: [
@@ -62,9 +72,31 @@ export default function RichTextEditor({
     'code-block',
   ]
 
+  if (loadError) {
+    return (
+      <div className={`rich-text-editor ${className}`}>
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={10}
+          className="w-full rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-900 outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900"
+        />
+      </div>
+    )
+  }
+
+  if (!QuillComponent) {
+    return (
+      <div className="w-full h-48 rounded-lg border border-slate-300 bg-slate-50 animate-pulse flex items-center justify-center">
+        <span className="text-slate-400 text-sm">Loading editor...</span>
+      </div>
+    )
+  }
+
   return (
     <div className={`rich-text-editor ${className}`}>
-      <ReactQuill
+      <QuillComponent
         theme="snow"
         value={value}
         onChange={onChange}

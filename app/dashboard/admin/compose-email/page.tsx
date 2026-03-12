@@ -99,6 +99,7 @@ function ComposeEmailContent() {
   const [bulkDone, setBulkDone] = useState<{ sent: number; failed: number; total: number } | null>(null)
   const [bulkLoadMsg, setBulkLoadMsg] = useState('')
   const [error, setError] = useState('')
+  const BULK_SEND_INTERVAL_MS = 550
 
   // Pre-fill from search params (e.g. from inbox reply)
   useEffect(() => {
@@ -180,6 +181,7 @@ function ComposeEmailContent() {
         const total = parsedRecipients.length
         let sent = 0
         let failedRecipients: ParsedRecipient[] = []
+        const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
         const sendOne = async (recipient: ParsedRecipient): Promise<boolean> => {
           try {
@@ -204,11 +206,16 @@ function ComposeEmailContent() {
         }
 
         // First attempt
-        for (const recipient of parsedRecipients) {
+        for (let i = 0; i < parsedRecipients.length; i++) {
+          const recipient = parsedRecipients[i]
           const ok = await sendOne(recipient)
           if (ok) sent++
           else failedRecipients.push(recipient)
           setBulkDone({ sent, failed: failedRecipients.length, total })
+          // Keep bulk delivery at <= 2 requests/second
+          if (i < parsedRecipients.length - 1) {
+            await wait(BULK_SEND_INTERVAL_MS)
+          }
         }
 
         // Second attempt only for first-attempt failures
@@ -216,11 +223,15 @@ function ComposeEmailContent() {
           await new Promise((resolve) => setTimeout(resolve, 1200))
           const stillFailed: ParsedRecipient[] = []
 
-          for (const recipient of failedRecipients) {
+          for (let i = 0; i < failedRecipients.length; i++) {
+            const recipient = failedRecipients[i]
             const ok = await sendOne(recipient)
             if (ok) sent++
             else stillFailed.push(recipient)
             setBulkDone({ sent, failed: stillFailed.length, total })
+            if (i < failedRecipients.length - 1) {
+              await wait(BULK_SEND_INTERVAL_MS)
+            }
           }
 
           failedRecipients = stillFailed

@@ -17,6 +17,18 @@ function getErrorMessage(error: unknown): string {
   return String(error)
 }
 
+function isRateLimitError(error: unknown): boolean {
+  const message = getErrorMessage(error).toLowerCase()
+  if (message.includes('too many requests')) return true
+  if (message.includes('2 requests per second')) return true
+  if (message.includes('rate limit')) return true
+  return false
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { email, name, subject, body, htmlBody, userId, usePlatformTemplate } = await request.json()
@@ -60,14 +72,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await sendCustomEmail({
-      to: trimmedEmail,
-      name: trimmedName,
-      subject: trimmedSubject,
-      body: trimmedBody,
-      htmlBody: trimmedHtmlBody || undefined,
-      usePlatformTemplate: usePlatformTemplate !== false,
-    })
+    const maxAttempts = 3
+    let result: { success: boolean; id?: string; error?: unknown } = { success: false, error: 'Send not attempted' }
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      result = await sendCustomEmail({
+        to: trimmedEmail,
+        name: trimmedName,
+        subject: trimmedSubject,
+        body: trimmedBody,
+        htmlBody: trimmedHtmlBody || undefined,
+        usePlatformTemplate: usePlatformTemplate !== false,
+      })
+
+      if (result.success) break
+      if (!isRateLimitError(result.error) || attempt === maxAttempts) break
+
+      // Respect provider rate limits with linear backoff.
+      await sleep(650 * attempt)
+    }
 
     // Log email
     try {
