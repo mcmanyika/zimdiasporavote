@@ -442,6 +442,40 @@ export interface InboundEmail {
   createdAt: Timestamp | Date
 }
 
+// Bill Proposal module
+export type BillProposalStatus =
+  | 'draft'
+  | 'under_review'
+  | 'needs_revision'
+  | 'published_for_consultation'
+  | 'archived'
+
+export interface BillProposal {
+  id: string
+  title: string
+  summary: string
+  problem: string
+  solution: string
+  legalBasis?: string
+  category: string
+  proposerName: string
+  proposerEmail: string
+  proposerUserId?: string
+  status: BillProposalStatus
+  supportCount: number
+  publishedAt?: Timestamp | Date
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
+export interface BillProposalSupport {
+  id: string
+  proposalId: string
+  email?: string
+  userId?: string
+  createdAt: Timestamp | Date
+}
+
 // Leadership types
 export interface Leader {
   id: string
@@ -462,6 +496,28 @@ export interface Organization {
   acronym?: string
   order: number
   isActive: boolean
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
+export type SiteLinkSection =
+  | 'header'
+  | 'footer_quick'
+  | 'footer_more'
+  | 'footer_social'
+  | 'footer_app'
+
+export interface SiteLink {
+  id: string
+  label: string
+  url: string
+  section: SiteLinkSection
+  order: number
+  isActive: boolean
+  openInNewTab?: boolean
+  style?: 'link' | 'button'
+  iconKey?: string
+  description?: string
   createdAt: Timestamp | Date
   updatedAt: Timestamp | Date
 }

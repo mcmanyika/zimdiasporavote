@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, IncidentReport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3106,6 +3106,55 @@ export async function getOrganizations(activeOnly: boolean = true): Promise<Orga
   }
 }
 
+// ─── Site Links (header/footer links) ──────────────────────────────────────────
+
+export async function getSiteLinks(
+  section: SiteLinkSection,
+  activeOnly: boolean = true
+): Promise<SiteLink[]> {
+  if (!db) return []
+
+  const normalize = (snapshot: any): SiteLink[] => {
+    const links: SiteLink[] = snapshot.docs.map((docSnap: any): SiteLink => {
+      const data = docSnap.data()
+      return {
+        ...data,
+        id: docSnap.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as SiteLink
+    })
+
+    const filtered = activeOnly ? links.filter((link: SiteLink) => link.isActive !== false) : links
+    return filtered.sort((a, b) => (a.order || 0) - (b.order || 0))
+  }
+
+  try {
+    let q
+    if (activeOnly) {
+      q = query(
+        collection(db, 'siteLinks'),
+        where('section', '==', section),
+        where('isActive', '==', true)
+      )
+    } else {
+      q = query(collection(db, 'siteLinks'), where('section', '==', section))
+    }
+    const snapshot = await getDocs(q)
+    return normalize(snapshot)
+  } catch (error) {
+    console.warn('Error fetching site links (fallback to full scan):', error)
+    try {
+      const snapshot = await getDocs(collection(db, 'siteLinks'))
+      const all = normalize(snapshot)
+      return all.filter((link) => link.section === section)
+    } catch (fallbackError) {
+      console.error('Error fetching site links fallback:', fallbackError)
+      return []
+    }
+  }
+}
+
 // ─── Incident Reports (WhatsApp evidence intake) ──────────────────────────────
 
 export async function createIncidentReport(
@@ -3642,6 +3691,159 @@ export async function getAllDownloadStats(): Promise<DownloadStat[]> {
   } catch (error) {
     console.error('Error fetching all download stats:', error)
     return []
+  }
+}
+
+// ─── Bill Proposals ──────────────────────────────────────────────
+
+export async function createBillProposal(
+  payload: Omit<BillProposal, 'id' | 'status' | 'supportCount' | 'createdAt' | 'updatedAt' | 'publishedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const now = Timestamp.now()
+  const ref = doc(collection(db, 'billProposals'))
+
+  // Firestore rejects undefined values, so only include optional fields when set.
+  const createData: Record<string, any> = {
+    title: payload.title,
+    summary: payload.summary,
+    problem: payload.problem,
+    solution: payload.solution,
+    category: payload.category,
+    proposerName: payload.proposerName,
+    proposerEmail: payload.proposerEmail,
+    status: 'under_review',
+    supportCount: 0,
+    id: ref.id,
+    createdAt: now,
+    updatedAt: now,
+  }
+
+  if (payload.legalBasis !== undefined) createData.legalBasis = payload.legalBasis
+  if (payload.proposerUserId !== undefined) createData.proposerUserId = payload.proposerUserId
+
+  await setDoc(ref, createData)
+
+  return ref.id
+}
+
+export async function getBillProposalById(id: string): Promise<BillProposal | null> {
+  const db = requireDb()
+  const snap = await getDoc(doc(db, 'billProposals', id))
+  if (!snap.exists()) return null
+  const data = snap.data()
+  return {
+    ...(data as any),
+    id: snap.id,
+    createdAt: toDate(data.createdAt),
+    updatedAt: toDate(data.updatedAt),
+    publishedAt: data.publishedAt ? toDate(data.publishedAt) : undefined,
+  } as BillProposal
+}
+
+export async function getBillProposals(
+  status?: BillProposalStatus | 'all'
+): Promise<BillProposal[]> {
+  const db = requireDb()
+
+  const normalize = (snapshot: any): BillProposal[] =>
+    snapshot.docs
+      .map((d: any) => {
+        const data = d.data()
+        return {
+          ...(data as any),
+          id: d.id,
+          createdAt: toDate(data.createdAt),
+          updatedAt: toDate(data.updatedAt),
+          publishedAt: data.publishedAt ? toDate(data.publishedAt) : undefined,
+        } as BillProposal
+      })
+      .sort((a: BillProposal, b: BillProposal) => {
+        const aTime = new Date(a.createdAt as any).getTime()
+        const bTime = new Date(b.createdAt as any).getTime()
+        return bTime - aTime
+      })
+
+  try {
+    const base = collection(db, 'billProposals')
+    if (status && status !== 'all') {
+      // Prefer status-filtered query. Avoid orderBy here to reduce index requirements.
+      try {
+        const filteredSnapshot = await getDocs(query(base, where('status', '==', status)))
+        return normalize(filteredSnapshot)
+      } catch (filteredError) {
+        console.warn('Filtered bill proposal query failed; falling back to full scan.', filteredError)
+        const allSnapshot = await getDocs(base)
+        return normalize(allSnapshot).filter((p) => p.status === status)
+      }
+    }
+
+    const snapshot = await getDocs(query(base, orderBy('createdAt', 'desc')))
+    return normalize(snapshot)
+  } catch (error) {
+    console.error('Error fetching bill proposals:', error)
+    return []
+  }
+}
+
+export async function updateBillProposal(
+  id: string,
+  patch: Partial<Omit<BillProposal, 'id' | 'createdAt'>>
+): Promise<void> {
+  const db = requireDb()
+  const updateData: Record<string, any> = { updatedAt: Timestamp.now() }
+  Object.entries(patch).forEach(([key, value]) => {
+    if (value !== undefined) updateData[key] = value
+  })
+  if (patch.status === 'published_for_consultation') {
+    updateData.publishedAt = Timestamp.now()
+  }
+  await updateDoc(doc(db, 'billProposals', id), updateData)
+}
+
+export async function supportBillProposal(
+  proposalId: string,
+  supporter: { email?: string; userId?: string }
+): Promise<{ supported: boolean; supportCount: number }> {
+  const db = requireDb()
+  const identity = (supporter.userId || supporter.email || '').trim().toLowerCase()
+  if (!identity) {
+    throw new Error('A userId or email is required to support a proposal.')
+  }
+
+  const safeIdentity = identity.replace(/[^a-z0-9_-]/gi, '_')
+  const supportId = `${proposalId}_${safeIdentity}`
+  const supportRef = doc(db, 'billProposalSupports', supportId)
+  const proposalRef = doc(db, 'billProposals', proposalId)
+
+  // Do not read billProposalSupports here: public rules allow create-only.
+  // If the support doc already exists, setDoc acts like an update and rules reject it.
+  try {
+    await setDoc(supportRef, {
+      id: supportId,
+      proposalId,
+      email: supporter.email || null,
+      userId: supporter.userId || null,
+      createdAt: Timestamp.now(),
+    } as Omit<BillProposalSupport, 'id'> & { id: string })
+  } catch (error: any) {
+    if (error?.code === 'permission-denied') {
+      const proposalSnap = await getDoc(proposalRef)
+      const count = proposalSnap.exists() ? Number(proposalSnap.data().supportCount || 0) : 0
+      return { supported: false, supportCount: count }
+    }
+    throw error
+  }
+
+  await updateDoc(proposalRef, {
+    supportCount: increment(1),
+    updatedAt: Timestamp.now(),
+  })
+
+  const updated = await getDoc(proposalRef)
+  return {
+    supported: true,
+    supportCount: updated.exists() ? Number(updated.data().supportCount || 1) : 1,
   }
 }
 

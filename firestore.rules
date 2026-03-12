@@ -253,6 +253,47 @@ service cloud.firestore {
                      request.resource.data.signatures.size() > resource.data.signatures.size();
     }
 
+    // Bill Proposals collection
+    match /billProposals/{proposalId} {
+      // Public can read only published proposals
+      allow read: if resource.data.status == 'published_for_consultation';
+      // Admins can read all proposals
+      allow read: if isAdmin();
+
+      // Public proposal intake
+      allow create: if request.resource.data.keys().hasAll([
+                      'title', 'summary', 'problem', 'solution', 'category',
+                      'proposerName', 'proposerEmail', 'status', 'supportCount'
+                    ]) &&
+                    request.resource.data.title is string &&
+                    request.resource.data.summary is string &&
+                    request.resource.data.problem is string &&
+                    request.resource.data.solution is string &&
+                    request.resource.data.category is string &&
+                    request.resource.data.proposerName is string &&
+                    request.resource.data.proposerEmail is string &&
+                    request.resource.data.proposerEmail.matches('.*@.*') &&
+                    request.resource.data.status == 'under_review' &&
+                    request.resource.data.supportCount == 0;
+
+      // Public can only increment support count on published proposals
+      allow update: if resource.data.status == 'published_for_consultation' &&
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supportCount', 'updatedAt']) &&
+                    request.resource.data.supportCount == resource.data.supportCount + 1;
+
+      // Admin moderation and publishing
+      allow update, delete: if isAdmin();
+    }
+
+    // Bill Proposal Supports collection
+    match /billProposalSupports/{supportId} {
+      // Public can create a support record
+      allow create: if request.resource.data.keys().hasAll(['proposalId']) &&
+                    request.resource.data.proposalId is string;
+      // Only admins can read/update/delete support records
+      allow read, update, delete: if isAdmin();
+    }
+
     // Banners collection
     match /banners/{bannerId} {
       // Everyone can read active banners (for the hero section)
@@ -373,6 +414,14 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if isAdmin();
+    }
+
+    // Site links collection (header/footer links)
+    match /siteLinks/{linkId} {
+      // Public website reads links
+      allow read: if true;
+      // Admins manage links
+      allow create, update, delete: if isAdmin();
     }
 
     // Referrals collection

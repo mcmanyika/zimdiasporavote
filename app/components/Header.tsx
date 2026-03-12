@@ -4,11 +4,52 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
+import { getSiteLinks } from '@/lib/firebase/firestore';
 
 interface HeaderProps {
   onDonateClick?: () => void;
   onContactClick?: () => void;
   startAtBottom?: boolean;
+}
+
+interface NavLinkItem {
+  id: string;
+  label: string;
+  url: string;
+  style?: 'link' | 'button';
+  openInNewTab?: boolean;
+  order: number;
+}
+
+const fallbackHeaderLinks: NavLinkItem[] = [
+  { id: 'header-about', label: 'About', url: '/about', style: 'link', order: 1 },
+  { id: 'header-petitions', label: 'Petitions', url: '/petitions', style: 'link', order: 2 },
+  { id: 'header-articles', label: 'Articles', url: '/news', style: 'link', order: 3 },
+  { id: 'header-join', label: 'Join DCP', url: '/membership-application', style: 'button', order: 4 },
+  { id: 'header-contact', label: 'Contact', url: '/#contact', style: 'link', order: 5 },
+];
+
+function normalizeNavLinks(raw: any[]): NavLinkItem[] {
+  return raw
+    .map((item): NavLinkItem => {
+      const style: NavLinkItem['style'] = item.style === 'button' ? 'button' : 'link';
+      return {
+        id: String(item.id || ''),
+        label: String(item.label || ''),
+        url: String(item.url || ''),
+        style,
+        openInNewTab: Boolean(item.openInNewTab),
+        order: Number(item.order || 0),
+      };
+    })
+    .filter((item) => item.label && item.url)
+    .sort((a, b) => a.order - b.order);
+}
+
+function isContactLink(link: NavLinkItem): boolean {
+  const label = link.label.trim().toLowerCase();
+  const url = link.url.trim().toLowerCase();
+  return label === 'contact' || url === '#contact' || url === '/#contact';
 }
 
 export default function Header({ onDonateClick, onContactClick, startAtBottom = false }: HeaderProps) {
@@ -18,6 +59,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
   const { user, userProfile, logout } = useAuth();
   const { getTotalItems } = useCart();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const [headerLinks, setHeaderLinks] = useState<NavLinkItem[]>(fallbackHeaderLinks);
   const cartItemCount = getTotalItems();
 
   const handleDonateClick = (e: React.MouseEvent) => {
@@ -63,6 +105,25 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
     return () => window.removeEventListener('scroll', handleScroll);
   }, [startAtBottom]);
 
+  useEffect(() => {
+    let isMounted = true;
+    const loadLinks = async () => {
+      try {
+        const dbLinks = await getSiteLinks('header');
+        const normalized = normalizeNavLinks(dbLinks as any[]);
+        if (isMounted && normalized.length > 0) {
+          setHeaderLinks(normalized);
+        }
+      } catch (error) {
+        console.error('Failed to load header links:', error);
+      }
+    };
+    void loadLinks();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <header 
       className={`fixed left-0 right-0 z-50 border-b border-slate-800 bg-black backdrop-blur-sm transition-all duration-500 ${
@@ -88,23 +149,52 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-4 md:flex lg:gap-6">
-          <Link href="/about" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">About</Link>
-          <Link href="/petitions" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Petitions</Link>
-          <Link href="/news" className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm">Articles</Link>
-          <Link href="/membership-application" className="rounded-full bg-yellow-500 px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-yellow-400 transition-colors sm:text-sm">Join DCP</Link>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              if (onContactClick) {
-                onContactClick();
-              } else {
-                window.location.href = '/#contact';
-              }
-            }}
-            className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm"
-          >
-            Contact
-          </button>
+          {headerLinks.map((link) => {
+            if (isContactLink(link)) {
+              return (
+                <button
+                  key={link.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onContactClick) {
+                      onContactClick();
+                    } else {
+                      window.location.href = '/#contact';
+                    }
+                  }}
+                  className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm"
+                >
+                  {link.label}
+                </button>
+              );
+            }
+
+            if (link.style === 'button') {
+              return (
+                <Link
+                  key={link.id}
+                  href={link.url}
+                  target={link.openInNewTab ? '_blank' : undefined}
+                  rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                  className="rounded-full bg-yellow-500 px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-yellow-400 transition-colors sm:text-sm"
+                >
+                  {link.label}
+                </Link>
+              );
+            }
+
+            return (
+              <Link
+                key={link.id}
+                href={link.url}
+                target={link.openInNewTab ? '_blank' : undefined}
+                rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm"
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -221,47 +311,54 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
       {mobileMenuOpen && (
         <div className="border-t border-slate-800 bg-black md:hidden">
           <nav className="flex flex-col space-y-1 px-4 py-4">
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              href="/petitions"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              Petitions
-            </Link>
-            <Link
-              href="/news"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              Articles
-            </Link>
-            <Link
-              href="/membership-application"
-              onClick={() => setMobileMenuOpen(false)}
-              className="mx-4 mt-2 rounded-full bg-yellow-500 px-4 py-3 text-center text-sm font-bold text-slate-900 hover:bg-yellow-400 transition-colors"
-            >
-              Join DCP
-            </Link>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                if (onContactClick) {
-                  onContactClick();
-                } else {
-                  window.location.href = '/#contact';
-                }
-              }}
-              className="rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            >
-              Contact
-            </button>
+            {headerLinks.map((link) => {
+              if (isContactLink(link)) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      if (onContactClick) {
+                        onContactClick();
+                      } else {
+                        window.location.href = '/#contact';
+                      }
+                    }}
+                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+
+              if (link.style === 'button') {
+                return (
+                  <Link
+                    key={link.id}
+                    href={link.url}
+                    target={link.openInNewTab ? '_blank' : undefined}
+                    rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mx-4 mt-2 rounded-full bg-yellow-500 px-4 py-3 text-center text-sm font-bold text-slate-900 hover:bg-yellow-400 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <Link
+                  key={link.id}
+                  href={link.url}
+                  target={link.openInNewTab ? '_blank' : undefined}
+                  rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
             {user ? (
               <>
                 <Link

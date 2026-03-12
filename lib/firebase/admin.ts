@@ -1,4 +1,5 @@
 import { App, applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'crypto'
 
@@ -54,6 +55,10 @@ function getBucket() {
     throw new Error('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is not configured')
   }
   return getStorage(getAdminApp()).bucket(bucketName)
+}
+
+export function getAdminDb() {
+  return getFirestore(getAdminApp())
 }
 
 export async function uploadBufferToStorage(

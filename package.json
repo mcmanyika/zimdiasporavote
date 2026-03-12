@@ -10,7 +10,8 @@
     "backup:firestore": "bash ./scripts/firestore-backup.sh",
     "restore:firestore": "bash ./scripts/firestore-restore.sh",
     "backup:firestore:prune-daily": "bash ./scripts/firestore-prune-daily.sh",
-    "backup:firestore:prune-weekly": "bash ./scripts/firestore-prune-weekly.sh"
+    "backup:firestore:prune-weekly": "bash ./scripts/firestore-prune-weekly.sh",
+    "seed:site-links": "node ./scripts/seed-site-links.js"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.4.0",
