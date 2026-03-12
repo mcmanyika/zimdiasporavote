@@ -271,20 +271,20 @@ export default function Home() {
         {/* National Referendum Declaration */}
         <section id="updates" className="bg-white py-16 sm:py-20 border-b border-slate-200">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
-              <div className="grid gap-0 md:grid-cols-[1.2fr_0.8fr]">
-                <div className="p-6 text-center sm:p-8 md:p-10">
-                  <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md">
+              <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">
+                <div className="p-6 text-center sm:p-8 md:p-10 md:text-left">
+                  <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400 md:text-left">
                     National Referendum Declaration
                   </p>
-                  <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                  <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-700 sm:text-base md:mx-0">
                     Zimbabwe stands at a defining constitutional moment. A proposed constitutional amendment seeks to extend presidential and parliamentary tenure without direct approval by the citizens of Zimbabwe.
                   </p>
-                  <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                  <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-700 sm:text-base md:mx-0">
                     This is not a minor procedural reform. It alters the sovereign right of the people to choose their leaders at regular constitutional intervals. The Constitution of Zimbabwe (2013) was adopted by referendum. Any change affecting the people&apos;s right to elect and replace leadership must therefore return to the people.
                   </p>
 
-                  <div className="mt-7">
+                  <div className="mt-7 flex justify-center md:justify-start">
                     <Link
                       href="/petitions"
                       className="group inline-flex items-center gap-2.5 rounded-full bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0"
@@ -297,13 +297,23 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="border-t border-slate-200 bg-white p-5 md:border-l md:border-t-0 md:p-6">
-                  <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-                    <img
-                      src="/downloads/courtCase.jpeg"
-                      alt="Court case filing document"
-                      className="h-auto w-full object-cover"
-                    />
+                <div className="border-t border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 md:border-l md:border-t-0 md:p-6">
+                  <div className="mx-auto max-w-[270px]">
+                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                      <img
+                        src="/downloads/courtCase.jpeg"
+                        alt="Court case filing document"
+                        className="h-auto w-full object-cover"
+                      />
+                    </div>
+                    <a
+                      href="/downloads/courtCase.jpeg"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                    >
+                      View Full Filing
+                    </a>
                   </div>
                 </div>
               </div>
