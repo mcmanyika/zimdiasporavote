@@ -1,5 +1,4 @@
 import { App, applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'crypto'
 
@@ -58,7 +57,16 @@ function getBucket() {
 }
 
 export function getAdminDb() {
-  return getFirestore(getAdminApp())
+  try {
+    // Lazy import prevents hard build failure when Firestore server bundle
+    // is unavailable in some deployment environments.
+    const { getFirestore } = require('firebase-admin/firestore') as {
+      getFirestore: (app?: App) => any
+    }
+    return getFirestore(getAdminApp())
+  } catch (error: any) {
+    throw new Error(`Firebase Admin Firestore is unavailable: ${error?.message || String(error)}`)
+  }
 }
 
 export async function uploadBufferToStorage(
