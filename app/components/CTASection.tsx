@@ -1,6 +1,24 @@
+'use client'
+
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function CTASection() {
+  const { user, userProfile } = useAuth()
+
+  const isExistingMember = Boolean(
+    user &&
+    userProfile &&
+    (
+      userProfile.membershipTier !== 'free' ||
+      userProfile.role === 'member' ||
+      userProfile.role === 'moderator' ||
+      userProfile.role === 'admin'
+    )
+  )
+
+  if (isExistingMember) return null
+
   return (
     <section className="bg-gradient-to-r from-slate-900 to-slate-800 py-8 text-white sm:py-12">
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
