@@ -8,7 +8,6 @@ import MembershipApplicationForm from '@/app/components/MembershipApplicationFor
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 
 function MembershipApplicationContent() {
   const { user } = useAuth()
@@ -50,7 +49,6 @@ function MembershipApplicationContent() {
             <p className="text-slate-600">Checking application status...</p>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -96,7 +94,6 @@ function MembershipApplicationContent() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   )
