@@ -18,24 +18,40 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const [QuillComponent, setQuillComponent] = useState<any>(null)
   const [loadError, setLoadError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     let isMounted = true
-    import('react-quill')
-      .then((mod) => {
+
+    const maxRetries = 3
+    const loadEditor = async () => {
+      try {
+        const mod = await import('react-quill')
         if (!isMounted) return
         setQuillComponent(() => mod.default)
-      })
-      .catch((error) => {
-        console.error('Failed to load rich text editor chunk, using textarea fallback:', error)
+        setLoadError(false)
+      } catch (error) {
         if (!isMounted) return
+
+        if (retryCount < maxRetries) {
+          const delayMs = 300 * (retryCount + 1)
+          setTimeout(() => {
+            if (isMounted) setRetryCount((prev) => prev + 1)
+          }, delayMs)
+          return
+        }
+
+        console.error('Failed to load rich text editor chunk, using textarea fallback:', error)
         setLoadError(true)
-      })
+      }
+    }
+
+    void loadEditor()
 
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [retryCount])
 
   const modules = useMemo(
     () => ({
@@ -75,6 +91,19 @@ export default function RichTextEditor({
   if (loadError) {
     return (
       <div className={`rich-text-editor ${className}`}>
+        <div className="mb-2 flex items-center justify-between rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+          <span>Rich text editor could not load. Using fallback editor.</span>
+          <button
+            type="button"
+            onClick={() => {
+              setLoadError(false)
+              setRetryCount(0)
+            }}
+            className="font-semibold underline"
+          >
+            Retry
+          </button>
+        </div>
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
