@@ -104,6 +104,9 @@ const siteLinks = [
   { id: 'footer-more-twitter-live', label: 'Twitter Live', url: '/twitter-live', section: 'footer_more', order: 5, isActive: true, openInNewTab: false },
   { id: 'footer-more-contact', label: 'Contact', url: '/#contact', section: 'footer_more', order: 6, isActive: true, openInNewTab: false },
 
+  // Footer - Useful links
+  { id: 'footer-useful-parlzim', label: 'Parliment Of Zimbabwe', url: 'https://www.parlzim.gov.zw/', section: 'footer_useful', order: 1, isActive: true, openInNewTab: true },
+
   // Footer - Social
   { id: 'footer-social-x', label: 'X', url: 'https://x.com/DCPlatform25', section: 'footer_social', order: 1, isActive: true, openInNewTab: true, iconKey: 'x' },
   { id: 'footer-social-facebook', label: 'Facebook', url: 'https://www.facebook.com/share/1C4G3L4eka/', section: 'footer_social', order: 2, isActive: true, openInNewTab: true, iconKey: 'facebook' },

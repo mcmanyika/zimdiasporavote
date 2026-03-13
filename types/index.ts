@@ -504,6 +504,7 @@ export type SiteLinkSection =
   | 'header'
   | 'footer_quick'
   | 'footer_more'
+  | 'footer_useful'
   | 'footer_social'
   | 'footer_app'
 

@@ -42,6 +42,10 @@ const fallbackMoreLinks: FooterLinkItem[] = [
   { id: 'footer-more-contact', label: 'Contact', url: '/#contact', order: 6 },
 ]
 
+const fallbackUsefulLinks: FooterLinkItem[] = [
+  { id: 'footer-useful-parlzim', label: 'Parliment Of Zimbabwe', url: 'https://www.parlzim.gov.zw/', order: 1, openInNewTab: true },
+]
+
 const fallbackSocialLinks: FooterLinkItem[] = [
   { id: 'footer-social-x', label: 'X', url: 'https://x.com/DCPlatform25', order: 1, iconKey: 'x', openInNewTab: true },
   { id: 'footer-social-facebook', label: 'Facebook', url: 'https://www.facebook.com/share/1C4G3L4eka/', order: 2, iconKey: 'facebook', openInNewTab: true },
@@ -131,6 +135,7 @@ export default function Footer() {
   const [appLink, setAppLink] = useState<FooterLinkItem>(fallbackAppLink)
   const [quickLinks, setQuickLinks] = useState<FooterLinkItem[]>(fallbackQuickLinks)
   const [moreLinks, setMoreLinks] = useState<FooterLinkItem[]>(fallbackMoreLinks)
+  const [usefulLinks, setUsefulLinks] = useState<FooterLinkItem[]>(fallbackUsefulLinks)
   const [socialLinks, setSocialLinks] = useState<FooterLinkItem[]>(fallbackSocialLinks)
 
   useEffect(() => {
@@ -138,10 +143,11 @@ export default function Footer() {
 
     const load = async () => {
       try {
-        const [app, quick, more, social] = await Promise.all([
+        const [app, quick, more, useful, social] = await Promise.all([
           getSiteLinks('footer_app'),
           getSiteLinks('footer_quick'),
           getSiteLinks('footer_more'),
+          getSiteLinks('footer_useful'),
           getSiteLinks('footer_social'),
         ])
 
@@ -150,11 +156,13 @@ export default function Footer() {
         const appItems = normalizeLinks(app as any[])
         const quickItems = normalizeLinks(quick as any[])
         const moreItems = normalizeLinks(more as any[])
+        const usefulItems = normalizeLinks(useful as any[])
         const socialItems = normalizeLinks(social as any[])
 
         if (appItems.length > 0) setAppLink(appItems[0])
         if (quickItems.length > 0) setQuickLinks(quickItems)
         if (moreItems.length > 0) setMoreLinks(moreItems)
+        if (usefulItems.length > 0) setUsefulLinks(usefulItems)
         if (socialItems.length > 0) setSocialLinks(socialItems)
       } catch (error) {
         console.error('Failed to load footer links:', error)
@@ -170,7 +178,7 @@ export default function Footer() {
   return (
     <footer className="border-t bg-slate-900 text-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        <div className="grid gap-6 md:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-5">
           <div>
             <h3 className="mb-3 text-xs font-semibold">Get the App</h3>
             <p className="mb-3 text-xs text-slate-400">
@@ -195,22 +203,68 @@ export default function Footer() {
             <ul className="space-y-1.5 text-xs text-slate-400">
               {quickLinks.map((link) => (
                 <li key={link.id}>
-                  <Link href={link.url} className="hover:text-white transition-colors">
-                    {link.label}
-                  </Link>
+                  {isExternal(link.url) || link.openInNewTab ? (
+                    <a
+                      href={link.url}
+                      target={link.openInNewTab ? '_blank' : undefined}
+                      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.url} className="hover:text-white transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <div className="mb-3 h-4"></div>
+            <h3 className="mb-3 text-xs font-semibold">More Links</h3>
             <ul className="space-y-1.5 text-xs text-slate-400">
               {moreLinks.map((link) => (
                 <li key={link.id}>
-                  <Link href={link.url} className="hover:text-white transition-colors">
-                    {link.label}
-                  </Link>
+                  {isExternal(link.url) || link.openInNewTab ? (
+                    <a
+                      href={link.url}
+                      target={link.openInNewTab ? '_blank' : undefined}
+                      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.url} className="hover:text-white transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-3 text-xs font-semibold">Useful Links</h3>
+            <ul className="space-y-1.5 text-xs text-slate-400">
+              {usefulLinks.map((link) => (
+                <li key={link.id}>
+                  {isExternal(link.url) || link.openInNewTab ? (
+                    <a
+                      href={link.url}
+                      target={link.openInNewTab ? '_blank' : undefined}
+                      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.url} className="hover:text-white transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
