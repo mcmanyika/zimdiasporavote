@@ -424,6 +424,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Country phone codes collection (global phone dropdown)
+    match /countryPhoneCodes/{codeId} {
+      // Public website/forms can read active country codes
+      allow read: if true;
+      // Admins manage country codes
+      allow create, update, delete: if isAdmin();
+    }
+
     // Referrals collection
     match /referrals/{referralId} {
       // Users can read referrals where they are the referrer

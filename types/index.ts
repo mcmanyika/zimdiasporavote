@@ -522,6 +522,17 @@ export interface SiteLink {
   updatedAt: Timestamp | Date
 }
 
+export interface CountryPhoneCode {
+  id: string
+  iso2: string
+  name: string
+  dialCode: string
+  order: number
+  isActive: boolean
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
 // Referral types
 export type ReferralStatus = 'signed_up' | 'applied' | 'paid'
 

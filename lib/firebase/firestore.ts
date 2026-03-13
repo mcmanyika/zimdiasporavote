@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3150,6 +3150,44 @@ export async function getSiteLinks(
       return all.filter((link) => link.section === section)
     } catch (fallbackError) {
       console.error('Error fetching site links fallback:', fallbackError)
+      return []
+    }
+  }
+}
+
+// ─── Country Phone Codes ───────────────────────────────────────────────────────
+
+export async function getCountryPhoneCodes(activeOnly: boolean = true): Promise<CountryPhoneCode[]> {
+  if (!db) return []
+
+  const normalize = (snapshot: any): CountryPhoneCode[] => {
+    const records: CountryPhoneCode[] = snapshot.docs.map((docSnap: any): CountryPhoneCode => {
+      const data = docSnap.data()
+      return {
+        ...data,
+        id: docSnap.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as CountryPhoneCode
+    })
+
+    const filtered = activeOnly ? records.filter((item) => item.isActive !== false) : records
+    return filtered.sort((a, b) => (a.order || 0) - (b.order || 0))
+  }
+
+  try {
+    const q = activeOnly
+      ? query(collection(db, 'countryPhoneCodes'), where('isActive', '==', true))
+      : query(collection(db, 'countryPhoneCodes'))
+    const snapshot = await getDocs(q)
+    return normalize(snapshot)
+  } catch (error) {
+    console.warn('Error fetching country phone codes (fallback to full scan):', error)
+    try {
+      const snapshot = await getDocs(collection(db, 'countryPhoneCodes'))
+      return normalize(snapshot)
+    } catch (fallbackError) {
+      console.error('Error fetching country phone codes fallback:', fallbackError)
       return []
     }
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { createMembershipApplication, createNotification, getReferralByReferred, updateReferralStatus } from '@/lib/firebase/firestore'
+import { createMembershipApplication, createNotification, getReferralByReferred, updateReferralStatus, getCountryPhoneCodes } from '@/lib/firebase/firestore'
 import type { MembershipApplicationType, ParticipationArea, OrganisationType } from '@/types'
 
 const provinces = [
@@ -18,6 +18,28 @@ const provinces = [
   'Matabeleland South',
   'Midlands',
 ]
+
+const fallbackCountryCodeOptions = [
+  { id: 'zw', iso2: 'ZW', name: 'Zimbabwe', dialCode: '+263' },
+  { id: 'za', iso2: 'ZA', name: 'South Africa', dialCode: '+27' },
+  { id: 'zm', iso2: 'ZM', name: 'Zambia', dialCode: '+260' },
+  { id: 'bw', iso2: 'BW', name: 'Botswana', dialCode: '+267' },
+  { id: 'gb', iso2: 'GB', name: 'United Kingdom', dialCode: '+44' },
+  { id: 'us', iso2: 'US', name: 'United States', dialCode: '+1' },
+]
+
+type CountryCodeOption = {
+  id: string
+  iso2: string
+  name: string
+  dialCode: string
+}
+
+function isoToFlag(iso2: string): string {
+  const code = (iso2 || '').toUpperCase()
+  if (code.length !== 2) return '🌍'
+  return String.fromCodePoint(...code.split('').map((c) => 127397 + c.charCodeAt(0)))
+}
 
 const participationOptions: { value: ParticipationArea; label: string }[] = [
   { value: 'civic_education', label: 'Civic education' },
@@ -54,13 +76,13 @@ export default function MembershipApplicationForm() {
   // Section B: Individual
   const [individual, setIndividual] = useState({
     fullName: '',
-    nationalIdPassport: '',
     gender: '',
     dateOfBirth: '',
     province: '',
     district: '',
     occupation: '',
     mobileNumber: '',
+    mobileCountryCode: '+263',
     emailAddress: '',
     participationAreas: [] as ParticipationArea[],
     participationOther: '',
@@ -77,6 +99,7 @@ export default function MembershipApplicationForm() {
     representativeName: '',
     representativePosition: '',
     representativeMobile: '',
+    representativeMobileCountryCode: '+263',
     representativeEmail: '',
     alternateRepresentative: '',
   })
@@ -85,6 +108,7 @@ export default function MembershipApplicationForm() {
   const [declarationAccepted, setDeclarationAccepted] = useState(false)
   const [signatureName, setSignatureName] = useState('')
   const [signatureDate, setSignatureDate] = useState('')
+  const [countryCodeOptions, setCountryCodeOptions] = useState<CountryCodeOption[]>(fallbackCountryCodeOptions)
 
   // Pre-fill from auth
   useEffect(() => {
@@ -101,6 +125,76 @@ export default function MembershipApplicationForm() {
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     setSignatureDate(today)
+  }, [])
+
+  // Load country code options from DB table
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchFromPublicApi = async () => {
+      try {
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,idd')
+        if (!response.ok) return []
+        const data = await response.json()
+        if (!Array.isArray(data)) return []
+
+        const mapped = data
+          .map((country: any) => {
+            const iso2 = String(country?.cca2 || '').toUpperCase()
+            const name = String(country?.name?.common || '').trim()
+            const root = String(country?.idd?.root || '').trim()
+            const suffix = Array.isArray(country?.idd?.suffixes) && country.idd.suffixes.length > 0
+              ? String(country.idd.suffixes[0] || '').trim()
+              : ''
+            const dialCode = `${root}${suffix}`.trim()
+            if (!iso2 || iso2.length !== 2 || !name || !dialCode.startsWith('+')) return null
+            return {
+              id: iso2.toLowerCase(),
+              iso2,
+              name,
+              dialCode,
+            }
+          })
+          .filter((item: CountryCodeOption | null): item is CountryCodeOption => item !== null)
+          .sort((a: CountryCodeOption, b: CountryCodeOption) => a.name.localeCompare(b.name))
+
+        return mapped
+      } catch {
+        return []
+      }
+    }
+
+    const loadCountryCodes = async () => {
+      try {
+        const dbCodes = await getCountryPhoneCodes(true)
+        if (!isMounted) return
+
+        if (dbCodes.length > 0) {
+          const normalized: CountryCodeOption[] = dbCodes.map((item) => ({
+            id: item.id,
+            iso2: item.iso2,
+            name: item.name,
+            dialCode: item.dialCode,
+          }))
+          setCountryCodeOptions(normalized)
+          return
+        }
+
+        const apiCodes = await fetchFromPublicApi()
+        if (!isMounted || apiCodes.length === 0) return
+        setCountryCodeOptions(apiCodes)
+      } catch (err) {
+        console.error('Failed to load country phone codes from Firestore, trying public API:', err)
+        const apiCodes = await fetchFromPublicApi()
+        if (!isMounted || apiCodes.length === 0) return
+        setCountryCodeOptions(apiCodes)
+      }
+    }
+
+    void loadCountryCodes()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const handleParticipationToggle = (area: ParticipationArea) => {
@@ -207,13 +301,12 @@ export default function MembershipApplicationForm() {
 
       if (membershipType === 'individual') {
         applicationData.fullName = individual.fullName.trim()
-        if (individual.nationalIdPassport.trim()) applicationData.nationalIdPassport = individual.nationalIdPassport.trim()
         if (individual.gender) applicationData.gender = individual.gender
         if (individual.dateOfBirth) applicationData.dateOfBirth = individual.dateOfBirth
         applicationData.province = individual.province
         if (individual.district.trim()) applicationData.district = individual.district.trim()
         if (individual.occupation.trim()) applicationData.occupation = individual.occupation.trim()
-        applicationData.mobileNumber = individual.mobileNumber.trim()
+        applicationData.mobileNumber = `${individual.mobileCountryCode} ${individual.mobileNumber.trim()}`
         applicationData.emailAddress = individual.emailAddress.trim()
         if (individual.participationAreas.length > 0) applicationData.participationAreas = individual.participationAreas
         if (individual.participationOther.trim()) applicationData.participationOther = individual.participationOther.trim()
@@ -226,7 +319,7 @@ export default function MembershipApplicationForm() {
         if (institutional.provincesOfOperation.trim()) applicationData.provincesOfOperation = institutional.provincesOfOperation.trim()
         applicationData.representativeName = institutional.representativeName.trim()
         if (institutional.representativePosition.trim()) applicationData.representativePosition = institutional.representativePosition.trim()
-        applicationData.representativeMobile = institutional.representativeMobile.trim()
+        applicationData.representativeMobile = `${institutional.representativeMobileCountryCode} ${institutional.representativeMobile.trim()}`
         applicationData.representativeEmail = institutional.representativeEmail.trim()
         if (institutional.alternateRepresentative.trim()) applicationData.alternateRepresentative = institutional.alternateRepresentative.trim()
         // Also store contact email for consistency
@@ -438,20 +531,8 @@ export default function MembershipApplicationForm() {
               />
             </div>
 
-            {/* ID & Gender */}
+            {/* Gender */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-900">
-                  National ID / Passport Number
-                </label>
-                <input
-                  type="text"
-                  value={individual.nationalIdPassport}
-                  onChange={(e) => setIndividual({ ...individual, nationalIdPassport: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  placeholder="e.g. 63-123456A78"
-                />
-              </div>
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-900">
                   Gender <span className="text-slate-400 text-xs">(Optional)</span>
@@ -533,14 +614,27 @@ export default function MembershipApplicationForm() {
                 <label className="mb-1 block text-sm font-semibold text-slate-900">
                   Mobile Number <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  value={individual.mobileNumber}
-                  onChange={(e) => setIndividual({ ...individual, mobileNumber: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  placeholder="+263 7X XXX XXXX"
-                  required
-                />
+                <div className="grid grid-cols-[minmax(150px,190px)_1fr] gap-2">
+                  <select
+                    value={individual.mobileCountryCode}
+                    onChange={(e) => setIndividual({ ...individual, mobileCountryCode: e.target.value })}
+                    className="rounded-lg border border-slate-300 px-2 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  >
+                    {countryCodeOptions.map((option) => (
+                      <option key={option.id} value={option.dialCode}>
+                        {`${isoToFlag(option.iso2)} ${option.name} (${option.dialCode})`}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    value={individual.mobileNumber}
+                    onChange={(e) => setIndividual({ ...individual, mobileNumber: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    placeholder="7X XXX XXXX"
+                    required
+                  />
+                </div>
               </div>
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-900">
@@ -739,14 +833,27 @@ export default function MembershipApplicationForm() {
                     <label className="mb-1 block text-sm font-semibold text-slate-700">
                       Mobile Number <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="tel"
-                      value={institutional.representativeMobile}
-                      onChange={(e) => setInstitutional({ ...institutional, representativeMobile: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                      placeholder="+263 7X XXX XXXX"
-                      required
-                    />
+                    <div className="grid grid-cols-[minmax(150px,190px)_1fr] gap-2">
+                      <select
+                        value={institutional.representativeMobileCountryCode}
+                        onChange={(e) => setInstitutional({ ...institutional, representativeMobileCountryCode: e.target.value })}
+                        className="rounded-lg border border-slate-300 px-2 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      >
+                        {countryCodeOptions.map((option) => (
+                          <option key={option.id} value={option.dialCode}>
+                            {`${isoToFlag(option.iso2)} ${option.name} (${option.dialCode})`}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        value={institutional.representativeMobile}
+                        onChange={(e) => setInstitutional({ ...institutional, representativeMobile: e.target.value })}
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                        placeholder="7X XXX XXXX"
+                        required
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-semibold text-slate-700">
@@ -912,7 +1019,6 @@ export default function MembershipApplicationForm() {
             {membershipType === 'individual' ? (
               <div className="grid gap-3 sm:grid-cols-2 text-sm">
                 <div><span className="text-slate-500">Full Name:</span> <span className="font-medium text-slate-900">{individual.fullName}</span></div>
-                {individual.nationalIdPassport && <div><span className="text-slate-500">ID/Passport:</span> <span className="font-medium text-slate-900">{individual.nationalIdPassport}</span></div>}
                 {individual.gender && <div><span className="text-slate-500">Gender:</span> <span className="font-medium text-slate-900">{individual.gender}</span></div>}
                 {individual.dateOfBirth && <div><span className="text-slate-500">Date of Birth:</span> <span className="font-medium text-slate-900">{individual.dateOfBirth}</span></div>}
                 <div><span className="text-slate-500">Province:</span> <span className="font-medium text-slate-900">{individual.province}</span></div>
