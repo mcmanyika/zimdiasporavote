@@ -294,6 +294,16 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Public Hearings collection
+    match /publicHearings/{hearingId} {
+      // Public can read only published hearings
+      allow read: if resource.data.isPublished == true;
+      // Admins can read all hearings
+      allow read: if isAdmin();
+      // Admins manage hearings
+      allow create, update, delete: if isAdmin();
+    }
+
     // Banners collection
     match /banners/{bannerId} {
       // Everyone can read active banners (for the hero section)

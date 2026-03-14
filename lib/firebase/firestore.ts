@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3191,6 +3191,110 @@ export async function getCountryPhoneCodes(activeOnly: boolean = true): Promise<
       return []
     }
   }
+}
+
+// ─── Public Hearings ───────────────────────────────────────────────────────────
+
+export async function createPublicHearing(
+  data: Omit<PublicHearing, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const ref = doc(collection(db, 'publicHearings'))
+  const now = Timestamp.now()
+
+  const payload: Record<string, any> = {
+    id: ref.id,
+    title: data.title,
+    province: data.province,
+    district: data.district,
+    venue: data.venue,
+    scheduledDate: data.scheduledDate,
+    status: data.status,
+    isPublished: data.isPublished,
+    createdAt: now,
+    updatedAt: now,
+  }
+
+  if (data.billCode !== undefined) payload.billCode = data.billCode
+  if (data.teamCode !== undefined) payload.teamCode = data.teamCode
+  if (data.locationName !== undefined) payload.locationName = data.locationName
+  if (data.startTime !== undefined) payload.startTime = data.startTime
+  if (data.endTime !== undefined) payload.endTime = data.endTime
+  if (data.timezone !== undefined) payload.timezone = data.timezone
+  if (data.sourceUrl !== undefined) payload.sourceUrl = data.sourceUrl
+  if (data.sourceImageUrl !== undefined) payload.sourceImageUrl = data.sourceImageUrl
+  if (data.notes !== undefined) payload.notes = data.notes
+  if (data.createdBy !== undefined) payload.createdBy = data.createdBy
+
+  await setDoc(ref, payload)
+  return ref.id
+}
+
+export async function getPublicHearings(
+  options?: { publishedOnly?: boolean; status?: PublicHearingStatus | 'all' }
+): Promise<PublicHearing[]> {
+  const db = requireDb()
+  const publishedOnly = options?.publishedOnly ?? false
+  const status = options?.status ?? 'all'
+
+  const normalize = (snapshot: any): PublicHearing[] =>
+    snapshot.docs
+      .map((docSnap: any) => {
+        const data = docSnap.data()
+        return {
+          ...data,
+          id: docSnap.id,
+          scheduledDate: toDate(data.scheduledDate),
+          createdAt: toDate(data.createdAt),
+          updatedAt: toDate(data.updatedAt),
+        } as PublicHearing
+      })
+      .sort((a: PublicHearing, b: PublicHearing) => {
+        const aTime = new Date(a.scheduledDate as any).getTime()
+        const bTime = new Date(b.scheduledDate as any).getTime()
+        return aTime - bTime
+      })
+
+  try {
+    const base = collection(db, 'publicHearings')
+    const filters: any[] = []
+    if (publishedOnly) filters.push(where('isPublished', '==', true))
+    if (status !== 'all') filters.push(where('status', '==', status))
+
+    const q = filters.length ? query(base, ...filters) : query(base)
+    const snapshot = await getDocs(q)
+    return normalize(snapshot)
+  } catch (error) {
+    console.warn('Error fetching public hearings (fallback to full scan):', error)
+    try {
+      const snapshot = await getDocs(collection(db, 'publicHearings'))
+      return normalize(snapshot).filter((item) => {
+        if (publishedOnly && !item.isPublished) return false
+        if (status !== 'all' && item.status !== status) return false
+        return true
+      })
+    } catch (fallbackError) {
+      console.error('Error fetching public hearings fallback:', fallbackError)
+      return []
+    }
+  }
+}
+
+export async function updatePublicHearing(
+  id: string,
+  patch: Partial<Omit<PublicHearing, 'id' | 'createdAt'>>
+): Promise<void> {
+  const db = requireDb()
+  const updateData: Record<string, any> = { updatedAt: Timestamp.now() }
+  Object.entries(patch).forEach(([key, value]) => {
+    if (value !== undefined) updateData[key] = value
+  })
+  await updateDoc(doc(db, 'publicHearings', id), updateData)
+}
+
+export async function deletePublicHearing(id: string): Promise<void> {
+  const db = requireDb()
+  await deleteDoc(doc(db, 'publicHearings', id))
 }
 
 // ─── Incident Reports (WhatsApp evidence intake) ──────────────────────────────

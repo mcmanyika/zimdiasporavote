@@ -44,6 +44,7 @@ const fallbackMoreLinks: FooterLinkItem[] = [
 
 const fallbackUsefulLinks: FooterLinkItem[] = [
   { id: 'footer-useful-parlzim', label: 'Parliment Of Zimbabwe', url: 'https://www.parlzim.gov.zw/', order: 1, openInNewTab: true },
+  { id: 'footer-useful-public-hearings', label: 'Public Hearings', url: '/public-hearings', order: 2 },
 ]
 
 const fallbackSocialLinks: FooterLinkItem[] = [
@@ -223,7 +224,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-xs font-semibold">More Links</h3>
+            <div className="mb-3 h-4"></div>
             <ul className="space-y-1.5 text-xs text-slate-400">
               {moreLinks.map((link) => (
                 <li key={link.id}>

@@ -12,7 +12,8 @@
     "backup:firestore:prune-daily": "bash ./scripts/firestore-prune-daily.sh",
     "backup:firestore:prune-weekly": "bash ./scripts/firestore-prune-weekly.sh",
     "seed:site-links": "node ./scripts/seed-site-links.js",
-    "seed:country-phone-codes": "node ./scripts/seed-country-phone-codes.js"
+    "seed:country-phone-codes": "node ./scripts/seed-country-phone-codes.js",
+    "seed:public-hearings": "node ./scripts/seed-public-hearings.js"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.4.0",

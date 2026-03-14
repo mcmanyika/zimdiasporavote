@@ -534,6 +534,31 @@ export interface CountryPhoneCode {
   updatedAt: Timestamp | Date
 }
 
+export type PublicHearingStatus = 'upcoming' | 'today' | 'completed' | 'cancelled' | 'rescheduled'
+
+export interface PublicHearing {
+  id: string
+  title: string
+  billCode?: string
+  teamCode?: string
+  province: string
+  district: string
+  locationName?: string
+  venue: string
+  scheduledDate: Timestamp | Date
+  startTime?: string
+  endTime?: string
+  timezone?: string
+  status: PublicHearingStatus
+  isPublished: boolean
+  sourceUrl?: string
+  sourceImageUrl?: string
+  notes?: string
+  createdBy?: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
 // Referral types
 export type ReferralStatus = 'signed_up' | 'applied' | 'paid'
 

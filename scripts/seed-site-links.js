@@ -103,9 +103,12 @@ const siteLinks = [
   { id: 'footer-more-videos', label: 'Videos', url: '/videos', section: 'footer_more', order: 4, isActive: true, openInNewTab: false },
   { id: 'footer-more-twitter-live', label: 'Twitter Live', url: '/twitter-live', section: 'footer_more', order: 5, isActive: true, openInNewTab: false },
   { id: 'footer-more-contact', label: 'Contact', url: '/#contact', section: 'footer_more', order: 6, isActive: true, openInNewTab: false },
+  // Legacy item cleanup: keep doc but hide it from footer_more list.
+  { id: 'footer-more-useful-links', label: 'Parliament Of Zimbawe', url: 'https://www.parlzim.gov.zw/', section: 'footer_more', order: 99, isActive: false, openInNewTab: true },
 
   // Footer - Useful links
   { id: 'footer-useful-parlzim', label: 'Parliment Of Zimbabwe', url: 'https://www.parlzim.gov.zw/', section: 'footer_useful', order: 1, isActive: true, openInNewTab: true },
+  { id: 'footer-useful-public-hearings', label: 'Public Hearings', url: '/public-hearings', section: 'footer_useful', order: 2, isActive: true, openInNewTab: false },
 
   // Footer - Social
   { id: 'footer-social-x', label: 'X', url: 'https://x.com/DCPlatform25', section: 'footer_social', order: 1, isActive: true, openInNewTab: true, iconKey: 'x' },
