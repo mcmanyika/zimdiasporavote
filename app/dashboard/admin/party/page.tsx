@@ -55,7 +55,7 @@ function PartyContentEditor() {
   const [formData, setFormData] = useState({
     pageTitle: 'DCP Political Party',
     heroTitle: 'A New Political Party Rooted in Constitutionalism',
-    heroSubtitle: 'Talks are underway to launch a political party based on DCP values, principles, and people-driven leadership.',
+    heroSubtitle: '',
     foundingStatement: '',
     mission: '',
     vision: '',

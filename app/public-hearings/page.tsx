@@ -10,8 +10,16 @@ import type { PublicHearing } from '@/types'
 export default function PublicHearingsPage() {
   const pageSize = 10
   const billsEmail = 'bills@parlzim.gov.zw'
-  const emailSubject = 'Public Hearing Submission: Constitution Amendment (No. 3) Bill'
-  const emailBody = 'I say No to Amendment Bill No. 3\n\nThank You'
+  const emailSubject = 'Public Submission – Constitution Amendment Bill, 2026'
+  const emailBody = `Dear Clerk of Parliament,
+
+I write as a citizen to oppose amendments that extend tenure, remove direct presidential elections, weaken ZEC, alter the role of the Defence Forces, politicise traditional leaders, or dissolve independent commissions.
+The 2013 Constitution was adopted by referendum. Any change affecting tenure or how leaders are elected must be approved by the people through a referendum.
+I respectfully urge Parliament to reject the Bill in its current form and preserve Zimbabwe's democratic safeguards.
+
+Name:
+Province:
+Contact:`
   const [hearings, setHearings] = useState<PublicHearing[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')

@@ -296,7 +296,15 @@ export default function Home() {
                       </svg>
                     </Link>
                     <a
-                      href={`mailto:bills@parlzim.gov.zw?subject=${encodeURIComponent('Public Hearing Submission: Constitution Amendment (No. 3) Bill')}&body=${encodeURIComponent('I say No to Amendment Bill No. 3\n\nThank You')}`}
+                      href={`mailto:bills@parlzim.gov.zw?subject=${encodeURIComponent('Public Submission – Constitution Amendment Bill, 2026')}&body=${encodeURIComponent(`Dear Clerk of Parliament,
+
+I write as a citizen to oppose amendments that extend tenure, remove direct presidential elections, weaken ZEC, alter the role of the Defence Forces, politicise traditional leaders, or dissolve independent commissions.
+The 2013 Constitution was adopted by referendum. Any change affecting tenure or how leaders are elected must be approved by the people through a referendum.
+I respectfully urge Parliament to reject the Bill in its current form and preserve Zimbabwe's democratic safeguards.
+
+Name:
+Province:
+Contact:`)}`}
                       className="inline-flex items-center rounded-full border border-slate-300 bg-white px-8 py-3.5 text-sm font-semibold text-slate-800 transition-all duration-200 hover:bg-slate-50 hover:-translate-y-0.5 active:translate-y-0"
                     >
                       Email Parliament

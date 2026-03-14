@@ -65,7 +65,7 @@ const landingPayload = {
   id: 'landing',
   pageTitle: 'DCP Political Party',
   heroTitle: 'A New Political Party Rooted in Constitutionalism',
-  heroSubtitle: 'Talks are underway to launch a political party based on DCP values, principles, and people-driven leadership.',
+  heroSubtitle: '',
   foundingStatement: 'This initiative seeks to transform constitutional advocacy into an accountable, democratic political platform.',
   mission: 'To build a citizen-led political movement that protects constitutionalism, rule of law, and social justice.',
   vision: 'A constitutional Zimbabwe with accountable leadership and inclusive national development.',
