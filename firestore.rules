@@ -304,6 +304,42 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Political Party landing content
+    match /partyContent/{contentId} {
+      // Public can read published content
+      allow read: if resource.data.isPublished == true;
+      // Admins can read and manage all content
+      allow read: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Political Party events
+    match /partyEvents/{eventId} {
+      // Public can read published events
+      allow read: if resource.data.isPublished == true;
+      // Admins can read and manage all events
+      allow read: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Political Party interest submissions
+    match /partyInterestSubmissions/{submissionId} {
+      // Public can submit interest forms
+      allow create: if request.resource.data.keys().hasAll([
+                      'fullName', 'email', 'phone', 'province', 'roleInterest', 'message', 'status'
+                    ]) &&
+                    request.resource.data.fullName is string &&
+                    request.resource.data.email is string &&
+                    request.resource.data.phone is string &&
+                    request.resource.data.province is string &&
+                    request.resource.data.roleInterest is string &&
+                    request.resource.data.message is string &&
+                    request.resource.data.email.matches('.*@.*') &&
+                    request.resource.data.status == 'new';
+      // Admins can read/update/delete submissions
+      allow read, update, delete: if isAdmin();
+    }
+
     // Banners collection
     match /banners/{bannerId} {
       // Everyone can read active banners (for the hero section)

@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PartyLandingContent, PartyEvent, PartyInterestSubmission, PartyInterestStatus, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 
 // Helper functions
 function requireDb() {
@@ -3191,6 +3191,208 @@ export async function getCountryPhoneCodes(activeOnly: boolean = true): Promise<
       return []
     }
   }
+}
+
+// ─── Political Party Module ────────────────────────────────────────────────────
+
+export async function getPartyLandingContent(): Promise<PartyLandingContent | null> {
+  const db = requireDb()
+  try {
+    const snap = await getDoc(doc(db, 'partyContent', 'landing'))
+    if (!snap.exists()) return null
+    const data = snap.data()
+    return {
+      ...data,
+      id: snap.id,
+      createdAt: toDate(data.createdAt),
+      updatedAt: toDate(data.updatedAt),
+    } as PartyLandingContent
+  } catch (error) {
+    console.error('Error fetching party landing content:', error)
+    return null
+  }
+}
+
+export async function upsertPartyLandingContent(
+  payload: Omit<PartyLandingContent, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }
+): Promise<void> {
+  const db = requireDb()
+  const ref = doc(db, 'partyContent', 'landing')
+  const now = Timestamp.now()
+
+  const data: Record<string, any> = {
+    id: 'landing',
+    pageTitle: payload.pageTitle,
+    heroTitle: payload.heroTitle,
+    heroSubtitle: payload.heroSubtitle,
+    foundingStatement: payload.foundingStatement,
+    mission: payload.mission,
+    vision: payload.vision,
+    principles: Array.isArray(payload.principles) ? payload.principles : [],
+    isPublished: payload.isPublished,
+    updatedAt: now,
+  }
+
+  if (payload.callToActionText !== undefined) data.callToActionText = payload.callToActionText
+  if (payload.updatedBy !== undefined) data.updatedBy = payload.updatedBy
+
+  const existing = await getDoc(ref)
+  if (!existing.exists()) {
+    data.createdAt = now
+  }
+
+  await setDoc(ref, data, { merge: true })
+}
+
+export async function getPartyEvents(publishedOnly: boolean = true): Promise<PartyEvent[]> {
+  const db = requireDb()
+
+  const normalize = (snapshot: any): PartyEvent[] =>
+    snapshot.docs
+      .map((docSnap: any) => {
+        const data = docSnap.data()
+        return {
+          ...data,
+          id: docSnap.id,
+          eventDate: toDate(data.eventDate),
+          createdAt: toDate(data.createdAt),
+          updatedAt: toDate(data.updatedAt),
+        } as PartyEvent
+      })
+      .filter((event: PartyEvent) => (publishedOnly ? event.isPublished : true))
+      .sort((a: PartyEvent, b: PartyEvent) => {
+        const aTime = new Date(a.eventDate as any).getTime()
+        const bTime = new Date(b.eventDate as any).getTime()
+        return aTime - bTime
+      })
+
+  try {
+    const q = publishedOnly
+      ? query(collection(db, 'partyEvents'), where('isPublished', '==', true))
+      : query(collection(db, 'partyEvents'))
+    const snapshot = await getDocs(q)
+    return normalize(snapshot)
+  } catch (error) {
+    console.warn('Error fetching party events (fallback to full scan):', error)
+    try {
+      const snapshot = await getDocs(collection(db, 'partyEvents'))
+      return normalize(snapshot)
+    } catch (fallbackError) {
+      console.error('Error fetching party events fallback:', fallbackError)
+      return []
+    }
+  }
+}
+
+export async function createPartyEvent(
+  payload: Omit<PartyEvent, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const ref = doc(collection(db, 'partyEvents'))
+  const now = Timestamp.now()
+  const data: Record<string, any> = {
+    id: ref.id,
+    title: payload.title,
+    province: payload.province,
+    location: payload.location,
+    eventDate: payload.eventDate,
+    isPublished: payload.isPublished,
+    createdAt: now,
+    updatedAt: now,
+  }
+  if (payload.description !== undefined) data.description = payload.description
+  if (payload.startTime !== undefined) data.startTime = payload.startTime
+  if (payload.endTime !== undefined) data.endTime = payload.endTime
+  if (payload.registrationUrl !== undefined) data.registrationUrl = payload.registrationUrl
+  if (payload.createdBy !== undefined) data.createdBy = payload.createdBy
+  await setDoc(ref, data)
+  return ref.id
+}
+
+export async function updatePartyEvent(
+  id: string,
+  patch: Partial<Omit<PartyEvent, 'id' | 'createdAt'>>
+): Promise<void> {
+  const db = requireDb()
+  const updateData: Record<string, any> = { updatedAt: Timestamp.now() }
+  Object.entries(patch).forEach(([key, value]) => {
+    if (value !== undefined) updateData[key] = value
+  })
+  await updateDoc(doc(db, 'partyEvents', id), updateData)
+}
+
+export async function deletePartyEvent(id: string): Promise<void> {
+  const db = requireDb()
+  await deleteDoc(doc(db, 'partyEvents', id))
+}
+
+export async function createPartyInterestSubmission(
+  payload: Omit<PartyInterestSubmission, 'id' | 'status' | 'createdAt' | 'updatedAt'>
+): Promise<string> {
+  const db = requireDb()
+  const ref = doc(collection(db, 'partyInterestSubmissions'))
+  const now = Timestamp.now()
+  const data: Record<string, any> = {
+    id: ref.id,
+    fullName: payload.fullName,
+    email: payload.email,
+    phone: payload.phone,
+    province: payload.province,
+    roleInterest: payload.roleInterest,
+    message: payload.message,
+    status: 'new' as PartyInterestStatus,
+    createdAt: now,
+    updatedAt: now,
+  }
+  if (payload.district !== undefined) data.district = payload.district
+  await setDoc(ref, data)
+  return ref.id
+}
+
+export async function getPartyInterestSubmissions(): Promise<PartyInterestSubmission[]> {
+  const db = requireDb()
+  const normalize = (snapshot: any): PartyInterestSubmission[] =>
+    snapshot.docs
+      .map((docSnap: any) => {
+        const data = docSnap.data()
+        return {
+          ...data,
+          id: docSnap.id,
+          createdAt: toDate(data.createdAt),
+          updatedAt: toDate(data.updatedAt),
+        } as PartyInterestSubmission
+      })
+      .sort((a: PartyInterestSubmission, b: PartyInterestSubmission) => {
+        const aTime = new Date(a.createdAt as any).getTime()
+        const bTime = new Date(b.createdAt as any).getTime()
+        return bTime - aTime
+      })
+
+  try {
+    const snapshot = await getDocs(query(collection(db, 'partyInterestSubmissions'), orderBy('createdAt', 'desc')))
+    return normalize(snapshot)
+  } catch (error) {
+    console.warn('Error fetching party interest submissions (fallback to full scan):', error)
+    try {
+      const snapshot = await getDocs(collection(db, 'partyInterestSubmissions'))
+      return normalize(snapshot)
+    } catch (fallbackError) {
+      console.error('Error fetching party interest submissions fallback:', fallbackError)
+      return []
+    }
+  }
+}
+
+export async function updatePartyInterestSubmission(
+  id: string,
+  patch: Partial<Omit<PartyInterestSubmission, 'id' | 'createdAt'>>
+): Promise<void> {
+  const db = requireDb()
+  const updateData: Record<string, any> = { updatedAt: Timestamp.now() }
+  Object.entries(patch).forEach(([key, value]) => {
+    if (value !== undefined) updateData[key] = value
+  })
+  await updateDoc(doc(db, 'partyInterestSubmissions', id), updateData)
 }
 
 // ─── Public Hearings ───────────────────────────────────────────────────────────

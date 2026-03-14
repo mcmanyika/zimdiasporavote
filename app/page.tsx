@@ -285,7 +285,7 @@ export default function Home() {
                     This is not a minor procedural reform. It alters the sovereign right of the people to choose their leaders at regular constitutional intervals. The Constitution of Zimbabwe (2013) was adopted by referendum. Any change affecting the people&apos;s right to elect and replace leadership must therefore return to the people.
                   </p>
 
-                  <div className="mt-7 flex justify-center md:justify-start">
+                  <div className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
                     <Link
                       href="/petitions"
                       className="group inline-flex items-center gap-2.5 rounded-full bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0"
@@ -295,6 +295,12 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </Link>
+                    <a
+                      href={`mailto:bills@parlzim.gov.zw?subject=${encodeURIComponent('Public Hearing Submission: Constitution Amendment (No. 3) Bill')}&body=${encodeURIComponent('I say No to Amendment Bill No. 3\n\nThank You')}`}
+                      className="inline-flex items-center rounded-full border border-slate-300 bg-white px-8 py-3.5 text-sm font-semibold text-slate-800 transition-all duration-200 hover:bg-slate-50 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      Email Parliament
+                    </a>
                   </div>
                 </div>
 

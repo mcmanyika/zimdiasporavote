@@ -192,6 +192,7 @@ const adminContentItems: NavItem[] = [
   { href: '/dashboard/admin/petitions', label: 'Petitions', icon: <IconPencilSquare />, description: 'Manage petitions' },
   { href: '/dashboard/admin/bill-proposals', label: 'Bill Proposals', icon: <IconClipboard />, description: 'Review and publish drafts' },
   { href: '/dashboard/admin/public-hearings', label: 'Public Hearings', icon: <IconClipboard />, description: 'Schedule and publish hearings' },
+  { href: '/dashboard/admin/party', label: 'Political Party', icon: <IconClipboard />, description: 'Manage party launch module' },
   { href: '/dashboard/admin/petition-signatures', label: 'Signatures', icon: <IconPencilSquare />, description: 'Petition signatories' },
   { href: '/dashboard/admin/surveys', label: 'Surveys', icon: <IconClipboard />, description: 'Manage surveys' },
   { href: '/dashboard/admin/banners', label: 'Banners', icon: <IconFlag />, description: 'Hero banners' },

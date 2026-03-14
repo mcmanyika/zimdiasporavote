@@ -9,6 +9,9 @@ import type { PublicHearing } from '@/types'
 
 export default function PublicHearingsPage() {
   const pageSize = 10
+  const billsEmail = 'bills@parlzim.gov.zw'
+  const emailSubject = 'Public Hearing Submission: Constitution Amendment (No. 3) Bill'
+  const emailBody = 'I say No to Amendment Bill No. 3\n\nThank You'
   const [hearings, setHearings] = useState<PublicHearing[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -75,21 +78,29 @@ export default function PublicHearingsPage() {
           <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold text-slate-900">Constitution of Zimbabwe Amendment (No. 3) Bill Public Hearing</h2>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <span>Province:</span>
-                <select
-                  value={provinceFilter}
-                  onChange={(e) => setProvinceFilter(e.target.value)}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm"
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <span>Province:</span>
+                  <select
+                    value={provinceFilter}
+                    onChange={(e) => setProvinceFilter(e.target.value)}
+                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                  >
+                    <option value="all">All</option>
+                    {provinces.map((province) => (
+                      <option key={province} value={province}>
+                        {province}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <a
+                  href={`mailto:${billsEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
+                  className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
                 >
-                  <option value="all">All</option>
-                  {provinces.map((province) => (
-                    <option key={province} value={province}>
-                      {province}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  Email Parliament
+                </a>
+              </div>
             </div>
           </div>
 
