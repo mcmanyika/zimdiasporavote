@@ -121,7 +121,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;padding:40px 20px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <table role="presentation" width="780" cellpadding="0" cellspacing="0" style="max-width:780px;width:100%;">
           <!-- Header -->
           <tr>
             <td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
@@ -133,25 +133,52 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
           </tr>
           <!-- Body -->
           <tr>
-            <td style="background-color:#ffffff;padding:40px;">
-              <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                Dear <strong style="color:#0f172a;">${name}</strong>,
-              </p>
-              <div style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 24px;">
-                ${renderedBody}
-              </div>
-              <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">
-                Warm regards,
-              </p>
-              <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0 0 2px;">
-                <strong>P. Manyika</strong>
-              </p>
-              <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0 0 2px;">
-                <strong>Defend the Constitution Platform</strong>
-              </p>
-              <p style="color:#64748b;font-size:13px;line-height:1.5;margin:0;">
-                <a href="${APP_URL}" style="color:#0f172a;text-decoration:underline;">www.dcpzim.com</a>
-              </p>
+            <td style="background-color:#ffffff;padding:0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td valign="top" style="padding:40px 30px 40px 40px;width:68%;">
+                    <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
+                      Dear <strong style="color:#0f172a;">${name}</strong>,
+                    </p>
+                    <div style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 24px;">
+                      ${renderedBody}
+                    </div>
+                    <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">
+                      Warm regards,
+                    </p>
+                    <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0 0 2px;">
+                      <strong>P. Manyika</strong>
+                    </p>
+                    <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0;">
+                      <strong>Defend the Constitution Platform</strong>
+                    </p>
+                  </td>
+                  <td valign="top" style="padding:28px 20px;background-color:#1e3a8a;width:32%;color:#ffffff;">
+                    <p style="font-size:16px;line-height:1.3;font-weight:700;margin:0 0 10px;">
+                      Contact
+                    </p>
+                    <p style="font-size:13px;line-height:1.7;margin:0 0 10px;">
+                      6 Down road. Avondale, Harare, Zimbabwe
+                    </p>
+                    <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;margin-right:6px;"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h3A1.5 1.5 0 0 1 9 4.24l1.03 4.12a1.5 1.5 0 0 1-.4 1.43l-1.2 1.2a13 13 0 0 0 4.57 4.57l1.2-1.2a1.5 1.5 0 0 1 1.43-.4L19.76 15A1.5 1.5 0 0 1 21 16.5v3A2.5 2.5 0 0 1 18.5 22h-1C8.94 22 2 15.06 2 6.5v-1Z" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      +263 71 876 5864
+                    </p>
+                    <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:-2px;margin-right:6px;"><path d="M13.5 8.5h2V6h-2C11.6 6 10 7.6 10 9.5V12H8v2.5h2V20h2.5v-5.5h2.2l.3-2.5h-2.5V9.8c0-.7.3-1.3 1-1.3Z"/></svg>
+                      <a href="https://www.facebook.com" style="color:#ffffff;text-decoration:underline;">Defend the Constitution Platform</a>
+                    </p>
+                    <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:-2px;margin-right:6px;"><path d="M18.9 3H22l-6.8 7.8L23 21h-6l-4.7-6.1L6.8 21H3.7l7.3-8.4L1.4 3h6l4.3 5.7L18.9 3Zm-1 16h1.7L6.5 4.9H4.8L17.9 19Z"/></svg>
+                      <a href="https://x.com/DCPPlatform25" style="color:#ffffff;text-decoration:underline;">@DCPPlatform25</a>
+                    </p>
+                    <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;margin-right:6px;"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" stroke="#ffffff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <a href="mailto:defendtheconstitutionplatform@gmail.com" style="color:#ffffff;text-decoration:underline;">defendtheconstitutionplatform@gmail.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <!-- Footer -->
@@ -159,6 +186,9 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
             <td style="background-color:#f1f5f9;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
               <p style="color:#94a3b8;font-size:11px;margin:0;">
                 © ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+              </p>
+              <p style="color:#94a3b8;font-size:11px;margin:6px 0 0;">
+                <a href="https://www.dcpzim.com" style="color:#0f172a;text-decoration:underline;">www.dcpzim.com</a>
               </p>
             </td>
           </tr>

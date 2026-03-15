@@ -8,7 +8,7 @@ import { uploadFile } from '@/lib/firebase/storage'
 import { getPetitions } from '@/lib/firebase/firestore'
 
 type SendMode = 'single' | 'bulk'
-type EmailTemplateId = 'blank_default' | 'blank_alt' | 'petition_followup'
+type EmailTemplateId = 'blank_default' | 'blank_alt' | 'petition_followup' | 'membership_solidarity'
 
 interface ParsedRecipient {
   email: string
@@ -77,6 +77,13 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
     subject: 'Thank you for signing the petition',
     htmlBody:
       '<p>Thank you for signing the petition.</p><p>Your support strengthens constitutional democracy.</p>',
+  },
+  {
+    id: 'membership_solidarity',
+    label: 'Membership Solidarity Contribution',
+    subject: 'Your DCP Membership Application – Next Step',
+    htmlBody:
+      '<p>Thank you for submitting your membership application to the Defend the Constitution Platform (DCP). We sincerely appreciate your commitment to defending Zimbabwe&apos;s Constitution and strengthening citizen participation.</p><p>We are pleased to inform you that your application has been received. The next step to activate your membership is your solidarity contribution.</p><p><strong>Individual Membership (Annual):</strong><br />- General Citizens — USD 5/year<br />- Students / Youth — USD 2/year<br />- Diaspora Citizens — USD 5/month or USD 60/year<br />- Workers / Informal Traders — USD 3/year (flexible)<br />- Liberation War Veterans — Voluntary / Waived<br />- Unwaged / Vulnerable Persons — Voluntary / Waived</p><p><strong>Institutional / Organisational Membership (Annual):</strong><br />- Small Community-Based Organisations — USD 25<br />- Local Trade Unions / Faith-Based Bodies — USD 50<br />- Professional Associations — USD 250<br />- National Civic Organisations &amp; Political Parties — USD 300</p><p>This solidarity contribution supports our civic education, mobilisation, petition outreach, and constitutional defence work across Zimbabwe.</p><p>Once your solidarity contribution is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in DCP initiatives.</p><p>You can complete your solidarity contribution by visiting:<br /><a href="https://www.dcpzim.com">www.dcpzim.com</a></p><p>Thank you for standing with us in defence of the Constitution and the future of Zimbabwe. For inquiries, please do not hesitate to contact us.</p><p><strong>Note:</strong> For EcoCash contributions, you may send to 0774754506 (Jacob Chengedzeni).</p>',
   },
 ]
 
