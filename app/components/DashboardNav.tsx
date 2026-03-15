@@ -193,8 +193,6 @@ const adminContentItems: NavItem[] = [
   { href: '/dashboard/admin/bill-proposals', label: 'Bill Proposals', icon: <IconClipboard />, description: 'Review and publish drafts' },
   { href: '/dashboard/admin/public-hearings', label: 'Public Hearings', icon: <IconClipboard />, description: 'Schedule and publish hearings' },
   { href: '/dashboard/admin/party', label: 'Political Party', icon: <IconClipboard />, description: 'Manage party launch module' },
-  { href: '/dashboard/admin/petition-signatures', label: 'Signatures', icon: <IconPencilSquare />, description: 'Petition signatories' },
-  { href: '/dashboard/admin/surveys', label: 'Surveys', icon: <IconClipboard />, description: 'Manage surveys' },
   { href: '/dashboard/admin/banners', label: 'Banners', icon: <IconFlag />, description: 'Hero banners' },
   { href: '/dashboard/admin/gallery', label: 'Gallery', icon: <IconPhoto />, description: 'Image gallery' },
   { href: '/dashboard/admin/leadership', label: 'Leadership', icon: <IconUserGroup />, description: 'Leadership team' },
@@ -240,6 +238,8 @@ const adminManageItems: NavItem[] = [
   { href: '/dashboard/admin/compose-email', label: 'Email Compose', icon: <IconEnvelope />, description: 'Send an email' },
   { href: '/dashboard/admin/emails', label: 'Emails', icon: <IconEnvelope />, description: 'Sent email logs' },
   { href: '/dashboard/admin/downloads', label: 'Downloads', icon: <IconArrowDownTray />, description: 'Download tracking' },
+  { href: '/dashboard/admin/petition-signatures', label: 'Signatures', icon: <IconPencilSquare />, description: 'Petition signatories' },
+  { href: '/dashboard/admin/surveys', label: 'Surveys', icon: <IconClipboard />, description: 'Manage surveys' },
 ]
 
 export default function DashboardNav() {

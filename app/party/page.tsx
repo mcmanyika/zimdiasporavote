@@ -21,19 +21,19 @@ const campaignHighlights = [
     title: 'Legislative Efforts',
     text: 'Drive petitions, community consultations, and policy advocacy in every province.',
     cta: 'VIEW MORE',
-    image: 'https://vox-populi.bold-themes.com/grassroot/wp-content/uploads/sites/4/2019/03/campaigne-1.jpg',
+    image: '/images/life.png',
   },
   {
     title: 'Fundraising & Donations',
     text: 'Build a broad grassroots supporter base through transparent small-donor funding.',
     cta: 'How you can help',
-    image: 'https://vox-populi.bold-themes.com/grassroot/wp-content/uploads/sites/4/2019/03/campaigne-2.jpg',
+    image: '/images/sports.png',
   },
   {
     title: 'Volunteer Organizing',
     text: 'Recruit, train, and coordinate local volunteer teams for long-term mobilization.',
     cta: 'VIEW MORE',
-    image: 'https://vox-populi.bold-themes.com/grassroot/wp-content/uploads/sites/4/2019/03/campaigne-3.jpg',
+    image: '/images/students.png',
   },
 ]
 
@@ -59,7 +59,7 @@ const heroNavItems = ['Home', 'About', 'Contribute', 'News', 'Shop', 'Elements']
 
 const defaultContent: PartyLandingContent = {
   id: 'landing',
-  pageTitle: 'DCP Political Party',
+  pageTitle: 'DCP Political',
   heroTitle: 'A New Political Party Rooted in Constitutionalism',
   heroSubtitle: '',
   foundingStatement: 'This initiative seeks to transform constitutional advocacy into an accountable, democratic political platform.',
@@ -171,7 +171,7 @@ export default function PartyLandingPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="relative min-h-screen overflow-hidden bg-[#0f56d9] text-white">
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.92),rgba(15,86,217,0.88))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.62),rgba(15,86,217,0.56))]" />
         <div
           className="absolute inset-0 bg-cover bg-center opacity-25 will-change-transform"
           style={{

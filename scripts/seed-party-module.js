@@ -63,7 +63,7 @@ function parseDate(dateStr) {
 
 const landingPayload = {
   id: 'landing',
-  pageTitle: 'DCP Political Party',
+  pageTitle: 'DCP Political',
   heroTitle: 'A New Political Party Rooted in Constitutionalism',
   heroSubtitle: '',
   foundingStatement: 'This initiative seeks to transform constitutional advocacy into an accountable, democratic political platform.',

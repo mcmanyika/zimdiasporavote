@@ -53,7 +53,7 @@ function PartyContentEditor() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({
-    pageTitle: 'DCP Political Party',
+    pageTitle: 'DCP Political',
     heroTitle: 'A New Political Party Rooted in Constitutionalism',
     heroSubtitle: '',
     foundingStatement: '',
