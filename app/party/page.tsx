@@ -173,10 +173,10 @@ export default function PartyLandingPage() {
       <section className="relative min-h-screen overflow-hidden bg-[#0f56d9] text-white">
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.62),rgba(15,86,217,0.56))]" />
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-25 will-change-transform"
+          className="absolute inset-0 bg-cover bg-center bg-fixed opacity-35 will-change-transform"
           style={{
             backgroundImage: "url('/images/party/great_zimbabwe.png')",
-            transform: `translate3d(0, ${Math.min(scrollY * 0.08, 180)}px, 0) scale(1.04)`,
+            transform: `translate3d(0, ${Math.min(scrollY * 0.14, 240)}px, 0) scale(1.08)`,
           }}
         />
 
