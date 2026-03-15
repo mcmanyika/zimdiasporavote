@@ -53,6 +53,36 @@ const CASH_PAYMENT_PLANS = [
   { id: 'professional', label: 'Professional Associations', amount: 250, period: 'yearly' as const },
 ]
 
+const DEFAULT_MEMBERSHIP_EMAIL_SUBJECT = 'Your DCP Membership Application – Next Step'
+const DEFAULT_MEMBERSHIP_EMAIL_BODY = `Thank you for submitting your membership application to the Defend the Constitution Platform (DCP). We sincerely appreciate your commitment to defending Zimbabwe's Constitution and strengthening citizen participation.
+
+We are pleased to inform you that your application has been received. The next step to activate your membership is your solidarity contribution.
+
+Individual Membership (Annual):
+- General Citizens — USD 5/year
+- Students / Youth — USD 2/year
+- Diaspora Citizens — USD 5/month or USD 60/year
+- Workers / Informal Traders — USD 3/year (flexible)
+- Liberation War Veterans — Voluntary / Waived
+- Unwaged / Vulnerable Persons — Voluntary / Waived
+
+Institutional / Organisational Membership (Annual):
+- Small Community-Based Organisations — USD 25
+- Local Trade Unions / Faith-Based Bodies — USD 50
+- Professional Associations — USD 250
+- National Civic Organisations & Political Parties — USD 300
+
+This solidarity contribution supports our civic education, mobilisation, petition outreach, and constitutional defence work across Zimbabwe.
+
+Once your solidarity contribution is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in DCP initiatives.
+
+You can complete your solidarity contribution by visiting:
+www.dcpzim.com
+
+Thank you for standing with us in defence of the Constitution and the future of Zimbabwe. For inquiries, please do not hesitate to contact us.
+
+Note: For EcoCash contributions, you may send to 0774754506 (Jacob Chengedzeni).`
+
 export default function AdminMembershipApplicationsPage() {
   const { userProfile } = useAuth()
   const router = useRouter()
@@ -264,10 +294,8 @@ export default function AdminMembershipApplicationsPage() {
 
     // No draft — use default template
     const applicantName = app.type === 'individual' ? app.fullName : app.organisationName
-    setEmailSubject(`Your DCP Membership Application – Next Step`)
-    setEmailBody(
-      `Thank you for submitting your membership application to the Defend the Constitution Platform (DCP). We sincerely appreciate your commitment to defending Zimbabwe's Constitution and strengthening citizen participation.\n\nWe are pleased to inform you that your application has been received. The next step to activate your membership is the membership contribution, which can be made as either:\n\n$5 per month, or\n\n$60 per year\n\nThis contribution supports our civic education, mobilisation, petition outreach, and constitutional defence work across Zimbabwe.\n\nOnce your payment is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in DCP initiatives.\n\nYou can complete your membership payment by visiting:\nwww.dcpzim.com\n\nThank you for standing with us in defence of the Constitution and the future of Zimbabwe. For inquiries please do not hesitate to contact us.`
-    )
+    setEmailSubject(DEFAULT_MEMBERSHIP_EMAIL_SUBJECT)
+    setEmailBody(DEFAULT_MEMBERSHIP_EMAIL_BODY)
   }
 
   const closeEmailModal = async () => {
@@ -382,8 +410,8 @@ export default function AdminMembershipApplicationsPage() {
   const selectedApps = applications.filter((a) => selectedIds.has(a.id))
 
   const getDefaultBulkTemplate = () => ({
-    subject: 'Your DCP Membership Application – Next Step',
-    body: `Thank you for submitting your membership application to the Defend the Constitution Platform (DCP). We sincerely appreciate your commitment to defending Zimbabwe's Constitution and strengthening citizen participation.\n\nWe are pleased to inform you that your application has been received. The next step to activate your membership is the membership contribution, which can be made as either:\n\n$5 per month, or\n\n$60 per year\n\nThis contribution supports our civic education, mobilisation, petition outreach, and constitutional defence work across Zimbabwe.\n\nOnce your payment is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in DCP initiatives.\n\nYou can complete your membership payment by visiting:\nwww.dcpzim.com\n\nThank you for standing with us in defence of the Constitution and the future of Zimbabwe. For inquiries please do not hesitate to contact us.`,
+    subject: DEFAULT_MEMBERSHIP_EMAIL_SUBJECT,
+    body: DEFAULT_MEMBERSHIP_EMAIL_BODY,
   })
 
   const openBulkEmailModal = () => {
