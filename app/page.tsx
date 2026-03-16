@@ -311,7 +311,7 @@ export default function Home() {
         {/* National Referendum Declaration */}
         <section id="updates" className="bg-white py-16 sm:py-20 border-b border-slate-200">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
               <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">
                 <div className="p-6 text-center sm:p-8 md:p-10 md:text-left">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400 md:text-left">
@@ -353,7 +353,7 @@ Contact:`)}`}
 
                 <div className="border-t border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 md:border-l md:border-t-0 md:p-6">
                   <div className="mx-auto max-w-[270px]">
-                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                       <img
                         src="/downloads/courtCase.jpeg"
                         alt="Court case filing document"
@@ -418,7 +418,7 @@ Contact:`)}`}
         {/* Donate Appeal */}
         <section id="donate-section" className="bg-slate-50 py-10 sm:py-16">
           <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <div className="overflow-hidden rounded-2xl bg-white shadow-lg border border-slate-200">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
               <div className="grid md:grid-cols-2">
                 {/* Left – Message */}
                 <div className="flex flex-col justify-center p-6 sm:p-10">
@@ -515,7 +515,7 @@ Contact:`)}`}
         {/* Sponsored Merchandise Section */}
         <section id="sponsored-merchandise" className="bg-white py-10 sm:py-14">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
               <div className="grid items-stretch md:grid-cols-2">
                 <div className="relative min-h-[280px] bg-slate-100">
                   <img
