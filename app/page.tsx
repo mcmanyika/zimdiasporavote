@@ -33,6 +33,7 @@ const affiliateLinks: Record<string, string> = {
 }
 
 export default function Home() {
+  const fallbackIntroVideoId = 'B5s-YFdSEHI'
   const { user } = useAuth()
   const { addToCart } = useCart()
   const router = useRouter()
@@ -198,6 +199,8 @@ export default function Home() {
   }
 
   const visibleProducts = products.slice(productStartIndex, productStartIndex + productsPerView)
+  const introVideoId = introVideo?.youtubeVideoId || fallbackIntroVideoId
+  const introVideoTitle = introVideo?.title || 'DCP Launch Video'
   const canGoLeft = productStartIndex > 0
   const canGoRight = productStartIndex + productsPerView < products.length
 
@@ -290,34 +293,18 @@ export default function Home() {
             <div className="mb-4 text-center sm:mb-6">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">DCP Launch</p>
             </div>
-            {introVideo?.youtubeVideoId ? (
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg">
-                <div className="aspect-video w-full">
-                  <iframe
-                    className="h-full w-full"
-                    src={`https://www.youtube.com/embed/${introVideo.youtubeVideoId}?rel=0`}
-                    title={introVideo.title || 'DCP YouTube Intro Video'}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  />
-                </div>
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg">
+              <div className="aspect-video w-full">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube.com/embed/${introVideoId}?rel=0`}
+                  title={introVideoTitle}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
               </div>
-            ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-                <p className="text-sm text-slate-600 sm:text-base">
-                  No intro video is published yet.
-                </p>
-                <a
-                  href="https://youtube.com/@defendtheconstitutionplatform"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
-                >
-                  Visit YouTube Channel
-                </a>
-              </div>
-            )}
+            </div>
           </div>
         </section>
 
