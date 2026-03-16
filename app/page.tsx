@@ -288,7 +288,7 @@ export default function Home() {
         <section className="bg-slate-50 py-12 sm:py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mb-4 text-center sm:mb-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Watch</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">DCP Launch</p>
             </div>
             {introVideo?.youtubeVideoId ? (
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg">
