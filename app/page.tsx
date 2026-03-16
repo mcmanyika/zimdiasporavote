@@ -10,8 +10,8 @@ import DonationModal from './components/DonationModal';
 import Chatbot from './components/Chatbot';
 import TwitterEmbed from './components/TwitterEmbed';
 import Footer from './components/Footer';
-import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, getOrganizations, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
-import type { Product, GalleryImage, Organization } from '@/types';
+import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, getOrganizations, getVideos, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
+import type { Product, GalleryImage, Organization, Video } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
@@ -51,6 +51,7 @@ export default function Home() {
   const [galleryLoading, setGalleryLoading] = useState(true)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [organizations, setOrganizations] = useState<Organization[]>([])
+  const [introVideo, setIntroVideo] = useState<Video | null>(null)
   const [billDownloadCount, setBillDownloadCount] = useState(0)
   const [contactOpen, setContactOpen] = useState(false)
   const [affiliateJoinModalOpen, setAffiliateJoinModalOpen] = useState(false)
@@ -137,6 +138,20 @@ export default function Home() {
       }
     }
     loadOrganizations()
+  }, [])
+
+  useEffect(() => {
+    const loadIntroVideo = async () => {
+      try {
+        const videos = await getVideos(true)
+        if (!videos.length) return
+        const featured = videos.find((video) => video.isFeatured) || videos[0]
+        setIntroVideo(featured)
+      } catch (error) {
+        console.error('Error loading intro video:', error)
+      }
+    }
+    loadIntroVideo()
   }, [])
 
   // Responsive products per view: 1 on mobile, 2 on tablet, 4 on desktop
@@ -268,6 +283,43 @@ export default function Home() {
 
         {/* Countdown Section */}
         <CountdownBanner />
+
+        {/* YouTube Intro Video */}
+        <section className="bg-slate-50 py-12 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mb-4 text-center sm:mb-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Watch</p>
+            </div>
+            {introVideo?.youtubeVideoId ? (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg">
+                <div className="aspect-video w-full">
+                  <iframe
+                    className="h-full w-full"
+                    src={`https://www.youtube.com/embed/${introVideo.youtubeVideoId}?rel=0`}
+                    title={introVideo.title || 'DCP YouTube Intro Video'}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+                <p className="text-sm text-slate-600 sm:text-base">
+                  No intro video is published yet.
+                </p>
+                <a
+                  href="https://youtube.com/@defendtheconstitutionplatform"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+                >
+                  Visit YouTube Channel
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* National Referendum Declaration */}
         <section id="updates" className="bg-white py-16 sm:py-20 border-b border-slate-200">
