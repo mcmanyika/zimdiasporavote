@@ -575,6 +575,20 @@ function PartyLandingContent() {
             </div>
           </div>
         </div>
+        <div className="relative border-t border-white/10 bg-black/90">
+          <div className="mx-auto max-w-7xl px-4 py-4 text-center text-[10px] text-white/80 sm:px-6 sm:text-xs">
+            <p>&copy; 2026 Defend the Constitution Platform. All rights reserved.</p>
+            <p className="mt-1">
+              <Link href="/privacy" className="hover:text-white">
+                Privacy Policy
+              </Link>
+              <span className="mx-1">·</span>
+              <Link href="/terms" className="hover:text-white">
+                Terms of Service
+              </Link>
+            </p>
+          </div>
+        </div>
       </section>
       <DonationModal
         isOpen={donationModalOpen}
