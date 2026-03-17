@@ -275,7 +275,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
             <>
               <Link
                 href="/login"
-                className="hidden rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors sm:px-4 sm:py-2 sm:text-sm md:inline-flex"
+                className="inline-flex rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors sm:px-4 sm:py-2 sm:text-sm"
               >
                 Sign In
               </Link>

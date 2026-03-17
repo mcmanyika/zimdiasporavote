@@ -36,7 +36,6 @@ const fallbackQuickLinks: FooterLinkItem[] = [
 const fallbackMoreLinks: FooterLinkItem[] = [
   { id: 'footer-more-shop', label: 'Shop', url: '/shop', order: 1 },
   { id: 'footer-more-articles', label: 'Articles', url: '/news', order: 2 },
-  { id: 'footer-more-bill-proposals', label: 'Bill Proposals', url: '/bill-proposals', order: 3 },
   { id: 'footer-more-videos', label: 'Videos', url: '/videos', order: 4 },
   { id: 'footer-more-twitter-live', label: 'Twitter Live', url: '/twitter-live', order: 5 },
   { id: 'footer-more-contact', label: 'Contact', url: '/#contact', order: 6 },

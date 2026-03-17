@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendCustomEmail } from '@/lib/email'
-import { createEmailLog, createPartyInterestSubmission } from '@/lib/firebase/firestore'
+import { createEmailLog } from '@/lib/firebase/firestore'
+import { createPartyInterestSubmission } from '@/features/party'
 import { getAdminDb } from '@/lib/firebase/admin'
 
 function parseRecipients(): string[] {

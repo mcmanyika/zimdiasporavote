@@ -15,15 +15,21 @@ import {
   updatePartyEvent,
   updatePartyInterestSubmission,
   upsertPartyLandingContent,
-} from '@/lib/firebase/firestore'
-import type { PartyEvent, PartyInterestStatus, PartyInterestSubmission } from '@/types'
+} from '@/features/party'
+import type { PartyEvent, PartyInterestStatus, PartyInterestSubmission } from '@/features/party'
 
 const submissionStatuses: PartyInterestStatus[] = ['new', 'contacted', 'converted', 'archived']
+const defaultHeroStats = [
+  { label: 'Legislation Passed', value: '1,369' },
+  { label: 'Donors', value: '12,000' },
+  { label: 'Fund Raised', value: '$85 M' },
+  { label: 'Volunteers', value: '30,000' },
+]
 
 export default function AdminPartyPage() {
   return (
     <ProtectedRoute>
-      <AdminRoute>
+      <AdminRoute minAccessLevel={5}>
         <div className="min-h-screen bg-slate-50">
           <div className="border-b bg-white">
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -60,6 +66,7 @@ function PartyContentEditor() {
     mission: '',
     vision: '',
     principlesText: '',
+    heroStats: defaultHeroStats.map((item) => ({ ...item })),
     callToActionText: '',
     isPublished: true,
   })
@@ -70,6 +77,11 @@ function PartyContentEditor() {
         setLoading(true)
         const landing = await getPartyLandingContent()
         if (landing) {
+          const heroStats = (landing.heroStats || []).slice(0, 4)
+          const normalizedHeroStats = defaultHeroStats.map((fallback, idx) => ({
+            label: heroStats[idx]?.label || fallback.label,
+            value: heroStats[idx]?.value || fallback.value,
+          }))
           setFormData({
             pageTitle: landing.pageTitle || '',
             heroTitle: landing.heroTitle || '',
@@ -78,6 +90,7 @@ function PartyContentEditor() {
             mission: landing.mission || '',
             vision: landing.vision || '',
             principlesText: (landing.principles || []).join('\n'),
+            heroStats: normalizedHeroStats,
             callToActionText: landing.callToActionText || '',
             isPublished: landing.isPublished !== false,
           })
@@ -100,6 +113,10 @@ function PartyContentEditor() {
         .split('\n')
         .map((line) => line.trim())
         .filter(Boolean)
+      const heroStats = defaultHeroStats.map((fallback, idx) => ({
+        label: formData.heroStats[idx]?.label?.trim() || fallback.label,
+        value: formData.heroStats[idx]?.value?.trim() || fallback.value,
+      }))
 
       await upsertPartyLandingContent({
         pageTitle: formData.pageTitle.trim(),
@@ -109,6 +126,7 @@ function PartyContentEditor() {
         mission: formData.mission.trim(),
         vision: formData.vision.trim(),
         principles,
+        heroStats,
         callToActionText: formData.callToActionText.trim() || undefined,
         isPublished: formData.isPublished,
         updatedBy: user?.uid || undefined,
@@ -122,6 +140,14 @@ function PartyContentEditor() {
   }
 
   const inputClass = 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm'
+  const updateHeroStat = (index: number, key: 'label' | 'value', value: string) => {
+    setFormData((prev) => {
+      const next = prev.heroStats.map((item, idx) =>
+        idx === index ? { ...item, [key]: value } : item
+      )
+      return { ...prev, heroStats: next }
+    })
+  }
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -153,6 +179,29 @@ function PartyContentEditor() {
           </Field>
           <Field label="Call To Action" className="md:col-span-2">
             <input value={formData.callToActionText} onChange={(e) => setFormData({ ...formData, callToActionText: e.target.value })} className={inputClass} />
+          </Field>
+          <Field label="Hero Stats" className="md:col-span-2">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {formData.heroStats.map((item, index) => (
+                <div key={`${index}-${item.label}`} className="rounded-lg border border-slate-200 p-3">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Stat {index + 1}</p>
+                  <div className="space-y-2">
+                    <input
+                      value={item.label}
+                      onChange={(e) => updateHeroStat(index, 'label', e.target.value)}
+                      placeholder="Label"
+                      className={inputClass}
+                    />
+                    <input
+                      value={item.value}
+                      onChange={(e) => updateHeroStat(index, 'value', e.target.value)}
+                      placeholder="Value"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </Field>
           <label className="md:col-span-2 flex items-center gap-2 text-sm text-slate-700">
             <input type="checkbox" checked={formData.isPublished} onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })} />

@@ -1,8 +1,13 @@
 'use client'
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { getPartyEvents, getPartyLandingContent } from '@/lib/firebase/firestore'
-import type { PartyEvent, PartyLandingContent } from '@/types'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import Link from 'next/link'
+import ProtectedRoute from '@/app/components/ProtectedRoute'
+import AdminRoute from '@/app/components/AdminRoute'
+import DonationModal from '@/app/components/DonationModal'
+import { getPartyEvents, getPartyLandingContent } from '@/features/party'
+import type { PartyEvent, PartyHeroStat, PartyLandingContent } from '@/features/party'
+import { useAuth } from '@/contexts/AuthContext'
 
 const roleOptions = [
   'Member',
@@ -50,12 +55,45 @@ const issueShowcase = [
     title: 'Legislative Efforts',
     description:
       'We’ve helped build the small-donor membership base of some of the best and biggest groups through millions of one-on-one conversations with supporters across the country. We prioritize quality civic engagement in every campaign.',
-    image:
-      'https://vox-populi.bold-themes.com/grassroot/wp-content/uploads/sites/4/2019/03/case_study_2.jpg',
+    image: '/images/parliament.png',
     cta: 'VIEW MORE',
   },
 ]
-const heroNavItems = ['Home', 'About', 'Contribute', 'News', 'Shop', 'Elements']
+const heroNavItems = ['About', 'Contribute', 'News', 'Shop']
+const partyFooterQuickLinks = [
+  { label: 'Vision', href: '/party' },
+  { label: 'Leadership Nominations', href: '/dashboard/party-nominations' },
+  { label: 'Vote for Candidates', href: '/dashboard/party-nominations' },
+  { label: 'Join the Movement', href: '/membership-application' },
+  { label: 'Events', href: '/party' },
+  { label: 'Volunteer Network', href: '/volunteer' },
+]
+const partyFooterMoreLinks = [
+  { label: 'Policy Priorities', href: '/party' },
+  { label: 'Provincial Structures', href: '/party' },
+  { label: 'Youth Wing', href: '/dashboard/youth' },
+  { label: 'Women’s Wing', href: '/party' },
+  { label: 'Manifesto', href: '/party' },
+  { label: 'Campaign Updates', href: '/news' },
+]
+const partyFooterUsefulLinks = [
+  { label: 'Parliament of Zimbabwe', href: 'https://www.parlzim.gov.zw/', external: true },
+  { label: 'Public Hearings', href: '/public-hearings' },
+  { label: 'Electoral Commission (ZEC)', href: 'https://www.zec.org.zw/', external: true },
+  { label: 'Constitution of Zimbabwe', href: 'https://www.veritaszim.net/node/318', external: true },
+]
+const partyFooterSocialLinks = [
+  { label: 'X (Party Updates)', href: 'https://x.com/DCPlatform25' },
+  { label: 'Facebook (Community)', href: 'https://www.facebook.com/share/1C4G3L4eka/' },
+  { label: 'YouTube (Live & Briefings)', href: 'https://youtube.com/@defendtheconstitutionplatform' },
+  { label: 'WhatsApp Channel', href: 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z' },
+]
+const defaultHeroStats: PartyHeroStat[] = [
+  { label: 'Legislation Passed', value: '1,369' },
+  { label: 'Donors', value: '12,000' },
+  { label: 'Fund Raised', value: '$85 M' },
+  { label: 'Volunteers', value: '30,000' },
+]
 
 const defaultContent: PartyLandingContent = {
   id: 'landing',
@@ -71,6 +109,7 @@ const defaultContent: PartyLandingContent = {
     'Non-violence, dignity, and equal rights',
     'Evidence-based policy and service delivery',
   ],
+  heroStats: defaultHeroStats,
   callToActionText: 'Register your interest to join, organize, or support the party launch.',
   isPublished: true,
   createdAt: new Date(),
@@ -78,6 +117,19 @@ const defaultContent: PartyLandingContent = {
 }
 
 export default function PartyLandingPage() {
+  return (
+    <ProtectedRoute>
+      <AdminRoute minAccessLevel={5}>
+        <PartyLandingContent />
+      </AdminRoute>
+    </ProtectedRoute>
+  )
+}
+
+function PartyLandingContent() {
+  const { user, userProfile, logout, loading: authLoading } = useAuth()
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef<HTMLDivElement>(null)
   const [scrollY, setScrollY] = useState(0)
   const [content, setContent] = useState<PartyLandingContent>(defaultContent)
   const [events, setEvents] = useState<PartyEvent[]>([])
@@ -85,6 +137,7 @@ export default function PartyLandingPage() {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submittedId, setSubmittedId] = useState('')
+  const [donationModalOpen, setDonationModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -130,6 +183,18 @@ export default function PartyLandingPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setAccountMenuOpen(false)
+      }
+    }
+    if (accountMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [accountMenuOpen])
+
   const sortedEvents = useMemo(
     () =>
       [...events].sort(
@@ -137,6 +202,12 @@ export default function PartyLandingPage() {
       ),
     [events]
   )
+  const heroStats = useMemo(() => {
+    const fromDb = content.heroStats || []
+    const fallback = defaultHeroStats
+    return (fromDb.length ? fromDb : fallback).slice(0, 4)
+  }, [content.heroStats])
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setSubmitting(true)
@@ -168,6 +239,14 @@ export default function PartyLandingPage() {
     }
   }
 
+  const openDonationModal = () => {
+    setDonationModalOpen(true)
+  }
+
+  const closeDonationModal = () => {
+    setDonationModalOpen(false)
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="relative min-h-screen overflow-hidden bg-[#0f56d9] text-white">
@@ -183,8 +262,7 @@ export default function PartyLandingPage() {
         <div className="relative flex min-h-screen flex-col">
           <div className="border-b border-white/20">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-blue-100 sm:px-6">
-              <p>Call Us: (+263) 000-0000</p>
-              <p className="hidden sm:block">Visit Us: Great Zimbabwe, Masvingo</p>
+              <p>Call Us: (+263) 71 876 5864</p>
               <p>Follow us</p>
             </div>
           </div>
@@ -198,9 +276,66 @@ export default function PartyLandingPage() {
                 </a>
               ))}
             </nav>
-            <a href="#join-party" className="rounded-full bg-rose-600 px-5 py-2 text-sm font-bold uppercase tracking-wide hover:bg-rose-500">
-              Donate
-            </a>
+            <div className="flex items-center gap-2">
+              {authLoading ? (
+                <span className="rounded-full border border-white/25 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/70 sm:text-sm">
+                  Loading...
+                </span>
+              ) : user ? (
+                <div className="relative" ref={accountMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setAccountMenuOpen((prev) => !prev)}
+                    className="flex max-w-[180px] items-center gap-2 rounded-full border border-white/45 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 sm:max-w-[220px] sm:text-sm"
+                  >
+                    <span className="truncate">{userProfile?.name || user.email?.split('@')[0] || 'Account'}</span>
+                    <svg
+                      className={`h-3.5 w-3.5 transition-transform ${accountMenuOpen ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m19 9-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {accountMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg">
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="block px-4 py-2.5 text-sm font-medium text-white/95 hover:bg-white/10"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountMenuOpen(false)
+                          void logout()
+                        }}
+                        className="block w-full px-4 py-2.5 text-left text-sm font-medium text-white/95 hover:bg-white/10"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="rounded-full border border-white/45 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:bg-white/10 sm:text-sm"
+                >
+                  Sign In
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={openDonationModal}
+                className="rounded-full bg-rose-600 px-5 py-2 text-sm font-bold uppercase tracking-wide hover:bg-rose-500"
+              >
+                Donate
+              </button>
+            </div>
           </div>
 
           <div className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2">
@@ -270,10 +405,9 @@ export default function PartyLandingPage() {
 
           <div className="border-t border-white/25">
             <div className="mx-auto grid max-w-7xl gap-0 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
-              <StatCard label="Legislation Passed" value="1,369" />
-              <StatCard label="Donors" value="12,000" />
-              <StatCard label="Fund Raised" value="$85 M" />
-              <StatCard label="Volunteers" value="30,000" />
+              {heroStats.map((stat) => (
+                <StatCard key={`${stat.label}-${stat.value}`} label={stat.label} value={stat.value} />
+              ))}
             </div>
           </div>
         </div>
@@ -296,7 +430,7 @@ export default function PartyLandingPage() {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="h-[230px] w-full rounded-xl object-cover shadow-md sm:h-[280px]"
+                    className="h-[230px] w-full rounded-xl object-cover shadow-md transition-transform duration-500 hover:scale-[1.03] sm:h-[280px]"
                     loading="lazy"
                   />
                 </div>
@@ -349,7 +483,7 @@ export default function PartyLandingPage() {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-[230px] w-full rounded-lg object-cover shadow-md sm:h-[290px]"
+                  className="h-[230px] w-full rounded-lg object-cover shadow-md transition-transform duration-500 hover:scale-[1.03] sm:h-[290px]"
                   loading="lazy"
                 />
                 <h3 className="mt-5 text-4xl font-extrabold text-slate-900">{item.title}</h3>
@@ -366,23 +500,88 @@ export default function PartyLandingPage() {
         </div>
       </section>
 
-      <section className="relative mt-10 min-h-[620px] overflow-hidden bg-[#0f56d9] text-white sm:min-h-[720px]">
+      <section className="relative mt-10 min-h-[320px] overflow-hidden bg-[#0f56d9] text-white sm:min-h-[380px]">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-35"
+          className="absolute inset-0 bg-cover bg-top bg-fixed opacity-35"
           style={{ backgroundImage: "url('/images/party/the_people.png')" }}
         />
-        <div className="absolute inset-0 bg-[#0f56d9]/80" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.62),rgba(15,86,217,0.56))]" />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="text-center text-xs font-bold uppercase tracking-wider text-blue-100">Let's Work Together</p>
           <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@dcpzim.com</h3>
           <div className="mt-8 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
             <div><p className="font-bold">WORKING HOURS</p><p className="text-blue-100">Mon - Sat 8.00 - 18.00</p></div>
-            <div><p className="font-bold">LOCATION</p><p className="text-blue-100">Great Zimbabwe, Masvingo</p></div>
-            <div><p className="font-bold">CALL CENTER</p><p className="text-blue-100">+263 000 000 000</p></div>
+            <div><p className="font-bold">LOCATION</p><p className="text-blue-100">Harare, Zimbabwe</p></div>
+            <div><p className="font-bold">CALL US:</p><p className="text-blue-100">(+263) 71 876 5864</p></div>
             <div><p className="font-bold">EMAIL</p><p className="text-blue-100">office@dcpzim.com</p></div>
+          </div>
+
+          <div className="mt-8 border-t border-white/20 pt-6">
+            <div className="grid gap-6 text-sm md:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <p className="mb-2 font-bold">Quick Links</p>
+                <ul className="space-y-1 text-blue-100">
+                  {partyFooterQuickLinks.map((item) => (
+                    <li key={item.label}>
+                      <Link href={item.href} className="hover:text-white">
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="mb-2 font-bold">More</p>
+                <ul className="space-y-1 text-blue-100">
+                  {partyFooterMoreLinks.map((item) => (
+                    <li key={item.label}>
+                      <Link href={item.href} className="hover:text-white">
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="mb-2 font-bold">Useful Links</p>
+                <ul className="space-y-1 text-blue-100">
+                  {partyFooterUsefulLinks.map((item) => (
+                    <li key={item.label}>
+                      {item.external ? (
+                        <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link href={item.href} className="hover:text-white">
+                          {item.label}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="mb-2 font-bold">Follow Us</p>
+                <ul className="space-y-1 text-blue-100">
+                  {partyFooterSocialLinks.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+      <DonationModal
+        isOpen={donationModalOpen}
+        onClose={closeDonationModal}
+        variant="drawer-right"
+        description="Donations will support party mobilisation, candidate development, and grassroots organising across Zimbabwe."
+      />
     </main>
   )
 }

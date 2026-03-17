@@ -4,9 +4,16 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
-export default function AdminRoute({ children }: { children: React.ReactNode }) {
+export default function AdminRoute({
+  children,
+  minAccessLevel = 1,
+}: {
+  children: React.ReactNode
+  minAccessLevel?: number
+}) {
   const { user, userProfile, loading } = useAuth()
   const router = useRouter()
+  const hasRequiredAccess = (userProfile?.accessLevel || 1) >= minAccessLevel
 
   useEffect(() => {
     if (!loading) {
@@ -14,9 +21,11 @@ export default function AdminRoute({ children }: { children: React.ReactNode }) 
         router.push('/login')
       } else if (userProfile?.role !== 'admin') {
         router.push('/dashboard')
+      } else if (!hasRequiredAccess) {
+        router.push('/dashboard')
       }
     }
-  }, [user, userProfile, loading, router])
+  }, [user, userProfile, loading, hasRequiredAccess, router])
 
   if (loading) {
     return (
@@ -29,7 +38,7 @@ export default function AdminRoute({ children }: { children: React.ReactNode }) 
     )
   }
 
-  if (!user || userProfile?.role !== 'admin') {
+  if (!user || userProfile?.role !== 'admin' || !hasRequiredAccess) {
     return null
   }
 

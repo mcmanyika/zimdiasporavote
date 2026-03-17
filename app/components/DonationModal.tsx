@@ -7,9 +7,17 @@ interface DonationModalProps {
   isOpen: boolean
   onClose: () => void
   initialMessage?: string
+  variant?: 'center' | 'drawer-right'
+  description?: string
 }
 
-export default function DonationModal({ isOpen, onClose, initialMessage = '' }: DonationModalProps) {
+export default function DonationModal({
+  isOpen,
+  onClose,
+  initialMessage = '',
+  variant = 'center',
+  description = 'Donations will help oppose 2030 Agenda and campaign for implementation of Constitution',
+}: DonationModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -27,8 +35,10 @@ export default function DonationModal({ isOpen, onClose, initialMessage = '' }: 
 
   if (!isOpen) return null
 
+  const isDrawer = variant === 'drawer-right'
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className={`fixed inset-0 z-50 flex ${isDrawer ? 'items-stretch justify-end' : 'items-center justify-center p-4'}`}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -36,13 +46,19 @@ export default function DonationModal({ isOpen, onClose, initialMessage = '' }: 
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+      <div
+        className={`relative z-10 bg-white shadow-2xl ${
+          isDrawer
+            ? 'h-full w-[30%] max-w-none animate-in slide-in-from-right duration-300'
+            : 'w-full max-w-2xl rounded-2xl'
+        }`}
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-2xl font-bold">Make a Donation</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Donations will help oppose 2030 Agenda and campaign for implementation of Constitution
+              {description}
             </p>
           </div>
           <button
@@ -67,7 +83,7 @@ export default function DonationModal({ isOpen, onClose, initialMessage = '' }: 
         </div>
 
         {/* Content */}
-        <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-6">
+        <div className={`${isDrawer ? 'h-[calc(100vh-88px)]' : 'max-h-[calc(100vh-200px)]'} overflow-y-auto p-6`}>
           <DonationForm onSuccess={handleSuccess} initialMessage={initialMessage} />
         </div>
       </div>

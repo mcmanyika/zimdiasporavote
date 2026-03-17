@@ -559,55 +559,18 @@ export interface PublicHearing {
   updatedAt: Timestamp | Date
 }
 
-export interface PartyLandingContent {
-  id: string
-  pageTitle: string
-  heroTitle: string
-  heroSubtitle: string
-  foundingStatement: string
-  mission: string
-  vision: string
-  principles: string[]
-  callToActionText?: string
-  isPublished: boolean
-  createdAt: Timestamp | Date
-  updatedAt: Timestamp | Date
-  updatedBy?: string
-}
-
-export interface PartyEvent {
-  id: string
-  title: string
-  description?: string
-  province: string
-  location: string
-  eventDate: Timestamp | Date
-  startTime?: string
-  endTime?: string
-  registrationUrl?: string
-  isPublished: boolean
-  createdBy?: string
-  createdAt: Timestamp | Date
-  updatedAt: Timestamp | Date
-}
-
-export type PartyInterestStatus = 'new' | 'contacted' | 'converted' | 'archived'
-
-export interface PartyInterestSubmission {
-  id: string
-  fullName: string
-  email: string
-  phone: string
-  province: string
-  district?: string
-  roleInterest: string
-  message: string
-  status: PartyInterestStatus
-  reviewedBy?: string
-  reviewNotes?: string
-  createdAt: Timestamp | Date
-  updatedAt: Timestamp | Date
-}
+export type {
+  PartyLandingContent,
+  PartyEvent,
+  PartyPositionType,
+  PartyNominationType,
+  PartyNominationStatus,
+  PartyLeadershipNomination,
+  PartyLeadershipVote,
+  PartyLeadershipVotingConfig,
+  PartyInterestStatus,
+  PartyInterestSubmission,
+} from '@/features/party/types'
 
 // Referral types
 export type ReferralStatus = 'signed_up' | 'applied' | 'paid'

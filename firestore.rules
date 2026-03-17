@@ -340,6 +340,70 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Political Party nominations voting configuration
+    match /partyLeadershipVotingConfig/{configId} {
+      // Members need read access to know whether nominations/voting are open
+      allow read: if true;
+      // Admins manage configuration
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Political Party leadership nominations
+    match /partyLeadershipNominations/{nominationId} {
+      // Public can read approved/finalized nominees for voting and results
+      allow read: if resource.data.status in ['approved_for_voting', 'shortlisted', 'final_selected'];
+      // Nominee owner can read own submission
+      allow read: if isAuthenticated() && resource.data.submittedByUserId == request.auth.uid;
+      // Admins can read all nominations
+      allow read: if isAdmin();
+
+      // Authenticated members can submit nominations
+      allow create: if isAuthenticated() &&
+                    request.resource.data.submittedByUserId == request.auth.uid &&
+                    request.resource.data.status == 'submitted' &&
+                    request.resource.data.positionType in ['council', 'mp', 'senator'] &&
+                    request.resource.data.nominationType in ['self', 'other'] &&
+                    request.resource.data.electionCycle is string &&
+                    request.resource.data.nomineeName is string &&
+                    request.resource.data.nomineeName.size() > 0 &&
+                    request.resource.data.province is string &&
+                    request.resource.data.province.size() > 0 &&
+                    request.resource.data.areaLabel is string &&
+                    request.resource.data.areaLabel.size() > 0 &&
+                    request.resource.data.motivation is string &&
+                    request.resource.data.motivation.size() > 0;
+
+      // Allow members to increment/decrement vote totals during voting
+      allow update: if isAuthenticated() &&
+                    resource.data.status == 'approved_for_voting' &&
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votesCount', 'updatedAt']) &&
+                    (request.resource.data.votesCount == resource.data.votesCount + 1 ||
+                     request.resource.data.votesCount == resource.data.votesCount - 1);
+
+      // Admins manage nomination statuses and review
+      allow update, delete: if isAdmin();
+    }
+
+    // Political Party leadership votes
+    match /partyLeadershipVotes/{voteId} {
+      // Members can read their own votes; admins can read all
+      allow read: if isAuthenticated() && resource.data.voterUserId == request.auth.uid;
+      allow read: if isAdmin();
+
+      // Authenticated members can cast votes for themselves only
+      allow create: if isAuthenticated() &&
+                    request.resource.data.voterUserId == request.auth.uid &&
+                    request.resource.data.positionType in ['council', 'mp', 'senator'] &&
+                    request.resource.data.nominationId is string &&
+                    request.resource.data.nominationId.size() > 0 &&
+                    request.resource.data.electionCycle is string &&
+                    request.resource.data.electionCycle.size() > 0;
+
+      // Members can remove their own vote; admins can delete any
+      allow delete: if isAuthenticated() && resource.data.voterUserId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
     // Banners collection
     match /banners/{bannerId} {
       // Everyone can read active banners (for the hero section)
@@ -475,6 +539,14 @@ service cloud.firestore {
       // Public website/forms can read active country codes
       allow read: if true;
       // Admins manage country codes
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Provinces collection (location dropdowns)
+    match /provinces/{provinceId} {
+      // Public website/forms can read active provinces
+      allow read: if true;
+      // Admins manage provinces
       allow create, update, delete: if isAdmin();
     }
 

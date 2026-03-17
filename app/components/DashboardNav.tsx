@@ -165,6 +165,7 @@ const accountItems: NavItem[] = [
   { href: '/dashboard/membership', label: 'Membership', icon: <IconStar />, description: 'Plan & billing' },
   { href: '/dashboard/membership-card', label: 'My Card', icon: <IconCreditCard />, description: 'View & print card' },
   { href: '/dashboard/referrals', label: 'Referrals', icon: <IconShare />, description: 'Invite friends & track' },
+  { href: '/dashboard/party-nominations', label: 'Nominations', icon: <IconClipboard />, description: 'Nominate and vote for candidates' },
   { href: '/dashboard/youth', label: 'Youth Hub', icon: <IconRocket />, description: 'Actions, missions & growth' },
   { href: '/dashboard/volunteer', label: 'Volunteer', icon: <IconHandRaised />, description: 'Volunteer status' },
   { href: '/dashboard/resources', label: 'Resources', icon: <IconBook />, description: 'Guides & materials' },
@@ -193,6 +194,7 @@ const adminContentItems: NavItem[] = [
   { href: '/dashboard/admin/bill-proposals', label: 'Bill Proposals', icon: <IconClipboard />, description: 'Review and publish drafts' },
   { href: '/dashboard/admin/public-hearings', label: 'Public Hearings', icon: <IconClipboard />, description: 'Schedule and publish hearings' },
   { href: '/dashboard/admin/party', label: 'Political Party', icon: <IconClipboard />, description: 'Manage party launch module' },
+  { href: '/dashboard/admin/party-nominations', label: 'Party Nominations', icon: <IconClipboard />, description: 'Review nominations and voting' },
   { href: '/dashboard/admin/banners', label: 'Banners', icon: <IconFlag />, description: 'Hero banners' },
   { href: '/dashboard/admin/gallery', label: 'Gallery', icon: <IconPhoto />, description: 'Image gallery' },
   { href: '/dashboard/admin/leadership', label: 'Leadership', icon: <IconUserGroup />, description: 'Leadership team' },
@@ -250,6 +252,14 @@ export default function DashboardNav() {
   const [megaOpen, setMegaOpen] = useState(false)
   const navRef = useRef<HTMLDivElement>(null)
 
+  // Filter account items based on role/access level
+  const filteredAccountItems = accountItems.filter((item) => {
+    if (item.href === '/dashboard/party-nominations') {
+      return isAdmin && accessLevel >= 5
+    }
+    return true
+  })
+
   // Filter admin manage items based on access level
   const filteredManageItems = adminManageItems.filter((item) => {
     if (item.href === '/dashboard/admin/donations' && accessLevel < 5) return false
@@ -260,12 +270,14 @@ export default function DashboardNav() {
   // Filter admin content items based on access level
   const filteredContentItems = adminContentItems.filter((item) => {
     if (item.href === '/dashboard/admin/petitions' && accessLevel < 5) return false
+    if (item.href === '/dashboard/admin/party' && accessLevel < 5) return false
+    if (item.href === '/dashboard/admin/party-nominations' && accessLevel < 5) return false
     return true
   })
 
   const allItems = isAdmin
-    ? [...accountItems, ...filteredContentItems, ...filteredManageItems]
-    : accountItems
+    ? [...filteredAccountItems, ...filteredContentItems, ...filteredManageItems]
+    : filteredAccountItems
   const activeItem = allItems.find(item => item.href === pathname)
   const activeLabel = activeItem?.label || 'Dashboard'
 
@@ -362,7 +374,7 @@ export default function DashboardNav() {
                         My Account
                       </h3>
                       <div className="space-y-0.5">
-                        {accountItems.map((item) => {
+                        {filteredAccountItems.map((item) => {
                           const isActive = pathname === item.href
                           return (
                             <Link key={item.href} href={item.href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${isActive ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-50'}`}>
@@ -459,7 +471,7 @@ export default function DashboardNav() {
                   /* ===== NON-ADMIN: spread account items across 4 columns ===== */
                   <>
                     {[0, 1, 2, 3].map((colIdx) => {
-                      const colItems = accountItems.filter((_, i) => i % 4 === colIdx)
+                      const colItems = filteredAccountItems.filter((_, i) => i % 4 === colIdx)
                       return (
                         <div key={colIdx}>
                           {colIdx === 0 && (
