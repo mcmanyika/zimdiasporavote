@@ -59,9 +59,10 @@ const issueShowcase = [
     cta: 'VIEW MORE',
   },
 ]
-const heroNavItems = ['About', 'Contribute', 'News', 'Shop']
+const heroNavItems = ['About', 'News', 'Shop']
 const partyFooterQuickLinks = [
   { label: 'Vision', href: '/party' },
+  { label: 'Nominated Candidates', href: '/nominated-candidates' },
   { label: 'Leadership Nominations', href: '/dashboard/party-nominations' },
   { label: 'Vote for Candidates', href: '/dashboard/party-nominations' },
   { label: 'Join the Movement', href: '/membership-application' },
