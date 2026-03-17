@@ -111,7 +111,7 @@ const defaultContent: PartyLandingContent = {
     'Evidence-based policy and service delivery',
   ],
   heroStats: defaultHeroStats,
-  callToActionText: 'Register your interest to join, organize, or support the party launch.',
+  callToActionText: 'Register your interest to join, organize, or support the platform activities.',
   isPublished: true,
   createdAt: new Date(),
   updatedAt: new Date(),

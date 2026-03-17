@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import AdminRoute from '@/app/components/AdminRoute'
 import DashboardNav from '@/app/components/DashboardNav'
@@ -49,6 +50,7 @@ function formatDate(date: Date | any): string {
 }
 
 export default function PetitionSignaturesPage() {
+  const router = useRouter()
   const [petitions, setPetitions] = useState<Petition[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -376,8 +378,25 @@ export default function PetitionSignaturesPage() {
                     </div>
 
                     {/* Signatures Over Time */}
-                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                      <h3 className="mb-4 text-sm font-bold text-slate-900">Signatures Over Time</h3>
+                    <div
+                      className="cursor-pointer rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
+                      onClick={() => {
+                        const qs = selectedPetition !== 'all' ? `?petition=${encodeURIComponent(selectedPetition)}` : ''
+                        router.push(`/dashboard/admin/petition-signatures/daily${qs}`)
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          const qs = selectedPetition !== 'all' ? `?petition=${encodeURIComponent(selectedPetition)}` : ''
+                          router.push(`/dashboard/admin/petition-signatures/daily${qs}`)
+                        }
+                      }}
+                      aria-label="Open daily signature breakdown page"
+                    >
+                      <h3 className="mb-1 text-sm font-bold text-slate-900">Signatures Over Time</h3>
+                      <p className="mb-3 text-xs text-slate-500">Click to view daily breakdown</p>
                       <div className="h-48">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={signaturesOverTime}>

@@ -67,7 +67,7 @@ function PartyContentEditor() {
     vision: '',
     principlesText: '',
     heroStats: defaultHeroStats.map((item) => ({ ...item })),
-    callToActionText: '',
+    callToActionText: 'Register your interest to join, organize, or support the platform activities.',
     isPublished: true,
   })
 
