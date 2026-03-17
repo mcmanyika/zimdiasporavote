@@ -183,7 +183,7 @@ function PartyContentEditor() {
           <Field label="Hero Stats" className="md:col-span-2">
             <div className="grid gap-3 sm:grid-cols-2">
               {formData.heroStats.map((item, index) => (
-                <div key={`${index}-${item.label}`} className="rounded-lg border border-slate-200 p-3">
+                <div key={`hero-stat-${index}`} className="rounded-lg border border-slate-200 p-3">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Stat {index + 1}</p>
                   <div className="space-y-2">
                     <input
