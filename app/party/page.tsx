@@ -83,7 +83,7 @@ const partyFooterUsefulLinks = [
   { label: 'Constitution of Zimbabwe', href: 'https://www.veritaszim.net/node/318', external: true },
 ]
 const partyFooterSocialLinks = [
-  { label: 'X (Party Updates)', href: 'https://x.com/DCPlatform25' },
+  { label: 'X (Platform Updates)', href: 'https://x.com/DCPlatform25' },
   { label: 'Facebook (Community)', href: 'https://www.facebook.com/share/1C4G3L4eka/' },
   { label: 'YouTube (Live & Briefings)', href: 'https://youtube.com/@defendtheconstitutionplatform' },
   { label: 'WhatsApp Channel', href: 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z' },
