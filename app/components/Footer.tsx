@@ -176,12 +176,12 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="border-t bg-slate-900 text-white">
+    <footer className="border-t border-blue-900/60 bg-blue-950 text-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
         <div className="grid gap-6 md:grid-cols-5">
           <div>
             <h3 className="mb-3 text-xs font-semibold">Get the App</h3>
-            <p className="mb-3 text-xs text-slate-400">
+            <p className="mb-3 text-xs text-blue-100/70">
               {appLink.description || 'Download our Android app for quick access.'}
             </p>
             <a
@@ -189,7 +189,7 @@ export default function Footer() {
               target={appLink.openInNewTab ? '_blank' : undefined}
               rel={appLink.openInNewTab ? 'noopener noreferrer' : undefined}
               download
-              className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-slate-900 hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-2 rounded-md bg-yellow-500 px-3 py-2 text-xs font-semibold text-slate-900 hover:bg-yellow-400 transition-colors"
             >
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.523 2.237a.625.625 0 0 0-.853.221l-1.09 1.837A7.628 7.628 0 0 0 12 3.5a7.628 7.628 0 0 0-3.58.795L7.33 2.458a.625.625 0 0 0-1.074.632l1.046 1.764A7.953 7.953 0 0 0 4 11h16a7.953 7.953 0 0 0-3.302-6.146l1.046-1.764a.625.625 0 0 0-.221-.853zM9 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM4 12v7a2 2 0 0 0 2 2h1v3a1.5 1.5 0 0 0 3 0v-3h4v3a1.5 1.5 0 0 0 3 0v-3h1a2 2 0 0 0 2-2v-7H4zm-2.5 0A1.5 1.5 0 0 0 0 13.5v5A1.5 1.5 0 0 0 3 18.5v-5A1.5 1.5 0 0 0 1.5 12zm21 0a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-1.5-1.5z" />
@@ -200,7 +200,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-3 text-xs font-semibold">Quick Links</h3>
-            <ul className="space-y-1.5 text-xs text-slate-400">
+            <ul className="space-y-1.5 text-xs text-blue-100/70">
               {quickLinks.map((link) => (
                 <li key={link.id}>
                   {isExternal(link.url) || link.openInNewTab ? (
@@ -208,12 +208,12 @@ export default function Footer() {
                       href={link.url}
                       target={link.openInNewTab ? '_blank' : undefined}
                       rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="hover:text-white transition-colors"
+                      className="hover:text-yellow-300 transition-colors"
                     >
                       {link.label}
                     </a>
                   ) : (
-                    <Link href={link.url} className="hover:text-white transition-colors">
+                    <Link href={link.url} className="hover:text-yellow-300 transition-colors">
                       {link.label}
                     </Link>
                   )}
@@ -224,7 +224,7 @@ export default function Footer() {
 
           <div>
             <div className="mb-3 h-4"></div>
-            <ul className="space-y-1.5 text-xs text-slate-400">
+            <ul className="space-y-1.5 text-xs text-blue-100/70">
               {moreLinks.map((link) => (
                 <li key={link.id}>
                   {isExternal(link.url) || link.openInNewTab ? (
@@ -232,12 +232,12 @@ export default function Footer() {
                       href={link.url}
                       target={link.openInNewTab ? '_blank' : undefined}
                       rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="hover:text-white transition-colors"
+                      className="hover:text-yellow-300 transition-colors"
                     >
                       {link.label}
                     </a>
                   ) : (
-                    <Link href={link.url} className="hover:text-white transition-colors">
+                    <Link href={link.url} className="hover:text-yellow-300 transition-colors">
                       {link.label}
                     </Link>
                   )}
@@ -248,7 +248,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-3 text-xs font-semibold">Useful Links</h3>
-            <ul className="space-y-1.5 text-xs text-slate-400">
+            <ul className="space-y-1.5 text-xs text-blue-100/70">
               {usefulLinks.map((link) => (
                 <li key={link.id}>
                   {isExternal(link.url) || link.openInNewTab ? (
@@ -256,12 +256,12 @@ export default function Footer() {
                       href={link.url}
                       target={link.openInNewTab ? '_blank' : undefined}
                       rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="hover:text-white transition-colors"
+                      className="hover:text-yellow-300 transition-colors"
                     >
                       {link.label}
                     </a>
                   ) : (
-                    <Link href={link.url} className="hover:text-white transition-colors">
+                    <Link href={link.url} className="hover:text-yellow-300 transition-colors">
                       {link.label}
                     </Link>
                   )}
@@ -272,7 +272,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-3 text-xs font-semibold">Follow Us</h3>
-            <p className="mb-3 text-xs text-slate-400">
+            <p className="mb-3 text-xs text-blue-100/70">
               Connect with us on social media.
             </p>
             <div className="flex items-center gap-3 flex-wrap">
@@ -282,7 +282,7 @@ export default function Footer() {
                   href={link.url}
                   target={link.openInNewTab !== false ? '_blank' : undefined}
                   rel={link.openInNewTab !== false ? 'noopener noreferrer' : undefined}
-                  className={`text-slate-400 transition-colors ${socialHoverClass(link.iconKey)}`}
+                  className={`text-blue-100/70 transition-colors ${socialHoverClass(link.iconKey)}`}
                   aria-label={link.label}
                 >
                   {renderSocialIcon(link.iconKey)}
@@ -292,12 +292,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-6 border-t border-slate-800 pt-4 text-center text-[10px] text-slate-400 sm:text-xs">
+        <div className="mt-6 border-t border-blue-900/60 pt-4 text-center text-[10px] text-blue-100/70 sm:text-xs">
           <p>&copy; {now.getFullYear()} Defend the Constitution Platform. All rights reserved.</p>
           <p className="mt-1">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/privacy" className="hover:text-yellow-300 transition-colors">Privacy Policy</Link>
             <span className="mx-1.5">·</span>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/terms" className="hover:text-yellow-300 transition-colors">Terms of Service</Link>
           </p>
         </div>
       </div>

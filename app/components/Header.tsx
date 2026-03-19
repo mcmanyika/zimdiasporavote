@@ -126,7 +126,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
 
   return (
     <header 
-      className={`fixed left-0 right-0 z-50 border-b border-slate-800 bg-black backdrop-blur-sm transition-all duration-500 ${
+      className={`fixed left-0 right-0 z-50 border-b border-blue-900/70 bg-blue-950 backdrop-blur-sm transition-all duration-500 ${
         isScrolled
           ? 'safe-top md:top-0 bottom-auto animate-slide-down'
           : 'safe-top bottom-auto md:bottom-0 md:top-auto'
@@ -162,7 +162,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                       window.location.href = '/#contact';
                     }
                   }}
-                  className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm"
+                  className="text-xs font-medium text-blue-100/80 hover:text-yellow-300 transition-colors sm:text-sm"
                 >
                   {link.label}
                 </button>
@@ -189,7 +189,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 href={link.url}
                 target={link.openInNewTab ? '_blank' : undefined}
                 rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                className="text-xs font-medium text-slate-300 hover:text-white transition-colors sm:text-sm"
+                className="text-xs font-medium text-blue-100/80 hover:text-yellow-300 transition-colors sm:text-sm"
               >
                 {link.label}
               </Link>
@@ -201,7 +201,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           {/* Cart Icon */}
           <Link
             href="/cart"
-            className="relative rounded-md p-1.5 text-white hover:bg-slate-800 transition-colors"
+            className="relative rounded-md p-1.5 text-white hover:bg-blue-900/60 transition-colors"
             aria-label="Shopping cart"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +219,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="hidden items-center gap-2 rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors sm:px-4 sm:py-2 sm:text-sm md:flex"
+                  className="hidden items-center gap-2 rounded-lg border border-blue-800/70 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-900/60 transition-colors sm:px-4 sm:py-2 sm:text-sm md:flex"
                 >
                   <span>{userProfile?.name || user.email?.split('@')[0] || 'Account'}</span>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,36 +227,36 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                   </svg>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-slate-800 bg-black shadow-lg">
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-blue-800/70 bg-blue-950 shadow-lg">
                     <div className="py-1">
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                       >
                         Dashboard
                       </Link>
                       <Link
                         href="/dashboard/profile"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                       >
                         Profile
                       </Link>
                       <Link
                         href="/dashboard/membership"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                       >
                         Membership
                       </Link>
-                      <hr className="my-1 border-slate-800" />
+                      <hr className="my-1 border-blue-800/70" />
                       <button
                         onClick={() => {
                           logout();
                           setUserMenuOpen(false);
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                        className="block w-full px-4 py-2 text-left text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                       >
                         Sign Out
                       </button>
@@ -266,7 +266,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
               </div>
               <button
                 onClick={handleDonateClick}
-                className="inline-flex rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-black hover:bg-slate-100 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-medium text-slate-900 hover:bg-yellow-400 transition-colors sm:px-4 sm:py-2 sm:text-sm"
               >
                 Donate
               </button>
@@ -275,13 +275,13 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
             <>
               <Link
                 href="/login"
-                className="inline-flex rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-lg border border-blue-800/70 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-900/60 transition-colors sm:px-4 sm:py-2 sm:text-sm"
               >
                 Sign In
               </Link>
               <button
                 onClick={handleDonateClick}
-                className="inline-flex rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-black hover:bg-slate-100 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-medium text-slate-900 hover:bg-yellow-400 transition-colors sm:px-4 sm:py-2 sm:text-sm"
               >
                 Donate
               </button>
@@ -291,7 +291,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="ml-2 inline-flex items-center justify-center rounded-lg p-2 text-white hover:bg-slate-800 md:hidden"
+            className="ml-2 inline-flex items-center justify-center rounded-lg p-2 text-white hover:bg-blue-900/60 md:hidden"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -309,7 +309,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-slate-800 bg-black md:hidden">
+        <div className="border-t border-blue-900/70 bg-blue-950 md:hidden">
           <nav className="flex flex-col space-y-1 px-4 py-4">
             {headerLinks.map((link) => {
               if (isContactLink(link)) {
@@ -324,7 +324,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                         window.location.href = '/#contact';
                       }
                     }}
-                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                   >
                     {link.label}
                   </button>
@@ -353,7 +353,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                   target={link.openInNewTab ? '_blank' : undefined}
                   rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                    className="rounded-lg px-4 py-3 text-sm font-medium text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -364,7 +364,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-lg border border-slate-700 px-4 py-3 text-center text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+                  className="mt-2 rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
                 >
                   Dashboard
                 </Link>
@@ -373,7 +373,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="mt-2 w-full rounded-lg border border-slate-700 px-4 py-3 text-center text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+                  className="mt-2 w-full rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
                 >
                   Sign Out
                 </button>
@@ -383,7 +383,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-lg border border-slate-700 px-4 py-3 text-center text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+                  className="mt-2 rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
                 >
                   Sign In
                 </Link>

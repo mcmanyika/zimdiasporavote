@@ -376,15 +376,15 @@ Contact:`)}`}
         </section>
 
         {/* Civic Engagement Stripe */}
-        <section className="bg-gradient-to-r from-emerald-900 to-slate-900 py-8 sm:py-10">
+        <section className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 py-8 sm:py-10">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
             <div className="mb-3 flex justify-center">
-              <svg className="h-10 w-10 text-emerald-300 sm:h-12 sm:w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-10 w-10 text-yellow-300 sm:h-12 sm:w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
             <h2 className="mb-2 text-xl font-bold text-white sm:text-2xl">Download the Proposed Amendment Bill No. 3</h2>
-            <p className="text-sm text-emerald-200/80 sm:text-base">
+            <p className="text-sm text-blue-100/85 sm:text-base">
               Read the full PDF version of the Constitution of Zimbabwe Amendment (No. 3) Bill, 2026.
             </p>
             <div className="mt-5 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-3">
@@ -408,8 +408,8 @@ Contact:`)}`}
               </Link>
             </div>
             {billDownloadCount > 0 && (
-              <p className="mt-4 text-xs text-emerald-300/70">
-                <span className="font-semibold text-emerald-200">{billDownloadCount.toLocaleString()}</span> {billDownloadCount === 1 ? 'download' : 'downloads'}
+              <p className="mt-4 text-xs text-blue-100/70">
+                <span className="font-semibold text-yellow-300">{billDownloadCount.toLocaleString()}</span> {billDownloadCount === 1 ? 'download' : 'downloads'}
               </p>
             )}
           </div>
@@ -422,7 +422,7 @@ Contact:`)}`}
               <div className="grid md:grid-cols-2">
                 {/* Left – Message */}
                 <div className="flex flex-col justify-center p-6 sm:p-10">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600">Support the Cause</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-blue-700">Support the Cause</p>
                   <h2 className="mb-3 text-2xl font-bold text-slate-900 sm:text-3xl">
                     Donations help efforts to pushback on Agenda 2030
                   </h2>
@@ -436,7 +436,7 @@ Contact:`)}`}
                       'Enable grassroots community mobilisation',
                     ].map((item) => (
                       <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
-                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         {item}
@@ -446,7 +446,7 @@ Contact:`)}`}
                   <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
                       onClick={() => openDonationModal()}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 sm:w-auto"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-yellow-500 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:bg-yellow-400 sm:w-auto"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -465,7 +465,7 @@ Contact:`)}`}
                 <div className="relative hidden md:block">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300" />
                   <div className="relative flex h-full flex-col items-center justify-center p-10 text-center text-slate-800">
-                    <svg className="mb-4 h-16 w-16 text-emerald-600 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mb-4 h-16 w-16 text-blue-700 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                     <p className="text-3xl font-extrabold sm:text-4xl">100%</p>
@@ -489,7 +489,7 @@ Contact:`)}`}
         </section>
 
         {/* CTA Section */}
-        <section id="cta-section" className="bg-gradient-to-r from-slate-900 to-slate-800 py-8 text-white sm:py-12">
+        <section id="cta-section" className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 py-8 text-white sm:py-12">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
             <h2 className="mb-3 text-2xl font-bold sm:text-3xl md:text-4xl">Ready to Make a Difference?</h2>
             <p className="mb-6 text-sm text-slate-300 sm:text-base">
@@ -525,7 +525,7 @@ Contact:`)}`}
                   />
                 </div>
                 <div className="flex flex-col justify-center p-6 sm:p-8">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
                     Sponsored Merchandise
                   </p>
                   <h2 className="mb-3 text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -541,7 +541,7 @@ Contact:`)}`}
                       'Your purchase strengthens outreach in underserved areas',
                     ].map((item) => (
                       <li key={item} className="flex items-start gap-2">
-                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         {item}
@@ -783,7 +783,7 @@ Contact:`)}`}
         <section id="affiliates-section" className="bg-white py-10 sm:py-14 border-t border-slate-200">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mb-8 text-center sm:mb-10">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
                 Partnerships
               </p>
               <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -795,7 +795,7 @@ Contact:`)}`}
                 </span>
                 <button
                   onClick={() => setAffiliateJoinModalOpen(true)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-700 text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-blue-700 text-blue-700 transition-colors hover:bg-yellow-500 hover:text-slate-900"
                   aria-label="Request to join as an affiliate"
                   title="Request to join"
                 >
@@ -821,7 +821,7 @@ Contact:`)}`}
                       href={link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`${cardClassName} block hover:text-emerald-700`}
+                      className={`${cardClassName} block hover:text-blue-700`}
                     >
                       {org}
                     </a>
@@ -985,7 +985,7 @@ Contact:`)}`}
               </button>
 
               <div className="mb-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Affiliate Requests</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Affiliate Requests</p>
                 <h3 className="mt-2 text-xl font-bold text-slate-900">Interested in Joining Our Affiliates?</h3>
               </div>
 
@@ -1005,7 +1005,7 @@ Contact:`)}`}
                     setAffiliateJoinModalOpen(false)
                     setContactOpen(true)
                   }}
-                  className="inline-flex flex-1 items-center justify-center rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
+                  className="inline-flex flex-1 items-center justify-center rounded-md bg-yellow-500 px-4 py-2.5 text-sm font-semibold text-slate-900 hover:bg-yellow-400 transition-colors"
                 >
                   Contact Us
                 </button>
@@ -1038,9 +1038,9 @@ Contact:`)}`}
               </button>
 
               {/* Header */}
-              <div className="bg-slate-900 px-6 py-5">
+              <div className="bg-blue-950 px-6 py-5">
                 <h2 className="text-xl font-bold text-white">Contact Us</h2>
-                <p className="text-sm text-slate-400 mt-1">We'd love to hear from you</p>
+                <p className="mt-1 text-sm text-blue-100/75">We'd love to hear from you</p>
               </div>
 
               {/* Body */}
@@ -1139,7 +1139,7 @@ function CountdownBanner() {
   const isExpired = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0
 
   return (
-    <section className="bg-gradient-to-r from-slate-900 via-emerald-900 to-slate-900 py-6 sm:py-8">
+    <section className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 py-6 sm:py-8">
       <div className="mx-auto max-w-5xl px-4 text-center">
         <h2 className="mb-1 text-sm font-bold uppercase tracking-widest text-white/80 sm:text-base">
           {isExpired ? 'The Wait Is Over!' : 'Countdown'}
