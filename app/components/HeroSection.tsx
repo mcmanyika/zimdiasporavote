@@ -139,7 +139,7 @@ export default function HeroSection() {
       ))}
 
       {/* Blue transparent theme overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-blue-950/25 via-blue-900/15 to-blue-950/30" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-blue-950/15 via-blue-900/10 to-blue-950/20" />
       
       {/* Social Media Icons - Left Side (Fixed, hides when scrolled past hero) */}
       <div className={`fixed left-2 sm:left-4 top-1/2 z-30 -translate-y-1/2 flex flex-col gap-3 sm:gap-4 bg-black/30 backdrop-blur-sm rounded-full py-3 sm:py-4 px-1.5 sm:px-2 transition-opacity duration-300 ${heroInView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
