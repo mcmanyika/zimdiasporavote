@@ -251,7 +251,7 @@ function PartyLandingContent() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="relative min-h-screen overflow-hidden bg-[#0f56d9] text-white">
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.62),rgba(15,86,217,0.56))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.26),rgba(15,86,217,0.20))]" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-fixed opacity-35 will-change-transform"
           style={{
@@ -527,7 +527,7 @@ function PartyLandingContent() {
           className="absolute inset-0 bg-cover bg-top bg-fixed opacity-35"
           style={{ backgroundImage: "url('/images/party/the_people.png')" }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.62),rgba(15,86,217,0.56))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.26),rgba(15,86,217,0.20))]" />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="text-center text-xs font-bold uppercase tracking-wider text-blue-100">Let's Work Together</p>
           <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@dcpzim.com</h3>
