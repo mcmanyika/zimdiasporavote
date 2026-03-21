@@ -10,8 +10,8 @@ import DonationModal from './components/DonationModal';
 import Chatbot from './components/Chatbot';
 import TwitterEmbed from './components/TwitterEmbed';
 import Footer from './components/Footer';
-import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, getOrganizations, getVideos, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
-import type { Product, GalleryImage, Organization, Video } from '@/types';
+import { createNewsletterSubscription, getProducts, getProductById, getGalleryImages, getOrganizations, getVideos, getNews, trackDownload, getDownloadCount } from '@/lib/firebase/firestore';
+import type { Product, GalleryImage, Organization, Video, News } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,18 @@ const fallbackOrganizations = [
 
 const affiliateLinks: Record<string, string> = {
   'SAPES Trust': 'https://sapes.org.zw/',
+}
+
+function formatArticleDate(date: unknown): string {
+  if (!date) return ''
+  const d =
+    date instanceof Date ? date : (date as { toDate?: () => Date })?.toDate?.() || new Date(date as string)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 export default function Home() {
@@ -57,6 +69,8 @@ export default function Home() {
   const [contactOpen, setContactOpen] = useState(false)
   const [affiliateJoinModalOpen, setAffiliateJoinModalOpen] = useState(false)
   const [donationPrefillMessage, setDonationPrefillMessage] = useState('')
+  const [recentArticles, setRecentArticles] = useState<News[]>([])
+  const [articlesLoading, setArticlesLoading] = useState(true)
 
   // Declaration cards scroll-in animation
   const declarationCardsRef = useRef<HTMLDivElement>(null)
@@ -177,6 +191,22 @@ export default function Home() {
 
   useEffect(() => {
     getDownloadCount('amendment-bill-no3').then(setBillDownloadCount)
+  }, [])
+
+  useEffect(() => {
+    const loadRecentArticles = async () => {
+      try {
+        setArticlesLoading(true)
+        const all = await getNews(true)
+        setRecentArticles(all.slice(0, 3))
+      } catch (error) {
+        console.error('Error loading recent articles:', error)
+        setRecentArticles([])
+      } finally {
+        setArticlesLoading(false)
+      }
+    }
+    void loadRecentArticles()
   }, [])
 
   const handleBillDownload = async () => {
@@ -509,6 +539,77 @@ Contact:`)}`}
                 Support Our Work
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Recent Articles */}
+        <section className="border-t border-slate-200 bg-white py-12 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">News &amp; Updates</p>
+                <h2 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">Recent Articles</h2>
+              </div>
+              <Link
+                href="/news"
+                className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-blue-800 transition-colors hover:text-yellow-600"
+              >
+                View all articles
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+
+            {articlesLoading ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="animate-pulse rounded-xl border border-slate-200 bg-slate-50 p-5">
+                    <div className="mb-3 h-3 w-24 rounded bg-slate-200" />
+                    <div className="mb-2 h-5 w-full rounded bg-slate-200" />
+                    <div className="mb-2 h-4 w-full rounded bg-slate-200" />
+                    <div className="h-3 w-4/5 rounded bg-slate-200" />
+                  </div>
+                ))}
+              </div>
+            ) : recentArticles.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
+                No articles published yet.{' '}
+                <Link href="/news" className="font-semibold text-blue-800 underline-offset-2 hover:underline">
+                  Visit the news page
+                </Link>{' '}
+                for updates.
+              </p>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {recentArticles.map((article) => (
+                  <Link
+                    key={article.id}
+                    href={`/news/${article.id}`}
+                    className="group flex flex-col rounded-xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:border-blue-300 hover:shadow-md sm:p-5"
+                  >
+                    <div className="flex flex-1 flex-col">
+                      <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                        {article.category && (
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-blue-800">{article.category}</span>
+                        )}
+                        <span>{formatArticleDate(article.publishedAt ?? article.createdAt)}</span>
+                      </div>
+                      <h3 className="mb-2 line-clamp-2 text-base font-bold text-slate-900 transition-colors group-hover:text-blue-900 sm:text-lg">
+                        {article.title}
+                      </h3>
+                      <p className="line-clamp-3 flex-1 text-sm text-slate-600">{article.description}</p>
+                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-blue-800 opacity-90 transition-opacity group-hover:opacity-100">
+                        Read article
+                        <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
