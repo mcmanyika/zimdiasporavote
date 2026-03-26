@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import RichTextEditor from '@/app/components/RichTextEditor'
 import { uploadFile } from '@/lib/firebase/storage'
-import { getPetitions } from '@/lib/firebase/firestore'
+import { getEmailSuppressions, getPetitions, removeEmailSuppression, upsertEmailSuppression } from '@/lib/firebase/firestore'
 
 type SendMode = 'single' | 'bulk'
 type EmailTemplateId = 'blank_default' | 'blank_alt' | 'petition_followup' | 'membership_solidarity'
@@ -13,6 +13,13 @@ type EmailTemplateId = 'blank_default' | 'blank_alt' | 'petition_followup' | 'me
 interface ParsedRecipient {
   email: string
   name: string
+}
+
+interface BulkSendProgress {
+  sent: number
+  failed: number
+  skipped: number
+  total: number
 }
 
 interface EmailTemplate {
@@ -103,9 +110,12 @@ function ComposeEmailContent() {
   const [uploadingImage, setUploadingImage] = useState(false)
   const [loadingPetitionSigners, setLoadingPetitionSigners] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [bulkDone, setBulkDone] = useState<{ sent: number; failed: number; total: number } | null>(null)
+  const [bulkDone, setBulkDone] = useState<BulkSendProgress | null>(null)
   const [bulkLoadMsg, setBulkLoadMsg] = useState('')
   const [error, setError] = useState('')
+  const [suppressedEmails, setSuppressedEmails] = useState<string[]>([])
+  const [suppressionInput, setSuppressionInput] = useState('')
+  const [suppressionBusy, setSuppressionBusy] = useState(false)
   const BULK_SEND_INTERVAL_MS = 550
 
   // Pre-fill from search params (e.g. from inbox reply)
@@ -117,6 +127,18 @@ function ComposeEmailContent() {
     if (paramName) setName(paramName)
     if (paramSubject) setSubject(paramSubject)
   }, [searchParams])
+
+  useEffect(() => {
+    const loadSuppressions = async () => {
+      try {
+        const suppressions = await getEmailSuppressions(200)
+        setSuppressedEmails(suppressions.map((s) => s.email))
+      } catch (loadError) {
+        console.error('Failed to load suppressions:', loadError)
+      }
+    }
+    void loadSuppressions()
+  }, [])
 
   if (!user || userProfile?.role !== 'admin') {
     return null
@@ -131,6 +153,58 @@ function ComposeEmailContent() {
     setSuccess(false)
     setBulkDone(null)
     setError('')
+  }
+
+  const parseSuppressionEmails = (input: string): string[] => {
+    const candidates = input
+      .split(/[\n,;\s]+/)
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean)
+
+    return Array.from(new Set(candidates.filter((value) => value.includes('@'))))
+  }
+
+  const handleAddSuppressions = async () => {
+    const emails = parseSuppressionEmails(suppressionInput)
+    if (emails.length === 0) {
+      setError('Enter at least one valid email to suppress.')
+      return
+    }
+
+    try {
+      setSuppressionBusy(true)
+      setError('')
+      await Promise.all(
+        emails.map((email) =>
+          upsertEmailSuppression({
+            email,
+            reason: 'admin_block',
+            source: 'admin',
+            createdBy: userProfile?.uid,
+            note: 'Added from bulk email admin panel',
+          })
+        )
+      )
+      setSuppressedEmails((prev) => Array.from(new Set([...prev, ...emails])))
+      setSuppressionInput('')
+    } catch (suppressionError: any) {
+      setError(suppressionError?.message || 'Failed to add suppression list.')
+    } finally {
+      setSuppressionBusy(false)
+    }
+  }
+
+  const handleRemoveSuppression = async (email: string) => {
+    try {
+      setSuppressionBusy(true)
+      setError('')
+      await removeEmailSuppression(email)
+      setSuppressedEmails((prev) => prev.filter((item) => item !== email))
+    } catch (suppressionError: any) {
+      setError(suppressionError?.message || 'Failed to remove suppression.')
+    } finally {
+      setSuppressionBusy(false)
+    }
   }
 
   const handleSend = async () => {
@@ -175,6 +249,10 @@ function ComposeEmailContent() {
           }),
         })
         const data = await res.json()
+        if (data?.suppressed) {
+          setError(`Recipient is suppressed (${data.reason || 'unsubscribe'}). Email not sent.`)
+          return
+        }
         if (!data.success) {
           setError(data.error || 'Failed to send email.')
           return
@@ -187,10 +265,11 @@ function ComposeEmailContent() {
       } else {
         const total = parsedRecipients.length
         let sent = 0
+        let skipped = 0
         let failedRecipients: ParsedRecipient[] = []
         const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-        const sendOne = async (recipient: ParsedRecipient): Promise<boolean> => {
+        const sendOne = async (recipient: ParsedRecipient): Promise<'sent' | 'failed' | 'skipped'> => {
           try {
             const res = await fetch('/api/email/send', {
               method: 'POST',
@@ -206,19 +285,21 @@ function ComposeEmailContent() {
               }),
             })
             const data = await res.json()
-            return !!(res.ok && data.success)
+            if (data?.suppressed) return 'skipped'
+            return !!(res.ok && data.success) ? 'sent' : 'failed'
           } catch {
-            return false
+            return 'failed'
           }
         }
 
         // First attempt
         for (let i = 0; i < parsedRecipients.length; i++) {
           const recipient = parsedRecipients[i]
-          const ok = await sendOne(recipient)
-          if (ok) sent++
+          const status = await sendOne(recipient)
+          if (status === 'sent') sent++
+          else if (status === 'skipped') skipped++
           else failedRecipients.push(recipient)
-          setBulkDone({ sent, failed: failedRecipients.length, total })
+          setBulkDone({ sent, skipped, failed: failedRecipients.length, total })
           // Keep bulk delivery at <= 2 requests/second
           if (i < parsedRecipients.length - 1) {
             await wait(BULK_SEND_INTERVAL_MS)
@@ -232,10 +313,11 @@ function ComposeEmailContent() {
 
           for (let i = 0; i < failedRecipients.length; i++) {
             const recipient = failedRecipients[i]
-            const ok = await sendOne(recipient)
-            if (ok) sent++
+            const status = await sendOne(recipient)
+            if (status === 'sent') sent++
+            else if (status === 'skipped') skipped++
             else stillFailed.push(recipient)
-            setBulkDone({ sent, failed: stillFailed.length, total })
+            setBulkDone({ sent, skipped, failed: stillFailed.length, total })
             if (i < failedRecipients.length - 1) {
               await wait(BULK_SEND_INTERVAL_MS)
             }
@@ -245,10 +327,11 @@ function ComposeEmailContent() {
         }
 
         const failed = failedRecipients.length
-        setBulkDone({ sent, failed, total })
+        setBulkDone({ sent, skipped, failed, total })
 
         if (sent > 0) setSuccess(true)
-        if (failed > 0 && sent === 0) setError('No emails were sent. Please check recipients or try again.')
+        if (sent === 0 && skipped > 0 && failed === 0) setError('All recipients are suppressed. No emails were sent.')
+        else if (failed > 0 && sent === 0) setError('No emails were sent. Please check recipients or try again.')
 
         setBulkRecipients('')
         if (sent > 0) {
@@ -369,6 +452,7 @@ function ComposeEmailContent() {
           <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
             <p className="text-sm font-medium text-slate-800">
               Bulk send result: <span className="font-semibold text-emerald-700">{bulkDone.sent} sent</span>,{' '}
+              <span className="font-semibold text-amber-600">{bulkDone.skipped} skipped</span>,{' '}
               <span className="font-semibold text-red-600">{bulkDone.failed} failed</span> (total {bulkDone.total})
             </p>
           </div>
@@ -422,6 +506,50 @@ function ComposeEmailContent() {
             </div>
             {bulkLoadMsg && (
               <p className="mt-2 text-xs font-medium text-slate-600">{bulkLoadMsg}</p>
+            )}
+          </div>
+
+          {/* Suppression manager */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Do Not Send List (Unsubscribe / Block)
+            </label>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <textarea
+                value={suppressionInput}
+                onChange={(e) => setSuppressionInput(e.target.value)}
+                rows={2}
+                placeholder={'Add email(s), comma or newline separated\nexample@example.com'}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+              />
+              <button
+                type="button"
+                onClick={handleAddSuppressions}
+                disabled={suppressionBusy}
+                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
+              >
+                {suppressionBusy ? 'Saving...' : 'Add to Do Not Send'}
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Suppressed recipients are skipped automatically during bulk send.
+            </p>
+            {suppressedEmails.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {suppressedEmails.map((email) => (
+                  <button
+                    key={email}
+                    type="button"
+                    onClick={() => handleRemoveSuppression(email)}
+                    disabled={suppressionBusy}
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                    title="Click to remove from suppression list"
+                  >
+                    <span>{email}</span>
+                    <span className="text-slate-400">x</span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 

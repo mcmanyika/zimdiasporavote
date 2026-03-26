@@ -413,6 +413,7 @@ export interface AdminNotification {
 // Email Log types
 export type EmailType = 'welcome' | 'membership_approved' | 'membership_rejected' | 'general' | 'custom'
 export type EmailStatus = 'sent' | 'failed'
+export type EmailSuppressionReason = 'unsubscribe' | 'admin_block' | 'hard_bounce' | 'complaint'
 
 export interface EmailLog {
   id: string
@@ -425,6 +426,18 @@ export interface EmailLog {
   error?: string           // Error message if failed
   userId?: string          // Associated user ID if available
   createdAt: Timestamp | Date
+}
+
+export interface EmailSuppression {
+  id: string
+  email: string
+  active: boolean
+  reason: EmailSuppressionReason
+  source: 'admin' | 'self_service' | 'provider_webhook'
+  note?: string
+  createdBy?: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
 }
 
 // Inbound Email (received via Resend webhook)

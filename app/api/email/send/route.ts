@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendCustomEmail } from '@/lib/email'
 import { createEmailLog } from '@/lib/firebase/firestore'
+import { getAdminDb } from '@/lib/firebase/admin'
 
 function getErrorMessage(error: unknown): string {
   if (!error) return 'Unknown error'
@@ -29,6 +30,29 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function getSuppressionStatus(email: string): Promise<{ suppressed: boolean; reason?: string }> {
+  try {
+    const normalized = email.trim().toLowerCase()
+    if (!normalized) return { suppressed: false }
+
+    const adminDb = getAdminDb()
+    const suppressionDoc = await adminDb.collection('emailSuppressions').doc(normalized).get()
+    if (!suppressionDoc.exists) return { suppressed: false }
+
+    const data = suppressionDoc.data() || {}
+    const active = data.active !== false
+    if (!active) return { suppressed: false }
+
+    return {
+      suppressed: true,
+      reason: typeof data.reason === 'string' ? data.reason : 'unsubscribe',
+    }
+  } catch (error) {
+    console.error('Failed to check suppression status:', error)
+    return { suppressed: false }
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { email, name, subject, body, htmlBody, userId, usePlatformTemplate } = await request.json()
@@ -48,6 +72,33 @@ export async function POST(request: NextRequest) {
     const trimmedSubject = subject.trim()
     const trimmedBody = (body || '').trim()
     const trimmedHtmlBody = (htmlBody || '').trim()
+
+    const suppression = await getSuppressionStatus(trimmedEmail)
+    if (suppression.suppressed) {
+      try {
+        await createEmailLog({
+          type: 'custom',
+          to: trimmedEmail,
+          name: trimmedName,
+          subject: trimmedSubject,
+          status: 'failed',
+          error: `Suppressed recipient (${suppression.reason || 'unsubscribe'})`,
+          userId: userId || undefined,
+        })
+      } catch (logErr) {
+        console.error('Failed to log suppressed email:', logErr)
+      }
+
+      return NextResponse.json(
+        {
+          success: false,
+          suppressed: true,
+          reason: suppression.reason || 'unsubscribe',
+          error: 'Recipient has unsubscribed or is suppressed.',
+        },
+        { status: 200 }
+      )
+    }
 
     if (!process.env.RESEND_API_KEY) {
       console.warn('RESEND_API_KEY is not configured. Skipping email.')

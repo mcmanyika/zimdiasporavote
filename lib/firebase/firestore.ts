@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, EmailSuppression, EmailSuppressionReason, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 import {
   createPartyEvent as createPartyEventModule,
   createPartyInterestSubmission as createPartyInterestSubmissionModule,
@@ -38,6 +38,10 @@ function requireDb() {
 
 function toDate(timestamp: any): Date {
   return timestamp?.toDate?.() || new Date()
+}
+
+function normalizeEmail(email: string): string {
+  return (email || '').trim().toLowerCase()
 }
 
 // User operations
@@ -2956,6 +2960,92 @@ export async function getEmailLogs(limitCount: number = 50): Promise<EmailLog[]>
     })
   } catch (error: any) {
     console.error('Error fetching email logs:', error)
+    return []
+  }
+}
+
+// ─── Email Suppression Operations ──────────────────────────────────
+export async function isEmailSuppressed(email: string): Promise<{ suppressed: boolean; reason?: EmailSuppressionReason }> {
+  const normalized = normalizeEmail(email)
+  if (!normalized) return { suppressed: false }
+
+  try {
+    const suppressionDoc = await getDoc(doc(requireDb(), 'emailSuppressions', normalized))
+    if (!suppressionDoc.exists()) return { suppressed: false }
+
+    const data = suppressionDoc.data()
+    const active = data.active !== false
+    if (!active) return { suppressed: false }
+
+    return {
+      suppressed: true,
+      reason: (data.reason as EmailSuppressionReason) || 'unsubscribe',
+    }
+  } catch (error: any) {
+    console.error('Error checking email suppression:', error)
+    return { suppressed: false }
+  }
+}
+
+export async function upsertEmailSuppression(input: {
+  email: string
+  reason: EmailSuppressionReason
+  source?: 'admin' | 'self_service' | 'provider_webhook'
+  note?: string
+  createdBy?: string
+}): Promise<void> {
+  const normalized = normalizeEmail(input.email)
+  if (!normalized) throw new Error('Email is required')
+
+  await setDoc(
+    doc(requireDb(), 'emailSuppressions', normalized),
+    {
+      id: normalized,
+      email: normalized,
+      active: true,
+      reason: input.reason,
+      source: input.source || 'admin',
+      note: input.note || '',
+      createdBy: input.createdBy || null,
+      updatedAt: Timestamp.now(),
+      createdAt: Timestamp.now(),
+    },
+    { merge: true }
+  )
+}
+
+export async function removeEmailSuppression(email: string): Promise<void> {
+  const normalized = normalizeEmail(email)
+  if (!normalized) throw new Error('Email is required')
+
+  await setDoc(
+    doc(requireDb(), 'emailSuppressions', normalized),
+    {
+      id: normalized,
+      email: normalized,
+      active: false,
+      updatedAt: Timestamp.now(),
+    },
+    { merge: true }
+  )
+}
+
+export async function getEmailSuppressions(limitCount: number = 100): Promise<EmailSuppression[]> {
+  try {
+    const snapshot = await getDocs(
+      query(collection(requireDb(), 'emailSuppressions'), where('active', '==', true), orderBy('updatedAt', 'desc'), limit(limitCount))
+    )
+    return snapshot.docs.map((docSnap) => {
+      const data = docSnap.data()
+      return {
+        ...data,
+        id: docSnap.id,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as EmailSuppression
+    })
+  } catch (error: any) {
+    console.error('Error fetching email suppressions:', error)
     return []
   }
 }
