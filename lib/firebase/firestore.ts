@@ -1383,19 +1383,25 @@ export async function getVideos(publishedOnly: boolean = true): Promise<Video[]>
     return mapDocs(snapshot)
   } catch (error: any) {
     console.error('Error fetching videos:', error)
-    // Fallback for missing composite index
-    if (error?.code === 'failed-precondition') {
+    // Fallback when composite index is missing or primary query fails.
+    // Must NOT use getDocs(collection(...)) for publishedOnly: rules only allow reads where
+    // isPublished == true, so listing the whole collection fails with permission-denied if
+    // any unpublished docs exist (common on mobile / any unauthenticated client).
+    const tryPublishedOnlyQuery = publishedOnly || error?.code === 'failed-precondition' || error?.code === 'permission-denied'
+    if (tryPublishedOnlyQuery) {
       try {
-        const snapshot = await getDocs(collection(requireDb(), 'videos'))
+        const col = collection(requireDb(), 'videos')
+        const snapshot = publishedOnly
+          ? await getDocs(query(col, where('isPublished', '==', true)))
+          : await getDocs(col)
         const videos = mapDocs(snapshot)
-        const filtered = publishedOnly ? videos.filter((v) => v.isPublished) : videos
-        filtered.sort((a, b) => {
+        videos.sort((a, b) => {
           if ((a.order || 0) !== (b.order || 0)) return (a.order || 0) - (b.order || 0)
           const aDate = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()
           const bDate = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime()
           return bDate - aDate
         })
-        return filtered
+        return videos
       } catch (fallbackError: any) {
         console.error('Error in fallback video query:', fallbackError)
         return []
