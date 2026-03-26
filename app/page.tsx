@@ -627,18 +627,18 @@ Contact:`)}`}
                 </div>
                 <div className="flex flex-col justify-center p-6 sm:p-8">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
-                    Sponsored Merchandise
+                    Merchandise
                   </p>
                   <h2 className="mb-3 text-2xl font-bold text-slate-900 sm:text-3xl">
-                    Buy item for Someone
+                    Buy Merchandise
                   </h2>
                   <p className="mb-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                    You can  sponsor DCP merchandise for others and help us spread the message.
+                    Buy DCP merchandise and help us spread the message.
                   </p>
                   <ul className="mb-6 space-y-2 text-sm text-slate-700">
                     {[
-                      'Choose a merchandise pack and complete checkout',
-                      'We direct sponsored packs to identified recipients',
+                      'Choose your merchandise and complete checkout',
+                      'Receive your order directly after purchase',
                       'Your purchase strengthens outreach in underserved areas',
                     ].map((item) => (
                       <li key={item} className="flex items-start gap-2">
@@ -654,7 +654,7 @@ Contact:`)}`}
                       onClick={() => openDonationModal('Sponsered merchandise')}
                       className="inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 sm:w-auto"
                     >
-                      Sponser Item
+                      Buy Item
                     </button>
                     <Link
                       href="/shop"
