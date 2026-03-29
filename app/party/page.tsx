@@ -5,7 +5,6 @@ import Link from 'next/link'
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import AdminRoute from '@/app/components/AdminRoute'
 import DonationModal from '@/app/components/DonationModal'
-import DashboardNav from '@/app/components/DashboardNav'
 import { getPartyEvents, getPartyLandingContent } from '@/features/party'
 import type { PartyEvent, PartyHeroStat, PartyLandingContent } from '@/features/party'
 import { useAuth } from '@/contexts/AuthContext'
@@ -380,8 +379,6 @@ function PartyLandingContent() {
               </button>
             </div>
           </div>
-
-          <DashboardNav breadcrumbLabel="Party" />
 
           <div className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2">
             <div className="order-2 lg:order-1">
