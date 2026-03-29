@@ -17,6 +17,7 @@ import {
   upsertPartyLandingContent,
 } from '@/features/party'
 import type { PartyEvent, PartyInterestStatus, PartyInterestSubmission } from '@/features/party'
+import { normalizePartyHeroSubtitle } from '@/lib/party-hero-subtitle'
 
 const submissionStatuses: PartyInterestStatus[] = ['new', 'contacted', 'converted', 'archived']
 const defaultHeroStats = [
@@ -59,7 +60,7 @@ function PartyContentEditor() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({
-    pageTitle: 'DCP Political',
+    pageTitle: 'WTP Political',
     heroTitle: 'A New Political Party Rooted in Constitutionalism',
     heroSubtitle: '',
     foundingStatement: '',
@@ -82,10 +83,13 @@ function PartyContentEditor() {
             label: heroStats[idx]?.label || fallback.label,
             value: heroStats[idx]?.value || fallback.value,
           }))
+          const rawPageTitle = (landing.pageTitle || '').trim()
+          const pageTitle =
+            /^dcp\s*political$/i.test(rawPageTitle) ? 'WTP Political' : landing.pageTitle || ''
           setFormData({
-            pageTitle: landing.pageTitle || '',
+            pageTitle,
             heroTitle: landing.heroTitle || '',
-            heroSubtitle: landing.heroSubtitle || '',
+            heroSubtitle: normalizePartyHeroSubtitle(landing.heroSubtitle),
             foundingStatement: landing.foundingStatement || '',
             mission: landing.mission || '',
             vision: landing.vision || '',

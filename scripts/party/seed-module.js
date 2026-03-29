@@ -63,12 +63,16 @@ function parseDate(dateStr) {
 
 const landingPayload = {
   id: 'landing',
-  pageTitle: 'DCP Political',
+  pageTitle: 'WTP Political',
   heroTitle: 'A New Political Party Rooted in Constitutionalism',
-  heroSubtitle: '',
-  foundingStatement: 'This initiative seeks to transform constitutional advocacy into an accountable, democratic political platform.',
-  mission: 'To build a citizen-led political movement that protects constitutionalism, rule of law, and social justice.',
-  vision: 'A constitutional Zimbabwe with accountable leadership and inclusive national development.',
+  heroSubtitle:
+    'This initiative aims to bring people together to share ideas, skills, and strategies that can help transform Zimbabwe into a world-class economy.',
+  foundingStatement:
+    'This platform centres on citizen and sector proposals: practical ideas that answer social and economic needs across Zimbabwe, developed openly and grounded in constitutional principles.',
+  mission:
+    'To invite proposals from every part of society — by sector and by community — and make them visible for discussion, support, and accountable follow-through.',
+  vision:
+    'A Zimbabwe where policy priorities emerge from transparent public proposals and constitutional safeguards, not closed-door deals.',
   principles: [
     'Constitutional supremacy and term limits',
     'Citizen participation and transparency',

@@ -244,7 +244,12 @@ const adminManageItems: NavItem[] = [
   { href: '/dashboard/admin/surveys', label: 'Surveys', icon: <IconClipboard />, description: 'Manage surveys' },
 ]
 
-export default function DashboardNav() {
+interface DashboardNavProps {
+  /** When the current path is not in the nav map (e.g. party-linked tools), show this in the breadcrumb. */
+  breadcrumbLabel?: string
+}
+
+export default function DashboardNav({ breadcrumbLabel }: DashboardNavProps) {
   const pathname = usePathname()
   const { userProfile } = useAuth()
   const isAdmin = userProfile?.role === 'admin'
@@ -279,7 +284,7 @@ export default function DashboardNav() {
     ? [...filteredAccountItems, ...filteredContentItems, ...filteredManageItems]
     : filteredAccountItems
   const activeItem = allItems.find(item => item.href === pathname)
-  const activeLabel = activeItem?.label || 'Dashboard'
+  const activeLabel = breadcrumbLabel || activeItem?.label || 'Dashboard'
 
   // Close mega menu on outside click
   useEffect(() => {

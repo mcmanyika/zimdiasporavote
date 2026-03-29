@@ -2,21 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Header from '@/app/components/Header'
-import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
+import PartyLinkedDashboardShell from '@/app/components/PartyLinkedDashboardShell'
 import { getBillProposals, supportBillProposal } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
 import type { BillProposal } from '@/types'
+import { BILL_PROPOSAL_SECTORS } from '@/lib/bill-proposal-sectors'
 
 export default function BillProposalsPage() {
   const [proposals, setProposals] = useState<BillProposal[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [sectorFilter, setSectorFilter] = useState<string>('all')
 
   useEffect(() => {
     loadProposals()
   }, [])
+
+  const filteredProposals =
+    sectorFilter === 'all' ? proposals : proposals.filter((p) => p.category === sectorFilter)
 
   const loadProposals = async () => {
     try {
@@ -32,54 +35,69 @@ export default function BillProposalsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
-      <Header />
+    <PartyLinkedDashboardShell
+      title="Bill Proposals"
+      breadcrumbLabel="Bill Proposals"
+      headerDescription="Review published draft bills and back the ones you want advanced."
+    >
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+      )}
 
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 pt-24 pb-10 text-white sm:pb-12">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">People Power</p>
-          <h1 className="mb-2 text-2xl font-bold sm:text-3xl md:text-4xl">Bill Proposals</h1>
-          <p className="mx-auto max-w-2xl text-sm text-slate-300 sm:text-base">
-            Review published draft bills and back the ones you want advanced.
+      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-600">
+            <span className="font-semibold uppercase tracking-wider text-slate-500">People Power</span>
+            {' · '}
+            Published proposals open for consultation.
           </p>
-          <div className="mt-6">
-            <Link
-              href="/bill-proposals/propose"
-              className="inline-flex rounded-full bg-yellow-400 px-6 py-2 text-sm font-semibold text-slate-900 transition-colors hover:bg-yellow-300"
-            >
-              Submit a Bill Proposal
-            </Link>
+          <Link
+            href="/bill-proposals/propose"
+            className="inline-flex w-fit rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+          >
+            Submit a Bill Proposal
+          </Link>
+        </div>
+
+        {!loading && proposals.length > 0 && (
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <label className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+              <span className="font-medium">Sector:</span>
+              <select
+                value={sectorFilter}
+                onChange={(e) => setSectorFilter(e.target.value)}
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+              >
+                <option value="all">All sectors</option>
+                {BILL_PROPOSAL_SECTORS.map((sector) => (
+                  <option key={sector} value={sector}>
+                    {sector}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
-        </div>
+        )}
+
+        {loading ? (
+          <div className="py-12 text-center text-slate-600">Loading proposals...</div>
+        ) : proposals.length === 0 ? (
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-6 py-12 text-center">
+            <p className="text-slate-700">No published bill proposals yet.</p>
+          </div>
+        ) : filteredProposals.length === 0 ? (
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-6 py-12 text-center">
+            <p className="text-slate-700">No proposals in this sector yet.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {filteredProposals.map((proposal) => (
+              <ProposalCard key={proposal.id} proposal={proposal} onSupported={loadProposals} />
+            ))}
+          </div>
+        )}
       </section>
-
-      <section className="py-10 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          {error && (
-            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
-          {loading ? (
-            <div className="py-12 text-center text-slate-600">Loading proposals...</div>
-          ) : proposals.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 px-6 py-12 text-center">
-              <p className="text-slate-700">No published bill proposals yet.</p>
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2">
-              {proposals.map((proposal) => (
-                <ProposalCard key={proposal.id} proposal={proposal} onSupported={loadProposals} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <CTASection />
-      <Footer />
-    </main>
+    </PartyLinkedDashboardShell>
   )
 }
 

@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import Link from 'next/link'
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import AdminRoute from '@/app/components/AdminRoute'
-import DashboardNav from '@/app/components/DashboardNav'
+import PartyLinkedDashboardShell from '@/app/components/PartyLinkedDashboardShell'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   createPartyLeadershipNomination,
@@ -237,18 +236,10 @@ export default function PartyNominationsPage() {
   return (
     <ProtectedRoute>
       <AdminRoute minAccessLevel={5}>
-        <div className="min-h-screen bg-slate-50">
-          <div className="border-b bg-white">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6">
-              <h1 className="text-3xl font-bold">Leadership Nominations & Voting</h1>
-              <Link href="/party" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                ← Back to Party Page
-              </Link>
-            </div>
-          </div>
-          <DashboardNav />
-
-          <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
+        <PartyLinkedDashboardShell
+          title="Leadership Nominations & Voting"
+          breadcrumbLabel="Nominations"
+        >
             {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
             {message && <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{message}</div>}
 
@@ -439,8 +430,7 @@ export default function PartyNominationsPage() {
               </div>
             )}
             </section>
-          </div>
-        </div>
+        </PartyLinkedDashboardShell>
       </AdminRoute>
     </ProtectedRoute>
   )

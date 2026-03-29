@@ -2,9 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Header from '@/app/components/Header'
-import Footer from '@/app/components/Footer'
+import PartyLinkedDashboardShell from '@/app/components/PartyLinkedDashboardShell'
 import { useAuth } from '@/contexts/AuthContext'
+import {
+  BILL_PROPOSAL_SECTORS,
+  DEFAULT_BILL_PROPOSAL_SECTOR,
+  type BillProposalSector,
+} from '@/lib/bill-proposal-sectors'
 
 export default function ProposeBillPage() {
   const { user, userProfile } = useAuth()
@@ -17,7 +21,7 @@ export default function ProposeBillPage() {
     problem: '',
     solution: '',
     legalBasis: '',
-    category: 'Governance',
+    category: DEFAULT_BILL_PROPOSAL_SECTOR,
     proposerName: userProfile?.name || user?.displayName || '',
     proposerEmail: user?.email || '',
   })
@@ -67,22 +71,13 @@ export default function ProposeBillPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
-      <Header />
-
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 pt-24 pb-10 text-white sm:pb-12">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Citizen Legislative Intake</p>
-          <h1 className="mb-2 text-2xl font-bold sm:text-3xl">Submit a Bill Proposal</h1>
-          <p className="text-sm text-slate-300 sm:text-base">
-            Share the law reform you want reviewed by the DCP legislative team.
-          </p>
-        </div>
-      </section>
-
-      <section className="py-10 sm:py-14">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <PartyLinkedDashboardShell
+      title="Submit a Bill Proposal"
+      breadcrumbLabel="Submit proposal"
+      headerDescription="Citizen legislative intake — share the law reform you want reviewed by the DCP legislative team."
+      maxWidthClass="max-w-4xl"
+    >
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             {error && (
               <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
@@ -157,14 +152,24 @@ export default function ProposeBillPage() {
                     placeholder="Constitution section, statute, or case law"
                   />
                 </Field>
-                <Field label="Category">
-                  <input
+                <Field label="Industry / sector">
+                  <select
                     required
                     value={formData.category}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-                    placeholder="Governance, Economy, Health, Justice..."
-                  />
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        category: e.target.value as BillProposalSector,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-900"
+                  >
+                    {BILL_PROPOSAL_SECTORS.map((sector) => (
+                      <option key={sector} value={sector}>
+                        {sector}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
               </div>
 
@@ -202,12 +207,8 @@ export default function ProposeBillPage() {
               </div>
             </form>
             )}
-          </div>
-        </div>
       </section>
-
-      <Footer />
-    </main>
+    </PartyLinkedDashboardShell>
   )
 }
 

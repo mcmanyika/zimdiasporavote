@@ -5,9 +5,11 @@ import Link from 'next/link'
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import AdminRoute from '@/app/components/AdminRoute'
 import DonationModal from '@/app/components/DonationModal'
+import DashboardNav from '@/app/components/DashboardNav'
 import { getPartyEvents, getPartyLandingContent } from '@/features/party'
 import type { PartyEvent, PartyHeroStat, PartyLandingContent } from '@/features/party'
 import { useAuth } from '@/contexts/AuthContext'
+import { normalizePartyHeroSubtitle, PARTY_HERO_SUBTITLE } from '@/lib/party-hero-subtitle'
 
 const roleOptions = [
   'Member',
@@ -21,47 +23,35 @@ const defaultRoleInterest = roleOptions[0]
 const defaultContributionMessage = 'Interested in joining the political party launch.'
 const defaultProvince = 'Not specified'
 
-const campaignHighlights = [
-  {
-    title: 'Legislative Efforts',
-    text: 'Drive petitions, community consultations, and policy advocacy in every province.',
-    cta: 'VIEW MORE',
-    image: '/images/life.png',
-  },
-  {
-    title: 'Fundraising & Donations',
-    text: 'Build a broad grassroots supporter base through transparent small-donor funding.',
-    cta: 'How you can help',
-    image: '/images/sports.png',
-  },
-  {
-    title: 'Volunteer Organizing',
-    text: 'Recruit, train, and coordinate local volunteer teams for long-term mobilization.',
-    cta: 'VIEW MORE',
-    image: '/images/students.png',
-  },
-]
-
 const issueShowcase = [
   {
-    title: 'Issues',
+    title: 'Proposals from every sector',
     description:
-      'Whether it’s getting petition signatures, creating thousands of citizen video appeals to send to Congress, or mobilizing supporters to hit the streets, we specialize in innovative advocacy campaigns that make waves.',
+      'From rural livelihoods to urban services, from anti-corruption to social protection — members and citizens can propose concrete ideas that respond to real needs across Zimbabwe.',
     image:
       'https://vox-populi.bold-themes.com/grassroot/wp-content/uploads/sites/4/2019/03/case_study_1.jpg',
-    cta: 'VIEW MORE',
+    cta: 'SUBMIT A PROPOSAL',
+    href: '/bill-proposals/propose',
   },
   {
-    title: 'Legislative Efforts',
+    title: 'See what is on the table',
     description:
-      'We’ve helped build the small-donor membership base of some of the best and biggest groups through millions of one-on-one conversations with supporters across the country. We prioritize quality civic engagement in every campaign.',
+      'Browse published proposals for consultation. Understand priorities, add your voice, and help shape a programme rooted in constitutionalism and practical reform.',
     image: '/images/parliament.png',
-    cta: 'VIEW MORE',
+    cta: 'VIEW PROPOSALS',
+    href: '/bill-proposals',
   },
 ]
-const heroNavItems = ['About', 'News', 'Shop']
+const heroNavItems = [
+  { label: 'Proposals', href: '/bill-proposals' },
+  { label: 'Submit idea', href: '/bill-proposals/propose' },
+  { label: 'News', href: '/news' },
+  { label: 'Shop', href: '/shop' },
+]
 const partyFooterQuickLinks = [
   { label: 'Vision', href: '/party' },
+  { label: 'View proposals', href: '/bill-proposals' },
+  { label: 'Submit a proposal', href: '/bill-proposals/propose' },
   { label: 'Nominated Candidates', href: '/nominated-candidates' },
   { label: 'Leadership Nominations', href: '/dashboard/party-nominations' },
   { label: 'Vote for Candidates', href: '/dashboard/party-nominations' },
@@ -70,12 +60,8 @@ const partyFooterQuickLinks = [
   { label: 'Volunteer Network', href: '/volunteer' },
 ]
 const partyFooterMoreLinks = [
-  { label: 'Policy Priorities', href: '/party' },
-  { label: 'Provincial Structures', href: '/party' },
-  { label: 'Youth Wing', href: '/dashboard/youth' },
-  { label: 'Women’s Wing', href: '/party' },
-  { label: 'Manifesto', href: '/party' },
-  { label: 'Campaign Updates', href: '/news' },
+  { label: 'Bill proposals (public)', href: '/bill-proposals' },
+  { label: 'Propose an idea', href: '/bill-proposals/propose' },
 ]
 const partyFooterUsefulLinks = [
   { label: 'Parliament of Zimbabwe', href: 'https://www.parlzim.gov.zw/', external: true },
@@ -98,12 +84,15 @@ const defaultHeroStats: PartyHeroStat[] = [
 
 const defaultContent: PartyLandingContent = {
   id: 'landing',
-  pageTitle: 'DCP Political',
+  pageTitle: 'WTP Political',
   heroTitle: 'A New Political Party Rooted in Constitutionalism',
-  heroSubtitle: '',
-  foundingStatement: 'This initiative seeks to transform constitutional advocacy into an accountable, democratic political platform.',
-  mission: 'To build a citizen-led political movement that protects constitutionalism, rule of law, and social justice.',
-  vision: 'A constitutional Zimbabwe with accountable leadership and inclusive national development.',
+  heroSubtitle: PARTY_HERO_SUBTITLE,
+  foundingStatement:
+    'This platform centres on citizen and sector proposals: practical ideas that answer social and economic needs across Zimbabwe, developed openly and grounded in constitutional principles.',
+  mission:
+    'To invite proposals from every part of society — by sector and by community — and make them visible for discussion, support, and accountable follow-through.',
+  vision:
+    'A Zimbabwe where policy priorities emerge from transparent public proposals and constitutional safeguards, not closed-door deals.',
   principles: [
     'Constitutional supremacy and term limits',
     'Citizen participation and transparency',
@@ -158,7 +147,12 @@ function PartyLandingContent() {
           getPartyLandingContent(),
           getPartyEvents(true),
         ])
-        if (landing?.isPublished) setContent(landing)
+        if (landing?.isPublished) {
+          setContent({
+            ...landing,
+            heroSubtitle: normalizePartyHeroSubtitle(landing.heroSubtitle),
+          })
+        }
         setEvents(upcoming)
       } catch (err: any) {
         setError(err?.message || 'Failed to load party page.')
@@ -208,6 +202,13 @@ function PartyLandingContent() {
     const fallback = defaultHeroStats
     return (fromDb.length ? fromDb : fallback).slice(0, 4)
   }, [content.heroStats])
+
+  // Firestore may still store legacy "DCP Political" from before rebrand.
+  const heroPageTitle = useMemo(() => {
+    const raw = (content.pageTitle || '').trim()
+    if (/^dcp\s*political$/i.test(raw)) return 'WTP Political'
+    return raw || 'WTP Political'
+  }, [content.pageTitle])
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -263,7 +264,27 @@ function PartyLandingContent() {
         <div className="relative flex min-h-screen flex-col">
           <div className="border-b border-white/20">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-blue-100 sm:px-6">
-              <p>Call Us: (+263) 71 876 5864</p>
+              <p className="flex items-center gap-2">
+                <span className="inline-flex shrink-0 rounded-[2px] border border-white/25 shadow-sm" aria-hidden="true">
+                  <svg className="h-3.5 w-[21px]" viewBox="0 0 21 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect width="21" height="2" y="0" fill="#319B42" />
+                    <rect width="21" height="2" y="2" fill="#FFD200" />
+                    <rect width="21" height="2" y="4" fill="#DE2010" />
+                    <rect width="21" height="2" y="6" fill="#000000" />
+                    <rect width="21" height="2" y="8" fill="#DE2010" />
+                    <rect width="21" height="2" y="10" fill="#FFD200" />
+                    <rect width="21" height="2" y="12" fill="#319B42" />
+                    <path d="M0 0v14L11 7 0 0z" fill="#ffffff" />
+                    <g transform="translate(4.25 7)">
+                      <path
+                        fill="#DE2010"
+                        d="M0,-1.05 L0.31,-0.32 1,-0.32 0.38,0.12 0.62,0.9 0,0.45 -0.62,0.9 -0.38,0.12 -1,-0.32 -0.31,-0.32 Z"
+                      />
+                    </g>
+                  </svg>
+                </span>
+                <span>Call Us: +1 832 786 0457</span>
+              </p>
               <div className="flex items-center gap-3">
                 <a href="https://x.com/DCPlatform25" target="_blank" rel="noopener noreferrer" className="text-blue-100 hover:text-white" aria-label="X">
                   <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -290,12 +311,12 @@ function PartyLandingContent() {
           </div>
 
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-            <div className="text-3xl font-extrabold tracking-tight">DCP</div>
+            <div className="text-3xl font-extrabold tracking-tight">WTP</div>
             <nav className="hidden items-center gap-7 text-sm font-semibold md:flex">
               {heroNavItems.map((item) => (
-                <a key={item} href="#" className="text-white/90 hover:text-white">
-                  {item}
-                </a>
+                <Link key={item.href} href={item.href} className="text-white/90 hover:text-white">
+                  {item.label}
+                </Link>
               ))}
             </nav>
             <div className="flex items-center gap-2">
@@ -360,22 +381,24 @@ function PartyLandingContent() {
             </div>
           </div>
 
+          <DashboardNav breadcrumbLabel="Party" />
+
           <div className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2">
             <div className="order-2 lg:order-1">
-              <p className="text-sm font-semibold uppercase tracking-wide text-blue-100">{content.pageTitle}</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-blue-100">{heroPageTitle}</p>
               <h1 className="mt-2 max-w-4xl text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl">
-                Rebuild fallen walls!
+                Laying The Agenda
               </h1>
               <p className="mt-4 max-w-3xl text-sm text-blue-100 sm:text-base">{content.heroSubtitle}</p>
-              <div className="mt-8">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <a href="#join-party" className="inline-flex items-center rounded-full bg-rose-600 px-10 py-4 text-base font-bold uppercase tracking-wide text-white hover:bg-rose-500">
-                  Let's Work Together
+                  Let's Build Together
                 </a>
               </div>
             </div>
 
             <aside id="join-party" className="order-1 w-full rounded-2xl border border-[#7fb3ff] bg-transparent p-5 text-white lg:order-2 lg:ml-auto lg:max-w-lg">
-              <h2 className="text-lg font-semibold text-white">Let's Work Together</h2>
+              <h2 className="text-lg font-semibold text-white">Let's Build Together</h2>
               <p className="mt-2 text-sm text-blue-100">
                 {content.callToActionText || 'Tell us how you want to participate in the party launch process.'}
               </p>
@@ -443,29 +466,6 @@ function PartyLandingContent() {
               {content.foundingStatement}
             </p>
           </div>
-
-          <div className="relative mt-10 space-y-10 sm:mt-14">
-            <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-slate-200 lg:block" />
-            {campaignHighlights.map((item, idx) => (
-              <div key={item.title} className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
-                <div className={idx % 2 === 0 ? '' : 'lg:order-2'}>
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="h-[230px] w-full rounded-xl object-cover shadow-md transition-transform duration-500 hover:scale-[1.03] sm:h-[280px]"
-                    loading="lazy"
-                  />
-                </div>
-                <article className={idx % 2 === 0 ? '' : 'lg:order-1'}>
-                  <div className="rounded-xl bg-white p-3 sm:p-5">
-                    <h3 className="text-3xl font-extrabold text-slate-900">{item.title}</h3>
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-700 sm:text-base">{item.text}</p>
-                    <p className="mt-5 text-sm font-bold uppercase tracking-wide text-rose-600">{item.cta}</p>
-                  </div>
-                </article>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -510,12 +510,12 @@ function PartyLandingContent() {
                 />
                 <h3 className="mt-5 text-4xl font-extrabold text-slate-900">{item.title}</h3>
                 <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base">{item.description}</p>
-                <button
-                  type="button"
-                  className="mt-6 rounded-full bg-[#07315d] px-6 py-2 text-xs font-bold uppercase tracking-wide text-white hover:bg-[#052748]"
+                <Link
+                  href={item.href}
+                  className="mt-6 inline-flex rounded-full bg-[#07315d] px-6 py-2 text-xs font-bold uppercase tracking-wide text-white hover:bg-[#052748]"
                 >
                   {item.cta}
-                </button>
+                </Link>
               </article>
             ))}
           </div>
@@ -530,12 +530,12 @@ function PartyLandingContent() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.26),rgba(15,86,217,0.20))]" />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="text-center text-xs font-bold uppercase tracking-wider text-blue-100">Let's Work Together</p>
-          <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@dcpzim.com</h3>
+          <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@wtpzim.com</h3>
           <div className="mt-8 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
             <div><p className="font-bold">WORKING HOURS</p><p className="text-blue-100">Mon - Sat 8.00 - 18.00</p></div>
             <div><p className="font-bold">LOCATION</p><p className="text-blue-100">Harare, Zimbabwe</p></div>
-            <div><p className="font-bold">CALL US:</p><p className="text-blue-100">(+263) 71 876 5864</p></div>
-            <div><p className="font-bold">EMAIL</p><p className="text-blue-100">office@dcpzim.com</p></div>
+            <div><p className="font-bold">CALL US:</p><p className="text-blue-100">+1 832 786 0457</p></div>
+            <div><p className="font-bold">EMAIL</p><p className="text-blue-100">office@wtpzim.com</p></div>
           </div>
 
           <div className="mt-8 border-t border-white/20 pt-6">
@@ -553,7 +553,7 @@ function PartyLandingContent() {
                 </ul>
               </div>
               <div>
-                <p className="mb-2 font-bold">More</p>
+                <p className="mb-2 font-bold">Proposals</p>
                 <ul className="space-y-1 text-blue-100">
                   {partyFooterMoreLinks.map((item) => (
                     <li key={item.label}>
@@ -599,7 +599,7 @@ function PartyLandingContent() {
         </div>
         <div className="relative border-t border-white/10 bg-black/90">
           <div className="mx-auto max-w-7xl px-4 py-4 text-center text-[10px] text-white/80 sm:px-6 sm:text-xs">
-            <p>&copy; 2026 Defend the Constitution Platform. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} We The People. All rights reserved.</p>
             <p className="mt-1">
               <Link href="/privacy" className="hover:text-white">
                 Privacy Policy

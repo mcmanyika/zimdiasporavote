@@ -159,7 +159,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
                     </p>
                     <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
                       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;margin-right:6px;"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h3A1.5 1.5 0 0 1 9 4.24l1.03 4.12a1.5 1.5 0 0 1-.4 1.43l-1.2 1.2a13 13 0 0 0 4.57 4.57l1.2-1.2a1.5 1.5 0 0 1 1.43-.4L19.76 15A1.5 1.5 0 0 1 21 16.5v3A2.5 2.5 0 0 1 18.5 22h-1C8.94 22 2 15.06 2 6.5v-1Z" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      +263 71 876 5864
+                      +1 832 786 0457
                     </p>
                     <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
                       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:-2px;margin-right:6px;"><path d="M13.5 8.5h2V6h-2C11.6 6 10 7.6 10 9.5V12H8v2.5h2V20h2.5v-5.5h2.2l.3-2.5h-2.5V9.8c0-.7.3-1.3 1-1.3Z"/></svg>

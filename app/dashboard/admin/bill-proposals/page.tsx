@@ -136,7 +136,7 @@ function BillProposalQueue() {
 
               <div className="grid gap-3 text-sm text-slate-700 md:grid-cols-2">
                 <p>
-                  <span className="font-semibold text-slate-900">Category:</span> {item.category}
+                  <span className="font-semibold text-slate-900">Sector:</span> {item.category}
                 </p>
                 <p>
                   <span className="font-semibold text-slate-900">Submitted by:</span> {item.proposerName} ({item.proposerEmail})

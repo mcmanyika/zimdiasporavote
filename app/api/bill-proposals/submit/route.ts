@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isBillProposalSector } from '@/lib/bill-proposal-sectors'
 import { getAdminDb } from '@/lib/firebase/admin'
 import { createBillProposal } from '@/lib/firebase/firestore'
 
@@ -22,6 +23,13 @@ export async function POST(request: NextRequest) {
 
     if (!proposerEmail.includes('@')) {
       return NextResponse.json({ error: 'Invalid proposer email.' }, { status: 400 })
+    }
+
+    if (!isBillProposalSector(category)) {
+      return NextResponse.json(
+        { error: 'Choose a valid industry or sector for this proposal.' },
+        { status: 400 }
+      )
     }
 
     // First attempt: Admin SDK write (bypasses client security rules).
