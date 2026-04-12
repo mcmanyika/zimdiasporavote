@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Prune old Firestore backups by age (daily window).
 # Required:
-#   FIREBASE_BACKUP_BUCKET   e.g. gs://defend-constitution-plat-dba4c.firebasestorage.app
+#   FIREBASE_BACKUP_BUCKET   e.g. gs://zimdiasporavote.firebasestorage.app
 #
 # Optional:
 #   FIRESTORE_BACKUP_PREFIX  (default: firestore-backups)

@@ -233,7 +233,7 @@ export default function ResourcesPage() {
               <h3 className="mb-4 text-lg font-bold">Quick Links</h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Link
-                  href="https://youtube.com/@defendtheconstitutionplatform"
+                  href="https://youtube.com/@DiasporaVote"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition-colors"
@@ -245,7 +245,7 @@ export default function ResourcesPage() {
                   </div>
                 </Link>
                 <Link
-                  href="https://www.dcpzim.com"
+                  href="https://diasporavote.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 hover:bg-slate-50 transition-colors"
@@ -253,7 +253,7 @@ export default function ResourcesPage() {
                   <span className="text-2xl">🔗</span>
                   <div>
                     <p className="font-semibold">Official Website</p>
-                    <p className="text-sm text-slate-600">www.dcpzim.com</p>
+                    <p className="text-sm text-slate-600">diasporavote.org</p>
                   </div>
                 </Link>
               </div>

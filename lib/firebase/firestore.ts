@@ -3463,13 +3463,13 @@ export async function updateIncidentReport(
 // ─── Referral Operations ──────────────────────────────────────────────────────
 
 /**
- * Generate a unique referral code (format: DCP-XXXXX where X is alphanumeric).
+ * Generate a unique referral code (format: DV-XXXXX where X is alphanumeric).
  * Checks Firestore to ensure uniqueness.
  */
 export async function generateReferralCode(): Promise<string> {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // avoid ambiguous chars 0/O, 1/I
   const generate = () => {
-    let code = 'DCP-'
+    let code = 'DV-'
     for (let i = 0; i < 5; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length))
     }

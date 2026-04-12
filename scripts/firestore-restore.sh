@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Firestore restore helper.
 # Required:
-#   FIREBASE_PROJECT_ID e.g. defend-constitution-plat-dba4c
+#   FIREBASE_PROJECT_ID e.g. zimdiasporavote
 #
 # Usage:
 #   npm run restore:firestore -- gs://bucket/path/to/export-folder

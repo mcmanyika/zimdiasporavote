@@ -526,6 +526,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Organizations (affiliates / partner logos on public pages)
+    match /organizations/{orgId} {
+      allow read: if resource.data.isActive == true;
+      allow read: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
     // Site links collection (header/footer links)
     match /siteLinks/{linkId} {
       // Public website reads links

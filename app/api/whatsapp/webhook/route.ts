@@ -367,7 +367,7 @@ export async function POST(request: NextRequest) {
           // Send error message
           await sendWhatsAppMessage(
             from,
-            'Sorry, I encountered an error. Please try again or visit our website at dcpzim.com for assistance.'
+            'Sorry, I encountered an error. Please try again or visit our website for assistance.'
           )
         }
       } else if (messageType === 'image') {

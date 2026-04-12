@@ -30,7 +30,7 @@ const fallbackQuickLinks: FooterLinkItem[] = [
   { id: 'footer-quick-leadership', label: 'Leadership', url: '/leadership', order: 3 },
   { id: 'footer-quick-gallery', label: 'Gallery', url: '/gallery', order: 4 },
   { id: 'footer-quick-surveys', label: 'Surveys', url: '/surveys', order: 5 },
-  { id: 'footer-quick-join', label: 'Join DCP', url: '/membership-application', order: 6 },
+  { id: 'footer-quick-join', label: 'Join Diaspora Vote', url: '/membership-application', order: 6 },
 ]
 
 const fallbackMoreLinks: FooterLinkItem[] = [
@@ -48,9 +48,9 @@ const fallbackUsefulLinks: FooterLinkItem[] = [
 ]
 
 const fallbackSocialLinks: FooterLinkItem[] = [
-  { id: 'footer-social-x', label: 'X', url: 'https://x.com/DCPlatform25', order: 1, iconKey: 'x', openInNewTab: true },
+  { id: 'footer-social-x', label: 'X', url: 'https://x.com/DiasporaVote', order: 1, iconKey: 'x', openInNewTab: true },
   { id: 'footer-social-facebook', label: 'Facebook', url: 'https://www.facebook.com/share/1C4G3L4eka/', order: 2, iconKey: 'facebook', openInNewTab: true },
-  { id: 'footer-social-youtube', label: 'YouTube', url: 'https://youtube.com/@defendtheconstitutionplatform', order: 3, iconKey: 'youtube', openInNewTab: true },
+  { id: 'footer-social-youtube', label: 'YouTube', url: 'https://youtube.com/@DiasporaVote', order: 3, iconKey: 'youtube', openInNewTab: true },
   { id: 'footer-social-tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@defend.the.consti', order: 4, iconKey: 'tiktok', openInNewTab: true },
   { id: 'footer-social-instagram', label: 'Instagram', url: 'https://www.instagram.com/dcplaform25', order: 5, iconKey: 'instagram', openInNewTab: true },
   { id: 'footer-social-whatsapp', label: 'WhatsApp Channel', url: 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z', order: 6, iconKey: 'whatsapp', openInNewTab: true },
@@ -294,7 +294,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 border-t border-blue-900/60 pt-4 text-center text-[10px] text-blue-100/70 sm:text-xs">
-          <p>&copy; {now.getFullYear()} Defend the Constitution Platform. All rights reserved.</p>
+          <p>&copy; {now.getFullYear()} Diaspora Vote. All rights reserved.</p>
           <p className="mt-1">
             <Link href="/privacy" className="hover:text-yellow-300 transition-colors">Privacy Policy</Link>
             <span className="mx-1.5">·</span>

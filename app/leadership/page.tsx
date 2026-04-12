@@ -36,7 +36,7 @@ export default function LeadershipPage() {
             <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Our People</p>
             <h1 className="mb-2 text-2xl font-bold sm:text-3xl md:text-4xl">Leadership</h1>
             <p className="text-sm text-slate-300 sm:text-base">
-              Meet the team driving the Defend the Constitution Platform forward
+              Meet the team driving the Diaspora Vote forward
             </p>
           </div>
         </div>

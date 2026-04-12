@@ -56,15 +56,15 @@ function WelcomeContent() {
           <Link href="/">
             <img
               src="/images/logo.png"
-              alt="DCP Logo"
+              alt="Diaspora Vote"
               className="mx-auto mb-6 h-16 w-16 rounded-lg object-contain hover:opacity-80 transition-opacity cursor-pointer"
             />
           </Link>
           <h1 className="text-2xl sm:text-3xl font-bold">
-            Welcome to the Defend the Constitution Platform
+            Welcome to Diaspora Vote
           </h1>
           <p className="mt-3 text-sm text-slate-400">
-            &ldquo;Defending the Constitution is Defending Our Future&rdquo;
+            &ldquo;Think Local, go global!&rdquo;
           </p>
         </div>
       </div>
@@ -77,33 +77,30 @@ function WelcomeContent() {
           </p>
 
           <p className="text-base text-slate-700 leading-relaxed mb-6">
-            Thank you for joining the <strong>Defend the Constitution Platform (DCP)</strong>.
+            Thank you for joining the <strong>Diaspora Vote (DV)</strong>.
           </p>
 
           <p className="text-base text-slate-700 leading-relaxed mb-6">
-            By choosing to become part of this Platform, you have joined a community of citizens
-            committed to a simple but profound principle:{' '}
-            <strong className="text-slate-900">Zimbabwe must be governed according to its Constitution.</strong>
+            By choosing to join, you are part of a community focused on{' '}
+            <strong className="text-slate-900">diaspora civic engagement and democratic participation</strong>{' '}
+            for Zimbabwe &mdash; connecting citizens abroad with transparent, peaceful ways to stay informed and involved.
           </p>
 
           <p className="text-base text-slate-700 leading-relaxed mb-6">
-            The DCP is a non-partisan, citizen-anchored constitutional movement. We do not exist to
-            compete for political office, but to protect the rules that make democratic politics
-            possible. Our work is guided by the People&rsquo;s Resolution &mdash; the shared commitment
-            that constitutional legitimacy, popular sovereignty, and the rule of law must remain the
-            foundation of our national life.
+            Diaspora Vote is non-partisan: we strengthen links between Zimbabweans overseas and democratic
+            processes at home, and we promote accountability and reliable information &mdash; without competing for political office.
           </p>
 
           <p className="text-base text-slate-700 leading-relaxed mb-4">
-            Your membership strengthens a collective effort to:
+            Together we work to:
           </p>
 
           <ul className="mb-6 space-y-3">
             {[
-              'Defend constitutional term limits and democratic safeguards',
-              'Promote full implementation of the Constitution',
-              'Support lawful civic participation and public accountability',
-              'Build a culture of constitutionalism across society',
+              'Expand diaspora access to information and participation',
+              'Promote free, fair, and peaceful democratic processes',
+              'Support lawful civic participation and accountability',
+              'Build solidarity across the global Zimbabwean community',
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-3">
                 <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
@@ -117,16 +114,13 @@ function WelcomeContent() {
           </ul>
 
           <p className="text-base text-slate-700 leading-relaxed mb-6">
-            We encourage you to stay engaged, participate in programmes and dialogues in your
-            community, and share accurate information from our official platforms. The strength of
-            this movement lies not in personalities, but in citizens acting together in defence of a
-            common national covenant.
+            Stay engaged through our programmes, share accurate information from our official channels, and invite others in the diaspora to take part. Our strength is citizens acting together.
           </p>
 
           {/* Highlight Quote */}
           <div className="mb-6 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 py-4 px-5">
             <p className="text-base sm:text-lg font-semibold italic text-slate-900">
-              Defending the Constitution is defending our future.
+              Think Local, go global!
             </p>
           </div>
 
@@ -141,7 +135,7 @@ function WelcomeContent() {
             <p className="text-base text-slate-700 mb-1">Warm regards,</p>
             <p className="text-base font-bold text-slate-900">Senator Jameson Zvidzai Timba</p>
             <p className="text-sm text-slate-500">Convenor</p>
-            <p className="text-sm text-slate-500">Defend the Constitution Platform (DCP)</p>
+            <p className="text-sm text-slate-500">Diaspora Vote (DV)</p>
           </div>
 
           {/* CTA Buttons */}
@@ -180,7 +174,7 @@ function WelcomeContent() {
       {/* Footer */}
       <div className="border-t bg-slate-100 py-6 text-center">
         <p className="text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} Defend the Constitution Platform. All rights reserved.
+          &copy; {new Date().getFullYear()} Diaspora Vote. All rights reserved.
         </p>
       </div>
     </div>

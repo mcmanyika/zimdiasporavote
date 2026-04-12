@@ -35,7 +35,7 @@ function MembershipApplicationContent() {
       <PartyLinkedDashboardShell
         title="Join the Movement"
         breadcrumbLabel="Membership"
-        headerDescription="Membership application — Defend the Constitution Platform (DCP)."
+        headerDescription="Membership application — Diaspora Vote."
         maxWidthClass="max-w-3xl"
       >
         <div className="flex items-center justify-center rounded-xl border border-slate-200 bg-white py-16 shadow-sm">
@@ -52,7 +52,7 @@ function MembershipApplicationContent() {
     <PartyLinkedDashboardShell
       title="Join the Movement"
       breadcrumbLabel="Membership"
-      headerDescription="“Defending the Constitution is Defending Our Future” — non-partisan membership in the DCP."
+      headerDescription="“Think Local, go global!” — non-partisan membership in Diaspora Vote."
       maxWidthClass="max-w-3xl"
     >
       <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:p-6">
@@ -71,10 +71,10 @@ function MembershipApplicationContent() {
             />
           </svg>
           <div>
-            <h3 className="text-sm font-bold text-amber-900">Defend the Constitution Platform (DCP)</h3>
+            <h3 className="text-sm font-bold text-amber-900">Diaspora Vote</h3>
             <p className="mt-1 text-sm text-amber-700">
-              The DCP is a non-partisan, non-electoral platform dedicated to the defence, protection, and full implementation
-              of the 2013 Constitution of Zimbabwe. Membership is open to individuals and organisations who share this
+              Diaspora Vote is a non-partisan platform that connects Zimbabweans abroad with civic participation, democratic
+              engagement, and transparent information. Membership is open to individuals and organisations who share this
               commitment.
             </p>
           </div>

@@ -104,7 +104,7 @@ export default function PetitionsPage() {
                   through peaceful civic means.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
-                  Join the Defend the Constitution Platform in demanding a referendum.
+                  Join the Diaspora Vote in demanding a referendum.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-slate-800 sm:text-base">
                   I support a national referendum before any extension of presidential or parliamentary tenure. No

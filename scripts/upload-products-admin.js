@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 
 // Initialize with explicit project ID (will use application default credentials if available)
 admin.initializeApp({
-  projectId: 'defend-constitution-plat-dba4c',
+  projectId: 'zimdiasporavote',
 });
 
 const db = admin.firestore();
@@ -10,7 +10,7 @@ const { Timestamp } = admin.firestore;
 
 const sampleProducts = [
   {
-    name: 'DCP T-Shirt',
+    name: 'Diaspora Vote T-Shirt',
     description: 'Show your support with our official platform t-shirt',
     price: 25,
     image: '/images/store/tshirt.png',
@@ -19,7 +19,7 @@ const sampleProducts = [
     isActive: true,
   },
   {
-    name: 'DCP Sticker Pack',
+    name: 'Diaspora Vote Sticker Pack',
     description: 'Set of 5 high-quality vinyl stickers',
     price: 5,
     image: '/images/store/cap.png',
@@ -28,7 +28,7 @@ const sampleProducts = [
     isActive: true,
   },
   {
-    name: 'DCP Flag',
+    name: 'Diaspora Vote Flag',
     description: '3x5 foot flag for rallies and events',
     price: 35,
     image: '/images/store/hoodie.png',

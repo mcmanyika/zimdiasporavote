@@ -221,7 +221,7 @@ export default function NewsDetailPage() {
                 {/* Quick info sidebar */}
                 <div className="border-l-4 border-emerald-500 pl-4 py-2 mt-4">
                   <p className="text-sm text-slate-500 italic leading-relaxed">
-                    Published by <span className="font-semibold text-slate-700">{news.author || 'DCP'}</span> on {formatDate(news.publishedAt || news.createdAt)}
+                    Published by <span className="font-semibold text-slate-700">{news.author || 'DV'}</span> on {formatDate(news.publishedAt || news.createdAt)}
                   </p>
                 </div>
               </div>

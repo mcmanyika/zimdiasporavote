@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Defend the Constitution",
-    "slug": "dcp-app",
+    "name": "Diaspora Vote",
+    "slug": "diaspora-vote",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

@@ -18,7 +18,7 @@ export default function Chatbot({ hideWhatsApp = false }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm here to help you learn about the Defend the Constitution Platform. How can I assist you today?",
+      content: "Hello! I'm here to help you learn about Diaspora Vote. How can I assist you today?",
       timestamp: new Date(),
     },
   ])
@@ -131,10 +131,10 @@ export default function Chatbot({ hideWhatsApp = false }: ChatbotProps) {
           <div className="flex items-center justify-between border-b border-slate-200 bg-slate-900 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-900">
-                DCP
+                DV
               </div>
               <div>
-                <h3 className="font-semibold text-white">DCP Assistant</h3>
+                <h3 className="font-semibold text-white">Diaspora Vote Assistant</h3>
                 <p className="text-xs text-slate-300">We're here to help</p>
               </div>
             </div>

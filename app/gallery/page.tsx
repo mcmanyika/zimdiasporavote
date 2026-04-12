@@ -6,14 +6,15 @@ import Footer from '@/app/components/Footer'
 import CTASection from '@/app/components/CTASection'
 import { getGalleryCategories, getGalleryImages } from '@/lib/firebase/firestore'
 import type { GalleryCategory, GalleryImage } from '@/types'
+import { getSiteUrl } from '@/lib/branding'
 
 const ITEMS_PER_PAGE = 12
 
-const SITE_URL = 'https://dcpzim.com/gallery'
+const SITE_URL = `${getSiteUrl()}/gallery`
 
 function ShareButtons({ title, size = 'sm' }: { imageUrl?: string; title: string; size?: 'sm' | 'md' }) {
   const [copied, setCopied] = useState(false)
-  const shareText = encodeURIComponent(`${title} – Defend the Constitution Platform`)
+  const shareText = encodeURIComponent(`${title} – Diaspora Vote`)
   const shareUrl = encodeURIComponent(SITE_URL)
 
   const btnClass = size === 'sm'

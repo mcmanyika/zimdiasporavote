@@ -146,7 +146,7 @@ function MembershipCardContent() {
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <div className="mb-6 text-center">
         <h2 className="text-xl font-bold text-slate-900">Your Membership Card</h2>
-        <p className="text-sm text-slate-500">View and print your official DCP membership card</p>
+        <p className="text-sm text-slate-500">View and print your official DV membership card</p>
       </div>
 
       <MembershipIDCard

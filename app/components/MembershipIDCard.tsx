@@ -37,7 +37,7 @@ export default function MembershipIDCard({
       <!DOCTYPE html>
       <html>
       <head>
-        <title>DCP Membership Card - ${memberName}</title>
+        <title>Diaspora Vote Membership Card - ${memberName}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body {
@@ -253,9 +253,9 @@ export default function MembershipIDCard({
           <div class="card">
             <div class="card-front">
               <div class="card-header">
-                <img src="${window.location.origin}/images/logo.png" class="card-logo" alt="DCP Logo" />
+                <img src="${window.location.origin}/images/logo.png" class="card-logo" alt="Diaspora Vote" />
                 <div>
-                  <div class="card-org-name">Defend the Constitution Platform</div>
+                  <div class="card-org-name">Diaspora Vote</div>
                   <div class="card-org-sub">Official Membership Card</div>
                 </div>
               </div>
@@ -283,7 +283,7 @@ export default function MembershipIDCard({
               </div>
               <div class="card-footer">
                 <div class="card-badge">✓ ACTIVE MEMBER</div>
-                <div class="card-id-text">www.dcpzim.com</div>
+                <div class="card-id-text">diasporavote.org</div>
               </div>
             </div>
           </div>
@@ -292,20 +292,20 @@ export default function MembershipIDCard({
           <div class="card">
             <div class="card-back">
               <div class="card-back-header">
-                <div class="card-back-title">Defend the Constitution Platform</div>
+                <div class="card-back-title">Diaspora Vote</div>
                 <div class="card-back-subtitle">Membership Terms & Conditions</div>
               </div>
               <ol class="card-terms">
-                <li>This card is the property of the Defend the Constitution Platform (DCP).</li>
+                <li>This card is the property of the Diaspora Vote (DV).</li>
                 <li>The holder is a registered member committed to defending constitutional supremacy.</li>
-                <li>This card is non-transferable and must be presented upon request at DCP events.</li>
+                <li>This card is non-transferable and must be presented upon request at Diaspora Vote events.</li>
                 <li>Membership is valid for one year from the date of issue and subject to renewal.</li>
-                <li>Lost or damaged cards should be reported to DCP administration immediately.</li>
+                <li>Lost or damaged cards should be reported to Diaspora Vote administration immediately.</li>
               </ol>
               <div class="card-back-footer">
-                <p>&ldquo;Defending the Constitution is Defending Our Future&rdquo;</p>
-                <p style="margin-top:8px"><a href="https://www.dcpzim.com">www.dcpzim.com</a></p>
-                <p style="margin-top:4px">&copy; ${new Date().getFullYear()} DCP. All rights reserved.</p>
+                <p>&ldquo;Think Local, go global!&rdquo;</p>
+                <p style="margin-top:8px"><a href="https://diasporavote.org">diasporavote.org</a></p>
+                <p style="margin-top:4px">&copy; ${new Date().getFullYear()} DV. All rights reserved.</p>
               </div>
             </div>
           </div>
@@ -331,9 +331,9 @@ export default function MembershipIDCard({
 
           {/* Header */}
           <div className="relative z-10 mb-5 flex items-center gap-3">
-            <img src="/images/logo.png" alt="DCP Logo" className="h-11 w-11 rounded-xl object-contain" />
+            <img src="/images/logo.png" alt="Diaspora Vote" className="h-11 w-11 rounded-xl object-contain" />
             <div>
-              <p className="text-sm font-bold tracking-wide">Defend the Constitution Platform</p>
+              <p className="text-sm font-bold tracking-wide">Diaspora Vote</p>
               <p className="text-[10px] tracking-wider text-slate-400">Official Membership Card</p>
             </div>
           </div>
@@ -379,29 +379,29 @@ export default function MembershipIDCard({
             <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-[10px] font-bold tracking-wider text-emerald-300">
               ✓ ACTIVE MEMBER
             </span>
-            <span className="text-[9px] text-slate-500">www.dcpzim.com</span>
+            <span className="text-[9px] text-slate-500">diasporavote.org</span>
           </div>
         </div>
 
         {/* Back of Card */}
         <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-xl">
           <div className="mb-4 text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-900">Defend the Constitution Platform</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-900">Diaspora Vote</p>
             <p className="text-[10px] text-slate-500">Membership Terms & Conditions</p>
           </div>
 
           <ol className="mb-4 list-decimal space-y-1 pl-4 text-[9px] leading-relaxed text-slate-600">
-            <li>This card is the property of the Defend the Constitution Platform (DCP).</li>
+            <li>This card is the property of the Diaspora Vote (DV).</li>
             <li>The holder is a registered member committed to defending constitutional supremacy.</li>
-            <li>This card is non-transferable and must be presented upon request at DCP events.</li>
+            <li>This card is non-transferable and must be presented upon request at Diaspora Vote events.</li>
             <li>Membership is valid for one year from the date of issue and subject to renewal.</li>
-            <li>Lost or damaged cards should be reported to DCP administration immediately.</li>
+            <li>Lost or damaged cards should be reported to Diaspora Vote administration immediately.</li>
           </ol>
 
           <div className="border-t border-slate-200 pt-3 text-center">
-            <p className="text-[9px] italic text-slate-500">&ldquo;Defending the Constitution is Defending Our Future&rdquo;</p>
-            <p className="mt-2 text-[9px] font-semibold text-slate-700">www.dcpzim.com</p>
-            <p className="text-[9px] text-slate-400">&copy; {new Date().getFullYear()} DCP. All rights reserved.</p>
+            <p className="text-[9px] italic text-slate-500">&ldquo;Think Local, go global!&rdquo;</p>
+            <p className="mt-2 text-[9px] font-semibold text-slate-700">diasporavote.org</p>
+            <p className="text-[9px] text-slate-400">&copy; {new Date().getFullYear()} DV. All rights reserved.</p>
           </div>
         </div>
       </div>

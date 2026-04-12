@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     const trimmedEmail = email.trim()
     const trimmedName = name.trim()
-    const subject = 'Welcome to Defend the Constitution Platform!'
+    const subject = 'Welcome to Diaspora Vote!'
 
     // Check if Resend API key is configured
     if (!process.env.RESEND_API_KEY) {

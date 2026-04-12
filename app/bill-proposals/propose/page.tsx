@@ -74,7 +74,7 @@ export default function ProposeBillPage() {
     <PartyLinkedDashboardShell
       title="Submit a Bill Proposal"
       breadcrumbLabel="Submit proposal"
-      headerDescription="Citizen legislative intake — share the law reform you want reviewed by the DCP legislative team."
+      headerDescription="Citizen legislative intake — share the law reform you want reviewed by the Diaspora Vote legislative team."
       maxWidthClass="max-w-4xl"
     >
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

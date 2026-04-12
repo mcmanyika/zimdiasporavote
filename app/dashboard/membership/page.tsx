@@ -54,13 +54,13 @@ export default function MembershipPage() {
             <MembershipCard />
           </div>
 
-          {/* DCP Membership Application */}
+          {/* Diaspora Vote membership application */}
           <div className="mb-8 rounded-lg border border-slate-200 bg-white p-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">DCP Membership Application</h2>
+                <h2 className="text-xl font-bold text-slate-900">Diaspora Vote membership application</h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Apply to become an official member of the Defend the Constitution Platform
+                  Apply to become an official member of Diaspora Vote
                 </p>
               </div>
               <Link

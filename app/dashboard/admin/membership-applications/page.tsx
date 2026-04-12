@@ -53,8 +53,8 @@ const CASH_PAYMENT_PLANS = [
   { id: 'professional', label: 'Professional Associations', amount: 250, period: 'yearly' as const },
 ]
 
-const DEFAULT_MEMBERSHIP_EMAIL_SUBJECT = 'Your DCP Membership Application – Next Step'
-const DEFAULT_MEMBERSHIP_EMAIL_BODY = `Thank you for submitting your membership application to the Defend the Constitution Platform (DCP). We sincerely appreciate your commitment to defending Zimbabwe's Constitution and strengthening citizen participation.
+const DEFAULT_MEMBERSHIP_EMAIL_SUBJECT = 'Your Diaspora Vote Membership Application – Next Step'
+const DEFAULT_MEMBERSHIP_EMAIL_BODY = `Thank you for submitting your membership application to Diaspora Vote (DV). We sincerely appreciate your commitment to strengthening diaspora civic engagement and democratic participation for Zimbabwe.
 
 We are pleased to inform you that your application has been received. The next step to activate your membership is your solidarity contribution.
 
@@ -72,14 +72,14 @@ Institutional / Organisational Membership (Annual):
 - Professional Associations — USD 250
 - National Civic Organisations & Political Parties — USD 300
 
-This solidarity contribution supports our civic education, mobilisation, petition outreach, and constitutional defence work across Zimbabwe.
+This solidarity contribution supports our civic education, mobilisation, outreach, and diaspora engagement work.
 
-Once your solidarity contribution is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in DCP initiatives.
+Once your solidarity contribution is received, your membership will be formally activated, and you will begin receiving updates, invitations, and opportunities to actively participate in Diaspora Vote initiatives.
 
 You can complete your solidarity contribution by visiting:
-www.dcpzim.com
+diasporavote.org
 
-Thank you for standing with us in defence of the Constitution and the future of Zimbabwe. For inquiries, please do not hesitate to contact us.
+Thank you for standing with us. For inquiries, please do not hesitate to contact us.
 
 Note: For EcoCash contributions, you may send to 0774754506 (Jacob Chengedzeni).`
 
@@ -262,11 +262,11 @@ export default function AdminMembershipApplicationsPage() {
     const existingNumbers = applications
       .filter(a => a.membershipNumber)
       .map(a => {
-        const match = a.membershipNumber!.match(/DCP-\d{4}-(\d+)/)
+        const match = a.membershipNumber!.match(/(?:DCP|DV)-\d{4}-(\d+)/)
         return match ? parseInt(match[1], 10) : 0
       })
     const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1
-    return `DCP-${year}-${String(nextNumber).padStart(3, '0')}`
+    return `DV-${year}-${String(nextNumber).padStart(3, '0')}`
   }
 
   const openDetail = (app: MembershipApplication) => {
@@ -538,7 +538,7 @@ export default function AdminMembershipApplicationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Membership Applications</h1>
-                <p className="mt-1 text-sm text-slate-500">Review and manage DCP membership applications</p>
+                <p className="mt-1 text-sm text-slate-500">Review and manage Diaspora Vote membership applications</p>
               </div>
               <Link
                 href="/dashboard"

@@ -47,7 +47,7 @@ export default function SplashOverlay({ visible, onEnter }: SplashOverlayProps) 
       </View>
 
       {/* App Name */}
-      <Text style={styles.title}>Defend the Constitution</Text>
+      <Text style={styles.title}>Diaspora Vote</Text>
 
       {/* Tagline */}
       <Text style={styles.tagline}>Our Constitution. Our Future</Text>

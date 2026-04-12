@@ -10,7 +10,7 @@ export default function VolunteerPage() {
       <PartyLinkedDashboardShell
         title="Volunteer Network"
         breadcrumbLabel="Volunteer"
-        headerDescription="Apply to volunteer with the Defend the Constitution Platform."
+        headerDescription="Apply to volunteer with the Diaspora Vote."
       >
         <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <VolunteerApplicationForm />

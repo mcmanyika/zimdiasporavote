@@ -193,9 +193,9 @@ function VolunteerApplicationsManagement() {
     } catch (e) { /* ignore */ }
 
     // No draft — use default template
-    setEmailSubject(`Your Volunteer Application — Defend the Constitution Platform`)
+    setEmailSubject(`Your Volunteer Application — Diaspora Vote`)
     setEmailBody(
-      `Thank you for submitting your volunteer application to the Defend the Constitution Platform (DCP). We truly appreciate your willingness to contribute your time and skills to this important cause.\n\nWe have reviewed your application and are pleased to inform you that we would like to explore how best to engage you within our programmes. A member of our team will be in touch to discuss next steps.\n\nIn the meantime, please feel free to visit our website at www.dcpzim.com to stay updated on our latest activities and initiatives.\n\nOnce again, thank you for standing with us in defence of Zimbabwe's Constitution.`
+      `Thank you for submitting your volunteer application to Diaspora Vote (DV). We truly appreciate your willingness to contribute your time and skills to this important cause.\n\nWe have reviewed your application and are pleased to inform you that we would like to explore how best to engage you within our programmes. A member of our team will be in touch to discuss next steps.\n\nIn the meantime, please feel free to visit our website at diasporavote.org to stay updated on our latest activities and initiatives.\n\nOnce again, thank you for standing with us.`
     )
   }
 
@@ -318,8 +318,8 @@ function VolunteerApplicationsManagement() {
   const selectedApps = applications.filter((a) => selectedIds.has(a.id))
 
   const getDefaultBulkTemplate = () => ({
-    subject: 'Your Volunteer Application — Defend the Constitution Platform',
-    body: `Thank you for submitting your volunteer application to the Defend the Constitution Platform (DCP). We truly appreciate your willingness to contribute your time and skills to this important cause.\n\nWe have reviewed your application and are pleased to inform you that we would like to explore how best to engage you within our programmes. A member of our team will be in touch to discuss next steps.\n\nIn the meantime, please feel free to visit our website at www.dcpzim.com to stay updated on our latest activities and initiatives.\n\nOnce again, thank you for standing with us in defence of Zimbabwe's Constitution.`,
+    subject: 'Your Volunteer Application — Diaspora Vote',
+    body: `Thank you for submitting your volunteer application to Diaspora Vote (DV). We truly appreciate your willingness to contribute your time and skills to this important cause.\n\nWe have reviewed your application and are pleased to inform you that we would like to explore how best to engage you within our programmes. A member of our team will be in touch to discuss next steps.\n\nIn the meantime, please feel free to visit our website at diasporavote.org to stay updated on our latest activities and initiatives.\n\nOnce again, thank you for standing with us.`,
   })
 
   const openBulkEmailModal = () => {

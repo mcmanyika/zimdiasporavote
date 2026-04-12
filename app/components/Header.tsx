@@ -25,7 +25,7 @@ const fallbackHeaderLinks: NavLinkItem[] = [
   { id: 'header-about', label: 'About', url: '/about', style: 'link', order: 1 },
   { id: 'header-petitions', label: 'Petitions', url: '/petitions', style: 'link', order: 2 },
   { id: 'header-articles', label: 'Articles', url: '/news', style: 'link', order: 3 },
-  { id: 'header-join', label: 'Join DCP', url: '/membership-application', style: 'button', order: 4 },
+  { id: 'header-join', label: 'Join Diaspora Vote', url: '/membership-application', style: 'button', order: 4 },
   { id: 'header-contact', label: 'Contact', url: '/#contact', style: 'link', order: 5 },
 ];
 
@@ -138,11 +138,11 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
         <Link href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
           <img 
             src="/images/logo.png" 
-            alt="DCP Logo" 
+            alt="Diaspora Vote" 
             className="h-11 w-11 rounded-md object-contain sm:h-12 sm:w-12"
           />
           <div className="leading-tight hidden sm:block">
-            <p className="text-xs font-bold text-white">Defend the Constitution</p>
+            <p className="text-xs font-bold text-white">Diaspora Vote</p>
             <p className="text-[10px] text-slate-400">Our Constitution. Our Future</p>
           </div>
         </Link>

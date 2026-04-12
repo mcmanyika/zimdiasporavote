@@ -10,7 +10,7 @@ import {
 import { WebView } from 'react-native-webview'
 import SplashOverlay from './SplashOverlay'
 
-const SITE_URL = 'https://dcpzim.com'
+const SITE_URL = 'https://diasporavote.org'
 
 export default function App() {
   const [isReady, setIsReady] = useState(false)
@@ -55,7 +55,7 @@ export default function App() {
           startInLoadingState={false}
           allowsBackForwardNavigationGestures
           cacheEnabled
-          applicationNameForUserAgent="DCPMobileApp/1.0"
+          applicationNameForUserAgent="DiasporaVoteMobile/1.0"
           pullToRefreshEnabled
         />
 

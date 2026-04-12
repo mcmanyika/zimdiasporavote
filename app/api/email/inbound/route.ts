@@ -64,7 +64,7 @@ function extractBodyText(data: any): { text: string; html: string } {
  * 
  * Receives POST requests from Resend when an email is sent to your domain.
  * Configure this URL in Resend dashboard → Webhooks → email.received event.
- * URL: https://dcpzim.com/api/email/inbound
+ * URL: https://diasporavote.org/api/email/inbound
  */
 export async function POST(request: NextRequest) {
   try {

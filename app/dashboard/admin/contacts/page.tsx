@@ -211,7 +211,7 @@ export default function AdminContactsPage() {
                   </p>
                     <div className="mt-4 flex gap-2">
                     <a
-                      href={`mailto:${submission.email}?subject=Re: Your message to DCP`}
+                      href={`mailto:${submission.email}?subject=Re: Your message to Diaspora Vote`}
                       onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors"
                     >

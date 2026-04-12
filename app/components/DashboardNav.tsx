@@ -150,14 +150,6 @@ function IconShare({ className = 'h-5 w-5' }: { className?: string }) {
   )
 }
 
-function IconRocket({ className = 'h-5 w-5' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 5.84l-4.09.58.58-4.09a6 6 0 015.84-5.84m3.51-4.87a1.5 1.5 0 112.12 2.12l-2.12 2.12a3 3 0 01-4.24-4.24l2.12-2.12z" />
-    </svg>
-  )
-}
-
 const accountItems: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: <IconChart />, description: 'Dashboard summary & stats' },
   { href: '/dashboard/profile', label: 'Profile', icon: <IconUser />, description: 'Your account settings' },
@@ -165,8 +157,6 @@ const accountItems: NavItem[] = [
   { href: '/dashboard/membership', label: 'Membership', icon: <IconStar />, description: 'Plan & billing' },
   { href: '/dashboard/membership-card', label: 'My Card', icon: <IconCreditCard />, description: 'View & print card' },
   { href: '/dashboard/referrals', label: 'Referrals', icon: <IconShare />, description: 'Invite friends & track' },
-  { href: '/dashboard/party-nominations', label: 'Nominations', icon: <IconClipboard />, description: 'Nominate and vote for candidates' },
-  { href: '/dashboard/youth', label: 'Youth Hub', icon: <IconRocket />, description: 'Actions, missions & growth' },
   { href: '/dashboard/volunteer', label: 'Volunteer', icon: <IconHandRaised />, description: 'Volunteer status' },
   { href: '/dashboard/resources', label: 'Resources', icon: <IconBook />, description: 'Guides & materials' },
 ]
@@ -192,19 +182,10 @@ const adminContentItems: NavItem[] = [
   { href: '/dashboard/admin/videos', label: 'Videos', icon: <IconVideo />, description: 'Educational YouTube videos' },
   { href: '/dashboard/admin/petitions', label: 'Petitions', icon: <IconPencilSquare />, description: 'Manage petitions' },
   { href: '/dashboard/admin/bill-proposals', label: 'Bill Proposals', icon: <IconClipboard />, description: 'Review and publish drafts' },
-  { href: '/dashboard/admin/public-hearings', label: 'Public Hearings', icon: <IconClipboard />, description: 'Schedule and publish hearings' },
-  { href: '/dashboard/admin/party', label: 'Political Party', icon: <IconClipboard />, description: 'Manage party launch module' },
-  { href: '/dashboard/admin/party-nominations', label: 'Party Nominations', icon: <IconClipboard />, description: 'Review nominations and voting' },
   { href: '/dashboard/admin/banners', label: 'Banners', icon: <IconFlag />, description: 'Hero banners' },
   { href: '/dashboard/admin/gallery', label: 'Gallery', icon: <IconPhoto />, description: 'Image gallery' },
   { href: '/dashboard/admin/leadership', label: 'Leadership', icon: <IconUserGroup />, description: 'Leadership team' },
   { href: '/dashboard/admin/twitter-embeds', label: 'X Embeds', icon: <IconTwitter />, description: 'Live Twitter/X feed' },
-  {
-    href: '/dashboard/admin/violence-instigator-submissions',
-    label: 'Violence posts',
-    icon: <IconTwitter />,
-    description: 'Public X links — review & activate',
-  },
 ]
 
 function IconIdentification({ className = 'h-5 w-5' }: { className?: string }) {
@@ -239,14 +220,12 @@ const adminManageItems: NavItem[] = [
   { href: '/dashboard/admin/donations', label: 'All Donations', icon: <IconHeart />, description: 'All donations' },
   { href: '/dashboard/admin/products', label: 'Products', icon: <IconShoppingBag />, description: 'Shop inventory' },
   { href: '/dashboard/admin/orders', label: 'Orders', icon: <IconCube />, description: 'Order management' },
-  { href: '/dashboard/admin/youth-missions', label: 'Youth Missions', icon: <IconRocket />, description: 'Youth action tasks' },
   { href: '/dashboard/admin/volunteers', label: 'Volunteers', icon: <IconUserGroup />, description: 'Applications' },
   { href: '/dashboard/admin/contacts', label: 'Contact', icon: <IconEnvelope />, description: 'Messages received' },
   { href: '/dashboard/admin/inbox', label: 'Inbox', icon: <IconEnvelope />, description: 'Received emails' },
   { href: '/dashboard/admin/compose-email', label: 'Email Compose', icon: <IconEnvelope />, description: 'Send an email' },
   { href: '/dashboard/admin/emails', label: 'Emails', icon: <IconEnvelope />, description: 'Sent email logs' },
   { href: '/dashboard/admin/downloads', label: 'Downloads', icon: <IconArrowDownTray />, description: 'Download tracking' },
-  { href: '/dashboard/admin/petition-signatures', label: 'Signatures', icon: <IconPencilSquare />, description: 'Petition signatories' },
   { href: '/dashboard/admin/surveys', label: 'Surveys', icon: <IconClipboard />, description: 'Manage surveys' },
 ]
 
@@ -263,13 +242,7 @@ export default function DashboardNav({ breadcrumbLabel }: DashboardNavProps) {
   const [megaOpen, setMegaOpen] = useState(false)
   const navRef = useRef<HTMLDivElement>(null)
 
-  // Filter account items based on role/access level
-  const filteredAccountItems = accountItems.filter((item) => {
-    if (item.href === '/dashboard/party-nominations') {
-      return isAdmin && accessLevel >= 5
-    }
-    return true
-  })
+  const filteredAccountItems = accountItems
 
   // Filter admin manage items based on access level
   const filteredManageItems = adminManageItems.filter((item) => {
@@ -278,11 +251,8 @@ export default function DashboardNav({ breadcrumbLabel }: DashboardNavProps) {
     return true
   })
 
-  // Filter admin content items based on access level
   const filteredContentItems = adminContentItems.filter((item) => {
     if (item.href === '/dashboard/admin/petitions' && accessLevel < 5) return false
-    if (item.href === '/dashboard/admin/party' && accessLevel < 5) return false
-    if (item.href === '/dashboard/admin/party-nominations' && accessLevel < 5) return false
     return true
   })
 

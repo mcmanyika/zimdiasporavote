@@ -1,10 +1,18 @@
 import { Resend } from 'resend'
+import {
+  CONTACT_EMAIL,
+  getSiteUrl,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SOCIAL_FACEBOOK_URL,
+  SOCIAL_X_URL,
+} from '@/lib/branding'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'DCP <onboarding@resend.dev>'
-const APP_NAME = 'Defend the Constitution Platform'
-const APP_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://dcpzim.com'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Diaspora Vote <onboarding@resend.dev>'
+const APP_NAME = SITE_NAME
+const APP_URL = getSiteUrl()
 
 // ─── Welcome Email ────────────────────────────────────────────────
 export async function sendWelcomeEmail({
@@ -125,7 +133,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
           <!-- Header -->
           <tr>
             <td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-              <img src="${APP_URL}/images/logo.png" alt="DCP Logo" width="60" height="60" style="border-radius:8px;" />
+              <img src="${APP_URL}/images/logo.png" alt="${APP_NAME}" width="60" height="60" style="border-radius:8px;" />
               <h1 style="color:#ffffff;font-size:22px;margin:16px 0 0;font-weight:700;">
                 ${APP_NAME}
               </h1>
@@ -147,7 +155,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
                       Warm regards,
                     </p>
                     <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0;">
-                      <strong>Defend the Constitution Platform</strong>
+                      <strong>${APP_NAME}</strong>
                     </p>
                   </td>
                   <td valign="top" style="padding:28px 20px;background-color:#1e3a8a;width:32%;color:#ffffff;">
@@ -163,15 +171,15 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
                     </p>
                     <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
                       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:-2px;margin-right:6px;"><path d="M13.5 8.5h2V6h-2C11.6 6 10 7.6 10 9.5V12H8v2.5h2V20h2.5v-5.5h2.2l.3-2.5h-2.5V9.8c0-.7.3-1.3 1-1.3Z"/></svg>
-                      <a href="https://www.facebook.com" style="color:#ffffff;text-decoration:underline;">Defend the Constitution Platform</a>
+                      <a href="${SOCIAL_FACEBOOK_URL}" style="color:#ffffff;text-decoration:underline;">${APP_NAME}</a>
                     </p>
                     <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
                       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#ffffff" style="vertical-align:-2px;margin-right:6px;"><path d="M18.9 3H22l-6.8 7.8L23 21h-6l-4.7-6.1L6.8 21H3.7l7.3-8.4L1.4 3h6l4.3 5.7L18.9 3Zm-1 16h1.7L6.5 4.9H4.8L17.9 19Z"/></svg>
-                      <a href="https://x.com/DCPPlatform25" style="color:#ffffff;text-decoration:underline;">@DCPPlatform25</a>
+                      <a href="${SOCIAL_X_URL}" style="color:#ffffff;text-decoration:underline;">@DiasporaVote</a>
                     </p>
                     <p style="font-size:12px;line-height:1.6;margin:0 0 6px;">
                       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;margin-right:6px;"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" stroke="#ffffff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      <a href="mailto:defendtheconstitutionplatform@gmail.com" style="color:#ffffff;text-decoration:underline;">defendtheconstitutionplatform@gmail.com</a>
+                      <a href="mailto:${CONTACT_EMAIL}" style="color:#ffffff;text-decoration:underline;">${CONTACT_EMAIL}</a>
                     </p>
                   </td>
                 </tr>
@@ -185,7 +193,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
                 © ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
               </p>
               <p style="color:#94a3b8;font-size:11px;margin:6px 0 0;">
-                <a href="https://www.dcpzim.com" style="color:#0f172a;text-decoration:underline;">www.dcpzim.com</a>
+                <a href="${APP_URL}" style="color:#0f172a;text-decoration:underline;">${APP_URL.replace(/^https?:\/\//, '')}</a>
               </p>
             </td>
           </tr>
@@ -212,7 +220,7 @@ function buildWelcomeEmailHtml({
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to DCP</title>
+  <title>Welcome to ${APP_NAME}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;padding:40px 20px;">
@@ -223,12 +231,12 @@ function buildWelcomeEmailHtml({
           <!-- Header -->
           <tr>
             <td style="background-color:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-              <img src="${APP_URL}/images/logo.png" alt="DCP Logo" width="60" height="60" style="border-radius:8px;" />
+              <img src="${APP_URL}/images/logo.png" alt="${APP_NAME}" width="60" height="60" style="border-radius:8px;" />
               <h1 style="color:#ffffff;font-size:22px;margin:16px 0 0;font-weight:700;">
-                Defend the Constitution Platform
+                ${APP_NAME}
               </h1>
               <p style="color:#94a3b8;font-size:13px;margin:6px 0 0;">
-                "Defending the Constitution is Defending Our Future"
+                &quot;${SITE_TAGLINE}&quot;
               </p>
             </td>
           </tr>
@@ -240,17 +248,17 @@ function buildWelcomeEmailHtml({
                 Dear <strong style="color:#0f172a;">${name}</strong>,
               </p>
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                Thank you for joining the <strong>Defend the Constitution Platform (DCP)</strong>.
+                Thank you for joining <strong>${APP_NAME}</strong>.
               </p>
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                By choosing to become part of this Platform, you have joined a community of citizens committed to a simple but profound principle: <strong style="color:#0f172a;">Zimbabwe must be governed according to its Constitution.</strong>
+                You are now part of a non-partisan community focused on <strong style="color:#0f172a;">diaspora civic engagement and democratic participation</strong> for Zimbabwe &mdash; connecting citizens abroad with transparent, peaceful ways to stay informed and involved.
               </p>
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                The DCP is a non-partisan, citizen-anchored constitutional movement. We do not exist to compete for political office, but to protect the rules that make democratic politics possible. Our work is guided by the People&rsquo;s Resolution &mdash; the shared commitment that constitutional legitimacy, popular sovereignty, and the rule of law must remain the foundation of our national life.
+                ${APP_NAME} exists to amplify diaspora voices, support accountable governance, and strengthen the link between Zimbabweans overseas and democratic processes at home.
               </p>
 
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 12px;">
-                Your membership strengthens a collective effort to:
+                Together we work to:
               </p>
 
               <!-- Bullet Points -->
@@ -260,7 +268,7 @@ function buildWelcomeEmailHtml({
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding-right:12px;vertical-align:top;color:#10b981;font-size:16px;">&#8226;</td>
-                        <td style="color:#334155;font-size:14px;line-height:1.6;">Defend constitutional term limits and democratic safeguards</td>
+                        <td style="color:#334155;font-size:14px;line-height:1.6;">Expand diaspora access to information and participation</td>
                       </tr>
                     </table>
                   </td>
@@ -270,7 +278,7 @@ function buildWelcomeEmailHtml({
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding-right:12px;vertical-align:top;color:#10b981;font-size:16px;">&#8226;</td>
-                        <td style="color:#334155;font-size:14px;line-height:1.6;">Promote full implementation of the Constitution</td>
+                        <td style="color:#334155;font-size:14px;line-height:1.6;">Promote free, fair, and peaceful democratic processes</td>
                       </tr>
                     </table>
                   </td>
@@ -280,7 +288,7 @@ function buildWelcomeEmailHtml({
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding-right:12px;vertical-align:top;color:#10b981;font-size:16px;">&#8226;</td>
-                        <td style="color:#334155;font-size:14px;line-height:1.6;">Support lawful civic participation and public accountability</td>
+                        <td style="color:#334155;font-size:14px;line-height:1.6;">Support lawful civic participation and accountability</td>
                       </tr>
                     </table>
                   </td>
@@ -290,7 +298,7 @@ function buildWelcomeEmailHtml({
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding-right:12px;vertical-align:top;color:#10b981;font-size:16px;">&#8226;</td>
-                        <td style="color:#334155;font-size:14px;line-height:1.6;">Build a culture of constitutionalism across society</td>
+                        <td style="color:#334155;font-size:14px;line-height:1.6;">Build solidarity across the global Zimbabwean community</td>
                       </tr>
                     </table>
                   </td>
@@ -298,7 +306,7 @@ function buildWelcomeEmailHtml({
               </table>
 
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                We encourage you to stay engaged, participate in programmes and dialogues in your community, and share accurate information from our official platforms. The strength of this movement lies not in personalities, but in citizens acting together in defence of a common national covenant.
+                Stay engaged through our programmes, share accurate information from our official channels, and invite others in the diaspora to take part. Our strength is citizens acting together.
               </p>
 
               <!-- Highlight Quote -->
@@ -306,7 +314,7 @@ function buildWelcomeEmailHtml({
                 <tr>
                   <td style="border-left:4px solid #10b981;padding:16px 20px;background-color:#f0fdf4;border-radius:0 8px 8px 0;">
                     <p style="color:#0f172a;font-size:16px;font-weight:600;font-style:italic;margin:0;">
-                      Defending the Constitution is defending our future.
+                      ${SITE_TAGLINE}
                     </p>
                   </td>
                 </tr>
@@ -338,7 +346,7 @@ function buildWelcomeEmailHtml({
                 Convenor
               </p>
               <p style="color:#64748b;font-size:13px;line-height:1.5;margin:0;">
-                Defend the Constitution Platform (DCP)
+                ${APP_NAME}
               </p>
             </td>
           </tr>
@@ -348,7 +356,7 @@ function buildWelcomeEmailHtml({
             <td style="background-color:#f1f5f9;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
               <p style="color:#64748b;font-size:12px;line-height:1.5;margin:0 0 8px;">
                 You're receiving this email because you signed up at
-                <a href="${APP_URL}" style="color:#0f172a;text-decoration:underline;">${APP_URL.replace('https://', '')}</a>
+                <a href="${APP_URL}" style="color:#0f172a;text-decoration:underline;">${APP_URL.replace(/^https?:\/\//, '')}</a>
               </p>
               <p style="color:#94a3b8;font-size:11px;margin:0;">
                 © ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.

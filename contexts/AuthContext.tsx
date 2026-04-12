@@ -205,71 +205,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userCredential = await signInWithPopup(auth, provider)
     const user = userCredential.user
 
-    // Check if user profile exists
-    const userDoc = await getDoc(doc(db, 'users', user.uid))
-    if (!userDoc.exists()) {
-      // Look up referrer if a referral code was provided
-      let referrerUser: UserProfile | null = null
-      if (referralCode) {
-        try {
-          referrerUser = await getUserByReferralCode(referralCode)
-        } catch { /* non-critical */ }
-      }
+    // Profile sync uses Firestore; keep Google Auth success even if rules/data fail so the user can still sign in.
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid))
+      if (!userDoc.exists()) {
+        // Look up referrer if a referral code was provided
+        let referrerUser: UserProfile | null = null
+        if (referralCode) {
+          try {
+            referrerUser = await getUserByReferralCode(referralCode)
+          } catch { /* non-critical */ }
+        }
 
-      // Create new user profile with referral code
-      const newReferralCode = await generateReferralCode()
-      const userProfile: UserProfile = {
-        uid: user.uid,
-        email: user.email!,
-        name: user.displayName || undefined,
-        membershipTier: 'free',
-        role: 'supporter',
-        createdAt: new Date(),
-        emailVerified: user.emailVerified,
-        photoURL: user.photoURL || undefined,
-        referralCode: newReferralCode,
-        ...(referrerUser ? { referredBy: referralCode } : {}),
-      }
-      await setDoc(doc(db, 'users', user.uid), {
-        ...userProfile,
-        createdAt: new Date(),
-      })
+        // Create new user profile with referral code
+        const newReferralCode = await generateReferralCode()
+        const userProfile: UserProfile = {
+          uid: user.uid,
+          email: user.email!,
+          name: user.displayName || undefined,
+          membershipTier: 'free',
+          role: 'supporter',
+          createdAt: new Date(),
+          emailVerified: user.emailVerified,
+          photoURL: user.photoURL || undefined,
+          referralCode: newReferralCode,
+          ...(referrerUser ? { referredBy: referralCode } : {}),
+        }
+        await setDoc(doc(db, 'users', user.uid), {
+          ...userProfile,
+          createdAt: new Date(),
+        })
 
-      // Create referral record if referred by someone
-      if (referrerUser) {
+        // Create referral record if referred by someone
+        if (referrerUser) {
+          try {
+            await createReferral({
+              referrerUserId: referrerUser.uid,
+              referredUserId: user.uid,
+              referredEmail: user.email!,
+              referredName: user.displayName || user.email!,
+              status: 'signed_up',
+            })
+          } catch (e) { /* non-critical */ }
+        }
+
+        // Create admin notification for new Google user signup
         try {
-          await createReferral({
-            referrerUserId: referrerUser.uid,
-            referredUserId: user.uid,
-            referredEmail: user.email!,
-            referredName: user.displayName || user.email!,
-            status: 'signed_up',
+          await createNotification({
+            type: 'new_user',
+            title: 'New User Registration',
+            message: `${user.displayName || user.email} signed up via Google.${referrerUser ? ` Referred by ${referrerUser.name || referrerUser.email}.` : ''}`,
+            link: '/dashboard/admin/users',
           })
         } catch (e) { /* non-critical */ }
+
+        // Send automated welcome email (non-blocking, non-critical)
+        try {
+          fetch('/api/email/welcome', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.email,
+              name: user.displayName || user.email,
+              userId: user.uid,
+            }),
+          }).catch(() => {}) // fire-and-forget
+        } catch (e) { /* non-critical */ }
       }
-
-      // Create admin notification for new Google user signup
-      try {
-        await createNotification({
-          type: 'new_user',
-          title: 'New User Registration',
-          message: `${user.displayName || user.email} signed up via Google.${referrerUser ? ` Referred by ${referrerUser.name || referrerUser.email}.` : ''}`,
-          link: '/dashboard/admin/users',
-        })
-      } catch (e) { /* non-critical */ }
-
-      // Send automated welcome email (non-blocking, non-critical)
-      try {
-        fetch('/api/email/welcome', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: user.email,
-            name: user.displayName || user.email,
-            userId: user.uid,
-          }),
-        }).catch(() => {}) // fire-and-forget
-      } catch (e) { /* non-critical */ }
+    } catch (e: unknown) {
+      const code = typeof e === 'object' && e !== null && 'code' in e ? (e as { code?: string }).code : undefined
+      if (code === 'permission-denied') {
+        console.error(
+          'Firestore permission denied while syncing Google profile. Deploy firestore.rules to this Firebase project (npm run firebase:deploy:rules).',
+          e
+        )
+        return
+      }
+      throw e
     }
   }
 

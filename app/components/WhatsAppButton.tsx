@@ -8,7 +8,7 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({
   phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_PHONE || '',
-  message = 'Hello! I have a question about the Defend the Constitution Platform.',
+  message = 'Hello! I have a question about Diaspora Vote.',
   className = '',
 }: WhatsAppButtonProps) {
   const handleClick = () => {

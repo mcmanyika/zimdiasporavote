@@ -11,8 +11,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Defend the Constitution Platform',
-  description: 'Citizen-led constitutionalism & accountability',
+  title: 'Diaspora Vote',
+  description: 'Think Local, go global — diaspora civic engagement for Zimbabwe',
 }
 
 export default function RootLayout({

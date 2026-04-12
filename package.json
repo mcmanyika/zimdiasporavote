@@ -1,5 +1,5 @@
 {
-  "name": "defend-the-constitution-platform",
+  "name": "diaspora-vote",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,10 @@
     "seed:country-phone-codes": "node ./scripts/seed-country-phone-codes.js",
     "seed:provinces": "node ./scripts/seed-provinces.js",
     "seed:public-hearings": "node ./scripts/seed-public-hearings.js",
-    "seed:party-module": "node ./scripts/party/seed-module.js"
+    "seed:party-module": "node ./scripts/party/seed-module.js",
+    "firebase:deploy": "npx firebase-tools deploy --only firestore,storage",
+    "firebase:deploy:rules": "npx firebase-tools deploy --only firestore:rules,storage",
+    "firebase:deploy:indexes": "npx firebase-tools deploy --only firestore:indexes"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.4.0",

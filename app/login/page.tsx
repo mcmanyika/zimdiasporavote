@@ -17,7 +17,7 @@ function LoginContent() {
           <Link href="/" className="inline-block mb-4">
             <img 
               src="/images/logo.png" 
-              alt="DCP Logo" 
+              alt="Diaspora Vote" 
               className="mx-auto h-24 w-24 rounded-md object-contain"
             />
           </Link>

@@ -17,6 +17,28 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
+const CART_STORAGE_KEY = 'dv_cart'
+const LEGACY_CART_KEY = 'dcp_cart'
+
+function readCartFromLocalStorage(): string | null {
+  if (typeof window === 'undefined') return null
+  const next = localStorage.getItem(CART_STORAGE_KEY)
+  if (next) return next
+  const legacy = localStorage.getItem(LEGACY_CART_KEY)
+  if (legacy) {
+    localStorage.setItem(CART_STORAGE_KEY, legacy)
+    localStorage.removeItem(LEGACY_CART_KEY)
+    return legacy
+  }
+  return null
+}
+
+function clearCartLocalStorage() {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(CART_STORAGE_KEY)
+  localStorage.removeItem(LEGACY_CART_KEY)
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth()
   const [items, setItems] = useState<CartItem[]>([])
@@ -29,7 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (hasLoadedRef.current || typeof window === 'undefined') return
     
     try {
-      const savedCart = localStorage.getItem('dcp_cart')
+      const savedCart = readCartFromLocalStorage()
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart)
         setItems(parsedCart)
@@ -56,7 +78,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         let localCart: CartItem[] = []
         if (typeof window !== 'undefined') {
           try {
-            const savedCart = localStorage.getItem('dcp_cart')
+            const savedCart = readCartFromLocalStorage()
             if (savedCart) {
               localCart = JSON.parse(savedCart)
             }
@@ -88,12 +110,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (mergedCart.length > 0) {
           await saveUserCart(user.uid, mergedCart)
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('dcp_cart')
+            clearCartLocalStorage()
           }
         } else {
           // Clear localStorage if cart is empty
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('dcp_cart')
+            clearCartLocalStorage()
           }
         }
       } catch (error) {
@@ -119,14 +141,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           await saveUserCart(user.uid, items)
           // Clear localStorage when user is logged in
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('dcp_cart')
+            clearCartLocalStorage()
           }
         } catch (error) {
           console.error('Error saving cart to Firestore:', error)
           // Fallback to localStorage if Firestore fails
           if (typeof window !== 'undefined') {
             try {
-              localStorage.setItem('dcp_cart', JSON.stringify(items))
+              localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
             } catch (e) {
               console.error('Error saving cart to localStorage:', e)
             }
@@ -138,7 +160,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // No user - save to localStorage
         if (typeof window !== 'undefined') {
           try {
-            localStorage.setItem('dcp_cart', JSON.stringify(items))
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
           } catch (error) {
             console.error('Error saving cart to localStorage:', error)
           }

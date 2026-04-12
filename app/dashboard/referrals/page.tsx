@@ -6,6 +6,7 @@ import { getReferralsByUser } from '@/lib/firebase/firestore'
 import DashboardNav from '@/app/components/DashboardNav'
 import ProtectedRoute from '@/app/components/ProtectedRoute'
 import type { Referral } from '@/types'
+import { getSiteUrl } from '@/lib/branding'
 
 function ReferralStatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; classes: string }> = {
@@ -35,7 +36,7 @@ function ReferralsContent() {
   const [copied, setCopied] = useState(false)
 
   const referralCode = userProfile?.referralCode || ''
-  const referralLink = referralCode ? `https://www.dcpzim.com/signup?ref=${referralCode}` : ''
+  const referralLink = referralCode ? `${getSiteUrl()}/signup?ref=${referralCode}` : ''
 
   useEffect(() => {
     async function load() {
@@ -80,7 +81,7 @@ function ReferralsContent() {
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900">Referrals</h1>
-          <p className="mt-1 text-sm text-slate-500">Invite friends to join DCP and track their progress.</p>
+          <p className="mt-1 text-sm text-slate-500">Invite friends to join Diaspora Vote and track their progress.</p>
         </div>
 
         {/* Referral Link Card */}

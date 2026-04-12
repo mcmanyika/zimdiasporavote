@@ -30,7 +30,7 @@ export default function OurWorkPage() {
             <h2 className="mb-6 text-center text-2xl font-bold sm:text-3xl md:text-4xl">Our Approach</h2>
             <div className="space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base">
               <p>
-                The Defend the Constitution Platform (DCP) employs a multi-faceted approach to protect and promote constitutional governance in Zimbabwe. Our work is grounded in the belief that an informed and engaged citizenry is essential for democratic accountability.
+                The Diaspora Vote (DV) employs a multi-faceted approach to protect and promote constitutional governance in Zimbabwe. Our work is grounded in the belief that an informed and engaged citizenry is essential for democratic accountability.
               </p>
               <p>
                 Through our comprehensive programs, we aim to empower citizens with knowledge, provide platforms for collective action, and advocate for policies that uphold the principles enshrined in our Constitution.

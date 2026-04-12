@@ -20,7 +20,7 @@ export interface UserProfile {
   emailVerified: boolean
   stripeCustomerId?: string
   photoURL?: string
-  referralCode?: string       // unique short code, e.g. "DCP-A7K3X"
+  referralCode?: string       // unique short code, e.g. "DV-A7K3X"
   referredBy?: string         // referral code of the user who referred this user
   accessLevel?: number        // admin-assigned access level 1-5
 }

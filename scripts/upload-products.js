@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 // Try to use application default credentials first
 try {
   admin.initializeApp({
-    projectId: 'defend-constitution-plat-dba4c',
+    projectId: 'zimdiasporavote',
   });
   console.log('✅ Firebase Admin initialized with application default credentials');
 } catch (error) {
@@ -20,7 +20,7 @@ const db = admin.firestore();
 
 const sampleProducts = [
   {
-    name: 'DCP T-Shirt',
+    name: 'Diaspora Vote T-Shirt',
     description: 'Show your support with our official platform t-shirt',
     price: 25,
     image: '/images/store/tshirt.png',
@@ -29,7 +29,7 @@ const sampleProducts = [
     isActive: true,
   },
   {
-    name: 'DCP Sticker Pack',
+    name: 'Diaspora Vote Sticker Pack',
     description: 'Set of 5 high-quality vinyl stickers',
     price: 5,
     image: '/images/store/cap.png',
@@ -38,7 +38,7 @@ const sampleProducts = [
     isActive: true,
   },
   {
-    name: 'DCP Flag',
+    name: 'Diaspora Vote Flag',
     description: '3x5 foot flag for rallies and events',
     price: 35,
     image: '/images/store/hoodie.png',

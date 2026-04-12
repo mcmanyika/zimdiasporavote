@@ -41,6 +41,9 @@ export default function LoginForm() {
         errorMessage = 'Invalid email address. Please check your email.'
       } else if (err.code === 'auth/too-many-requests') {
         errorMessage = 'Too many failed attempts. Please try again later.'
+      } else if (err.code === 'permission-denied' || err.message?.includes('insufficient permissions')) {
+        errorMessage =
+          'Database access was denied. Deploy Firestore security rules to your Firebase project (npm run firebase:deploy:rules), or confirm NEXT_PUBLIC_FIREBASE_PROJECT_ID matches the project where rules are deployed.'
       }
       
       setError(errorMessage)
@@ -64,6 +67,9 @@ export default function LoginForm() {
         errorMessage = 'Sign in was cancelled. Please try again.'
       } else if (err.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked. Please allow popups and try again.'
+      } else if (err.code === 'permission-denied' || err.message?.includes('insufficient permissions')) {
+        errorMessage =
+          'Database access was denied. Deploy Firestore security rules to your Firebase project (npm run firebase:deploy:rules), or confirm NEXT_PUBLIC_FIREBASE_PROJECT_ID matches the project where rules are deployed.'
       }
       
       setError(errorMessage)

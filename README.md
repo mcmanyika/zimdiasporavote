@@ -44,7 +44,7 @@ This project includes scripts to back up and restore the full Firestore database
 Set these environment variables in your shell before running:
 
 ```bash
-export FIREBASE_PROJECT_ID=defend-constitution-plat-dba4c
+export FIREBASE_PROJECT_ID=zimdiasporavote
 export FIREBASE_BACKUP_BUCKET=gs://your-backup-bucket
 ```
 
@@ -82,13 +82,13 @@ Example cron schedule (server/VM):
 
 ```bash
 # Every day at 01:00 - create backup
-0 1 * * * cd /path/to/cdp && FIREBASE_PROJECT_ID=defend-constitution-plat-dba4c FIREBASE_BACKUP_BUCKET=gs://defend-constitution-plat-dba4c.firebasestorage.app npm run backup:firestore >> /var/log/firestore-backup.log 2>&1
+0 1 * * * cd /path/to/cdp && FIREBASE_PROJECT_ID=zimdiasporavote FIREBASE_BACKUP_BUCKET=gs://zimdiasporavote.firebasestorage.app npm run backup:firestore >> /var/log/firestore-backup.log 2>&1
 
 # Every day at 01:30 - prune old daily backups
-30 1 * * * cd /path/to/cdp && FIREBASE_BACKUP_BUCKET=gs://defend-constitution-plat-dba4c.firebasestorage.app npm run backup:firestore:prune-daily >> /var/log/firestore-backup.log 2>&1
+30 1 * * * cd /path/to/cdp && FIREBASE_BACKUP_BUCKET=gs://zimdiasporavote.firebasestorage.app npm run backup:firestore:prune-daily >> /var/log/firestore-backup.log 2>&1
 
 # Every Sunday at 02:00 - prune weekly/monthly retention
-0 2 * * 0 cd /path/to/cdp && FIREBASE_BACKUP_BUCKET=gs://defend-constitution-plat-dba4c.firebasestorage.app npm run backup:firestore:prune-weekly >> /var/log/firestore-backup.log 2>&1
+0 2 * * 0 cd /path/to/cdp && FIREBASE_BACKUP_BUCKET=gs://zimdiasporavote.firebasestorage.app npm run backup:firestore:prune-weekly >> /var/log/firestore-backup.log 2>&1
 ```
 
 Optional high-risk period schedule:

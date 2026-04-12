@@ -73,7 +73,7 @@ const siteLinks = [
   { id: 'header-petitions', label: 'Petitions', url: '/petitions', section: 'header', order: 2, isActive: true, style: 'link', openInNewTab: false },
   { id: 'header-bill-proposals', label: 'Bill Proposals', url: '/bill-proposals', section: 'header', order: 3, isActive: false, style: 'link', openInNewTab: false },
   { id: 'header-articles', label: 'Articles', url: '/news', section: 'header', order: 3, isActive: true, style: 'link', openInNewTab: false },
-  { id: 'header-join', label: 'Join DCP', url: '/membership-application', section: 'header', order: 4, isActive: true, style: 'button', openInNewTab: false },
+  { id: 'header-join', label: 'Join Diaspora Vote', url: '/membership-application', section: 'header', order: 4, isActive: true, style: 'button', openInNewTab: false },
   { id: 'header-contact', label: 'Contact', url: '/#contact', section: 'header', order: 5, isActive: true, style: 'link', openInNewTab: false },
 
   // Footer - App
@@ -94,7 +94,7 @@ const siteLinks = [
   { id: 'footer-quick-leadership', label: 'Leadership', url: '/leadership', section: 'footer_quick', order: 3, isActive: true, openInNewTab: false },
   { id: 'footer-quick-gallery', label: 'Gallery', url: '/gallery', section: 'footer_quick', order: 4, isActive: true, openInNewTab: false },
   { id: 'footer-quick-surveys', label: 'Surveys', url: '/surveys', section: 'footer_quick', order: 5, isActive: true, openInNewTab: false },
-  { id: 'footer-quick-join', label: 'Join DCP', url: '/membership-application', section: 'footer_quick', order: 6, isActive: true, openInNewTab: false },
+  { id: 'footer-quick-join', label: 'Join Diaspora Vote', url: '/membership-application', section: 'footer_quick', order: 6, isActive: true, openInNewTab: false },
 
   // Footer - More links
   { id: 'footer-more-shop', label: 'Shop', url: '/shop', section: 'footer_more', order: 1, isActive: true, openInNewTab: false },
@@ -131,16 +131,16 @@ const siteLinks = [
   { id: 'footer-useful-constitution', label: 'Constitution of Zimbabwe', url: 'https://www.veritaszim.net/node/318', section: 'footer_useful', order: 91, isActive: false, openInNewTab: true },
 
   // Footer - Social
-  { id: 'footer-social-x', label: 'X', url: 'https://x.com/DCPlatform25', section: 'footer_social', order: 1, isActive: true, openInNewTab: true, iconKey: 'x' },
+  { id: 'footer-social-x', label: 'X', url: 'https://x.com/DiasporaVote', section: 'footer_social', order: 1, isActive: true, openInNewTab: true, iconKey: 'x' },
   { id: 'footer-social-facebook', label: 'Facebook', url: 'https://www.facebook.com/share/1C4G3L4eka/', section: 'footer_social', order: 2, isActive: true, openInNewTab: true, iconKey: 'facebook' },
-  { id: 'footer-social-youtube', label: 'YouTube', url: 'https://youtube.com/@defendtheconstitutionplatform', section: 'footer_social', order: 3, isActive: true, openInNewTab: true, iconKey: 'youtube' },
+  { id: 'footer-social-youtube', label: 'YouTube', url: 'https://youtube.com/@DiasporaVote', section: 'footer_social', order: 3, isActive: true, openInNewTab: true, iconKey: 'youtube' },
   { id: 'footer-social-tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@defend.the.consti', section: 'footer_social', order: 4, isActive: true, openInNewTab: true, iconKey: 'tiktok' },
   { id: 'footer-social-instagram', label: 'Instagram', url: 'https://www.instagram.com/dcplaform25', section: 'footer_social', order: 5, isActive: true, openInNewTab: true, iconKey: 'instagram' },
   { id: 'footer-social-whatsapp', label: 'WhatsApp Channel', url: 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z', section: 'footer_social', order: 6, isActive: true, openInNewTab: true, iconKey: 'whatsapp' },
   // Cleanup: party-only renamed social labels should not appear in global footer.
-  { id: 'footer-social-x-party', label: 'X (Party Updates)', url: 'https://x.com/DCPlatform25', section: 'footer_social', order: 90, isActive: false, openInNewTab: true, iconKey: 'x' },
+  { id: 'footer-social-x-party', label: 'X (Party Updates)', url: 'https://x.com/DiasporaVote', section: 'footer_social', order: 90, isActive: false, openInNewTab: true, iconKey: 'x' },
   { id: 'footer-social-facebook-party', label: 'Facebook (Community)', url: 'https://www.facebook.com/share/1C4G3L4eka/', section: 'footer_social', order: 91, isActive: false, openInNewTab: true, iconKey: 'facebook' },
-  { id: 'footer-social-youtube-party', label: 'YouTube (Live & Briefings)', url: 'https://youtube.com/@defendtheconstitutionplatform', section: 'footer_social', order: 92, isActive: false, openInNewTab: true, iconKey: 'youtube' },
+  { id: 'footer-social-youtube-party', label: 'YouTube (Live & Briefings)', url: 'https://youtube.com/@DiasporaVote', section: 'footer_social', order: 92, isActive: false, openInNewTab: true, iconKey: 'youtube' },
 
   // Cleanup: party-only quick links should not appear in global footer.
   { id: 'footer-quick-party-vision', label: 'Party Vision', url: '/party', section: 'footer_quick', order: 90, isActive: false, openInNewTab: false },

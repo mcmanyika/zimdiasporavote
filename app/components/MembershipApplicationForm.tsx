@@ -79,7 +79,6 @@ export default function MembershipApplicationForm() {
     gender: '',
     dateOfBirth: '',
     province: '',
-    district: '',
     occupation: '',
     mobileNumber: '',
     mobileCountryCode: '+263',
@@ -304,7 +303,6 @@ export default function MembershipApplicationForm() {
         if (individual.gender) applicationData.gender = individual.gender
         if (individual.dateOfBirth) applicationData.dateOfBirth = individual.dateOfBirth
         applicationData.province = individual.province
-        if (individual.district.trim()) applicationData.district = individual.district.trim()
         if (individual.occupation.trim()) applicationData.occupation = individual.occupation.trim()
         applicationData.mobileNumber = `${individual.mobileCountryCode} ${individual.mobileNumber.trim()}`
         applicationData.emailAddress = individual.emailAddress.trim()
@@ -371,7 +369,7 @@ export default function MembershipApplicationForm() {
         </div>
         <h3 className="mb-2 text-xl font-bold text-green-900">Application Submitted Successfully!</h3>
         <p className="mb-6 text-green-700">
-          Thank you for your membership application to the Defend the Constitution Platform.
+          Thank you for your membership application to Diaspora Vote.
           Your application is now under review. You will be notified once it has been processed.
         </p>
         <button
@@ -580,32 +578,18 @@ export default function MembershipApplicationForm() {
               </div>
             </div>
 
-            {/* District & Occupation */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-900">
-                  District / Ward <span className="text-slate-400 text-xs">(if applicable)</span>
-                </label>
-                <input
-                  type="text"
-                  value={individual.district}
-                  onChange={(e) => setIndividual({ ...individual, district: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  placeholder="Enter district or ward"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-900">
-                  Occupation / Social Base <span className="text-slate-400 text-xs">(if applicable)</span>
-                </label>
-                <input
-                  type="text"
-                  value={individual.occupation}
-                  onChange={(e) => setIndividual({ ...individual, occupation: e.target.value })}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  placeholder="e.g. worker, student, professional"
-                />
-              </div>
+            {/* Occupation */}
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-slate-900">
+                Occupation / Social Base <span className="text-slate-400 text-xs">(if applicable)</span>
+              </label>
+              <input
+                type="text"
+                value={individual.occupation}
+                onChange={(e) => setIndividual({ ...individual, occupation: e.target.value })}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                placeholder="e.g. worker, student, professional"
+              />
             </div>
 
             {/* Contact */}
@@ -803,7 +787,7 @@ export default function MembershipApplicationForm() {
 
             {/* Designated Representative */}
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-              <h4 className="mb-3 text-sm font-bold text-slate-900">Designated Representative to the DCP</h4>
+              <h4 className="mb-3 text-sm font-bold text-slate-900">Designated Representative to Diaspora Vote</h4>
               <div className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
@@ -913,32 +897,28 @@ export default function MembershipApplicationForm() {
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-6">
             <p className="mb-4 text-sm leading-relaxed text-slate-700">
-              I / We hereby apply for membership of the <strong>Defend the Constitution Platform (DCP)</strong> and affirm that:
+              I / We hereby apply for membership of <strong>Diaspora Vote (DV)</strong> and affirm that:
             </p>
             <ul className="space-y-3 text-sm text-slate-700">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">1</span>
-                <span>I / We support the defence, protection, and full implementation of the <strong>2013 Constitution of Zimbabwe</strong>;</span>
+                <span>I / We subscribe to and uphold the <strong>values and democratic principles</strong> published by Diaspora Vote;</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">2</span>
-                <span>I / We subscribe to and uphold the <strong>People&apos;s Resolution</strong> as adopted by the Defend the Constitution Platform;</span>
+                <span>I / We understand that Diaspora Vote is <strong>non-partisan</strong> and focused on civic engagement and democratic participation;</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">3</span>
-                <span>I / We understand that the DCP is <strong>non-partisan, non-electoral</strong>, and does not seek state power;</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">4</span>
                 <span>I / We commit to <strong>peaceful, lawful, and constitutional</strong> action;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">5</span>
-                <span>I / We agree to abide by the <strong>DCP Constitution, governance framework, and code of conduct</strong>.</span>
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">4</span>
+                <span>I / We agree to abide by the <strong>Diaspora Vote governance framework and code of conduct</strong>.</span>
               </li>
             </ul>
             <p className="mt-4 text-sm italic text-slate-500">
-              I / We further acknowledge that membership of the DCP does not replace affiliation to any political party, civic organisation, or institution.
+              I / We further acknowledge that membership of Diaspora Vote does not replace affiliation to any political party, civic organisation, or institution.
             </p>
           </div>
 
@@ -1022,7 +1002,6 @@ export default function MembershipApplicationForm() {
                 {individual.gender && <div><span className="text-slate-500">Gender:</span> <span className="font-medium text-slate-900">{individual.gender}</span></div>}
                 {individual.dateOfBirth && <div><span className="text-slate-500">Date of Birth:</span> <span className="font-medium text-slate-900">{individual.dateOfBirth}</span></div>}
                 <div><span className="text-slate-500">Province:</span> <span className="font-medium text-slate-900">{individual.province}</span></div>
-                {individual.district && <div><span className="text-slate-500">District/Ward:</span> <span className="font-medium text-slate-900">{individual.district}</span></div>}
                 {individual.occupation && <div><span className="text-slate-500">Occupation:</span> <span className="font-medium text-slate-900">{individual.occupation}</span></div>}
                 <div><span className="text-slate-500">Mobile:</span> <span className="font-medium text-slate-900">{individual.mobileNumber}</span></div>
                 <div><span className="text-slate-500">Email:</span> <span className="font-medium text-slate-900">{individual.emailAddress}</span></div>

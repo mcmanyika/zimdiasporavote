@@ -4,8 +4,8 @@ set -euo pipefail
 
 # Firestore full export helper.
 # Required:
-#   FIREBASE_PROJECT_ID   e.g. defend-constitution-plat-dba4c
-#   FIREBASE_BACKUP_BUCKET e.g. gs://defend-constitution-backups
+#   FIREBASE_PROJECT_ID   e.g. zimdiasporavote
+#   FIREBASE_BACKUP_BUCKET e.g. gs://zimdiasporavote-backups
 #
 # Optional:
 #   FIRESTORE_BACKUP_PREFIX (default: firestore-backups)
