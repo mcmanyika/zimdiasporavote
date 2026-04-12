@@ -9,6 +9,7 @@ import { getPartyEvents, getPartyLandingContent } from '@/features/party'
 import type { PartyEvent, PartyHeroStat, PartyLandingContent } from '@/features/party'
 import { useAuth } from '@/contexts/AuthContext'
 import { normalizePartyHeroSubtitle, PARTY_HERO_SUBTITLE } from '@/lib/party-hero-subtitle'
+import { normalizePartyHeroTitle, PARTY_HERO_TITLE_DEFAULT } from '@/lib/party-hero-title'
 
 const roleOptions = [
   'Member',
@@ -83,8 +84,8 @@ const defaultHeroStats: PartyHeroStat[] = [
 
 const defaultContent: PartyLandingContent = {
   id: 'landing',
-  pageTitle: 'WTP Political',
-  heroTitle: 'A New Political Party Rooted in Constitutionalism',
+  pageTitle: 'NTA Political',
+  heroTitle: PARTY_HERO_TITLE_DEFAULT,
   heroSubtitle: PARTY_HERO_SUBTITLE,
   foundingStatement:
     'This platform centres on citizen and sector proposals: practical ideas that answer social and economic needs across Zimbabwe, developed openly and grounded in constitutional principles.',
@@ -202,11 +203,11 @@ function PartyLandingContent() {
     return (fromDb.length ? fromDb : fallback).slice(0, 4)
   }, [content.heroStats])
 
-  // Firestore may still store legacy "DCP Political" from before rebrand.
+  // Firestore may still store legacy "DCP Political" / "WTP Political" / "NAC Political" from before rebrand.
   const heroPageTitle = useMemo(() => {
     const raw = (content.pageTitle || '').trim()
-    if (/^dcp\s*political$/i.test(raw)) return 'WTP Political'
-    return raw || 'WTP Political'
+    if (/^(dcp|wtp|nac)\s*political$/i.test(raw)) return 'NTA Political'
+    return raw || 'NTA Political'
   }, [content.pageTitle])
 
   const handleSubmit = async (event: FormEvent) => {
@@ -310,7 +311,7 @@ function PartyLandingContent() {
           </div>
 
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-            <div className="text-3xl font-extrabold tracking-tight">WTP</div>
+            <div className="text-3xl font-extrabold tracking-tight">NTA</div>
             <nav className="hidden items-center gap-7 text-sm font-semibold md:flex">
               {heroNavItems.map((item) => (
                 <Link key={item.href} href={item.href} className="text-white/90 hover:text-white">
@@ -384,7 +385,7 @@ function PartyLandingContent() {
             <div className="order-2 lg:order-1">
               <p className="text-sm font-semibold uppercase tracking-wide text-blue-100">{heroPageTitle}</p>
               <h1 className="mt-2 max-w-4xl text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl">
-                Laying The Agenda
+                {normalizePartyHeroTitle(content.heroTitle)}
               </h1>
               <p className="mt-4 max-w-3xl text-sm text-blue-100 sm:text-base">{content.heroSubtitle}</p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -527,12 +528,12 @@ function PartyLandingContent() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(15,86,217,0.26),rgba(15,86,217,0.20))]" />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="text-center text-xs font-bold uppercase tracking-wider text-blue-100">Let's Work Together</p>
-          <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@wtpzim.com</h3>
+          <h3 className="mt-2 text-center text-3xl font-extrabold sm:text-5xl">office@ntazim.com</h3>
           <div className="mt-8 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
             <div><p className="font-bold">WORKING HOURS</p><p className="text-blue-100">Mon - Sat 8.00 - 18.00</p></div>
             <div><p className="font-bold">LOCATION</p><p className="text-blue-100">Harare, Zimbabwe</p></div>
             <div><p className="font-bold">CALL US:</p><p className="text-blue-100">+1 832 786 0457</p></div>
-            <div><p className="font-bold">EMAIL</p><p className="text-blue-100">office@wtpzim.com</p></div>
+            <div><p className="font-bold">EMAIL</p><p className="text-blue-100">office@ntazim.com</p></div>
           </div>
 
           <div className="mt-8 border-t border-white/20 pt-6">
@@ -596,7 +597,7 @@ function PartyLandingContent() {
         </div>
         <div className="relative border-t border-white/10 bg-black/90">
           <div className="mx-auto max-w-7xl px-4 py-4 text-center text-[10px] text-white/80 sm:px-6 sm:text-xs">
-            <p>&copy; {new Date().getFullYear()} We The People. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} NTA. All rights reserved.</p>
             <p className="mt-1">
               <Link href="/privacy" className="hover:text-white">
                 Privacy Policy

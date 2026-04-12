@@ -18,6 +18,7 @@ import {
 } from '@/features/party'
 import type { PartyEvent, PartyInterestStatus, PartyInterestSubmission } from '@/features/party'
 import { normalizePartyHeroSubtitle } from '@/lib/party-hero-subtitle'
+import { normalizePartyHeroTitle, PARTY_HERO_TITLE_DEFAULT } from '@/lib/party-hero-title'
 
 const submissionStatuses: PartyInterestStatus[] = ['new', 'contacted', 'converted', 'archived']
 const defaultHeroStats = [
@@ -60,8 +61,8 @@ function PartyContentEditor() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [formData, setFormData] = useState({
-    pageTitle: 'WTP Political',
-    heroTitle: 'A New Political Party Rooted in Constitutionalism',
+    pageTitle: 'NTA Political',
+    heroTitle: PARTY_HERO_TITLE_DEFAULT,
     heroSubtitle: '',
     foundingStatement: '',
     mission: '',
@@ -85,10 +86,12 @@ function PartyContentEditor() {
           }))
           const rawPageTitle = (landing.pageTitle || '').trim()
           const pageTitle =
-            /^dcp\s*political$/i.test(rawPageTitle) ? 'WTP Political' : landing.pageTitle || ''
+            /^(dcp|wtp|nac)\s*political$/i.test(rawPageTitle)
+              ? 'NTA Political'
+              : landing.pageTitle || ''
           setFormData({
             pageTitle,
-            heroTitle: landing.heroTitle || '',
+            heroTitle: normalizePartyHeroTitle(landing.heroTitle),
             heroSubtitle: normalizePartyHeroSubtitle(landing.heroSubtitle),
             foundingStatement: landing.foundingStatement || '',
             mission: landing.mission || '',

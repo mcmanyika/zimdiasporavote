@@ -199,6 +199,12 @@ const adminContentItems: NavItem[] = [
   { href: '/dashboard/admin/gallery', label: 'Gallery', icon: <IconPhoto />, description: 'Image gallery' },
   { href: '/dashboard/admin/leadership', label: 'Leadership', icon: <IconUserGroup />, description: 'Leadership team' },
   { href: '/dashboard/admin/twitter-embeds', label: 'X Embeds', icon: <IconTwitter />, description: 'Live Twitter/X feed' },
+  {
+    href: '/dashboard/admin/violence-instigator-submissions',
+    label: 'Violence posts',
+    icon: <IconTwitter />,
+    description: 'Public X links — review & activate',
+  },
 ]
 
 function IconIdentification({ className = 'h-5 w-5' }: { className?: string }) {

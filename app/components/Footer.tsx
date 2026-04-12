@@ -38,7 +38,8 @@ const fallbackMoreLinks: FooterLinkItem[] = [
   { id: 'footer-more-articles', label: 'Articles', url: '/news', order: 2 },
   { id: 'footer-more-videos', label: 'Videos', url: '/videos', order: 4 },
   { id: 'footer-more-twitter-live', label: 'Twitter Live', url: '/twitter-live', order: 5 },
-  { id: 'footer-more-contact', label: 'Contact', url: '/#contact', order: 6 },
+  { id: 'footer-more-report-violence', label: 'Report violence on X', url: '/report-violence-posts', order: 6 },
+  { id: 'footer-more-contact', label: 'Contact', url: '/#contact', order: 7 },
 ]
 
 const fallbackUsefulLinks: FooterLinkItem[] = [

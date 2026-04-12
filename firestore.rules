@@ -629,6 +629,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Violence instigator X/Twitter submissions (public creates via server API only)
+    match /violenceInstigatorSubmissions/{submissionId} {
+      allow read: if isAdmin() || (resource != null && resource.data.status == 'active');
+      allow create: if false;
+      allow update, delete: if isAdmin();
+    }
+
     // Email Drafts collection
     match /emailDrafts/{draftId} {
       // Only admins can read, create, update, and delete drafts

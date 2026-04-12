@@ -102,8 +102,17 @@ const siteLinks = [
   { id: 'footer-more-bill-proposals', label: 'Bill Proposals', url: '/bill-proposals', section: 'footer_more', order: 3, isActive: false, openInNewTab: false },
   { id: 'footer-more-videos', label: 'Videos', url: '/videos', section: 'footer_more', order: 4, isActive: true, openInNewTab: false },
   { id: 'footer-more-twitter-live', label: 'Twitter Live', url: '/twitter-live', section: 'footer_more', order: 5, isActive: true, openInNewTab: false },
-  { id: 'footer-more-contact', label: 'Contact', url: '/#contact', section: 'footer_more', order: 6, isActive: true, openInNewTab: false },
-  { id: 'footer-more-political-party', label: 'Political Party', url: '/party', section: 'footer_more', order: 7, isActive: false, openInNewTab: false },
+  {
+    id: 'footer-more-report-violence',
+    label: 'Report violence on X',
+    url: '/report-violence-posts',
+    section: 'footer_more',
+    order: 6,
+    isActive: true,
+    openInNewTab: false,
+  },
+  { id: 'footer-more-contact', label: 'Contact', url: '/#contact', section: 'footer_more', order: 7, isActive: true, openInNewTab: false },
+  { id: 'footer-more-political-party', label: 'Political Party', url: '/party', section: 'footer_more', order: 8, isActive: false, openInNewTab: false },
   // Legacy item cleanup: keep doc but hide it from footer_more list.
   { id: 'footer-more-useful-links', label: 'Parliament Of Zimbawe', url: 'https://www.parlzim.gov.zw/', section: 'footer_more', order: 99, isActive: false, openInNewTab: true },
   // Cleanup: party-only "more" links should not appear in global footer.

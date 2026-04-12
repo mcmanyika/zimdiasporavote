@@ -17,7 +17,7 @@ import {
   increment,
 } from 'firebase/firestore'
 import { db } from './config'
-import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, EmailSuppression, EmailSuppressionReason, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
+import type { UserProfile, Donation, Membership, ContactSubmission, Purchase, Product, UserRole, News, Video, CartItem, VolunteerApplication, VolunteerApplicationStatus, Petition, PetitionSignature, ShipmentStatus, NewsletterSubscription, Banner, GalleryCategory, GalleryImage, Survey, SurveyResponse, MembershipApplication, MembershipApplicationStatus, AdminNotification, NotificationType, NotificationAudience, EmailLog, EmailType, EmailStatus, EmailSuppression, EmailSuppressionReason, Leader, Organization, SiteLink, SiteLinkSection, CountryPhoneCode, PublicHearing, PublicHearingStatus, IncidentReport, BillProposal, BillProposalStatus, BillProposalSupport, Referral, ReferralStatus, Resource, EmailDraft, EmailDraftContext, TwitterEmbedPost, ViolenceInstigatorSubmission, InboundEmail, PaymentMethod, YouthProfile, YouthMission, YouthMissionSubmission } from '@/types'
 import {
   createPartyEvent as createPartyEventModule,
   createPartyInterestSubmission as createPartyInterestSubmissionModule,
@@ -3932,6 +3932,81 @@ export async function updateTwitterEmbed(embedId: string, data: Partial<TwitterE
 export async function deleteTwitterEmbed(embedId: string): Promise<void> {
   const db = requireDb()
   await deleteDoc(doc(db, 'twitterEmbeds', embedId))
+}
+
+// ===== Violence instigator submissions (X/Twitter links — public submit via API) =====
+
+export async function getViolenceInstigatorSubmissions(): Promise<ViolenceInstigatorSubmission[]> {
+  const db = requireDb()
+  try {
+    const q = query(collection(db, 'violenceInstigatorSubmissions'), orderBy('createdAt', 'desc'))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        id: d.id,
+        tweetUrl: data.tweetUrl,
+        category: data.category,
+        status: data.status,
+        reviewedBy: data.reviewedBy,
+        reviewNote: data.reviewNote,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as ViolenceInstigatorSubmission
+    })
+  } catch (error) {
+    console.error('Error fetching violence instigator submissions:', error)
+    return []
+  }
+}
+
+export async function getActiveViolenceInstigatorSubmissions(): Promise<ViolenceInstigatorSubmission[]> {
+  if (!db) return []
+  try {
+    const q = query(
+      collection(db, 'violenceInstigatorSubmissions'),
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc')
+    )
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((d) => {
+      const data = d.data()
+      return {
+        id: d.id,
+        tweetUrl: data.tweetUrl,
+        category: data.category,
+        status: data.status,
+        reviewedBy: data.reviewedBy,
+        reviewNote: data.reviewNote,
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
+      } as ViolenceInstigatorSubmission
+    })
+  } catch (error) {
+    console.error('Error fetching active violence instigator submissions:', error)
+    return []
+  }
+}
+
+export async function updateViolenceInstigatorSubmission(
+  submissionId: string,
+  data: Partial<
+    Pick<ViolenceInstigatorSubmission, 'status' | 'reviewedBy' | 'reviewNote' | 'tweetUrl' | 'category'>
+  >
+): Promise<void> {
+  const db = requireDb()
+  const updateData: Record<string, any> = { updatedAt: Timestamp.now() }
+  if (data.status !== undefined) updateData.status = data.status
+  if (data.reviewedBy !== undefined) updateData.reviewedBy = data.reviewedBy || null
+  if (data.reviewNote !== undefined) updateData.reviewNote = data.reviewNote || null
+  if (data.tweetUrl !== undefined) updateData.tweetUrl = data.tweetUrl
+  if (data.category !== undefined) updateData.category = data.category
+  await updateDoc(doc(db, 'violenceInstigatorSubmissions', submissionId), updateData)
+}
+
+export async function deleteViolenceInstigatorSubmission(submissionId: string): Promise<void> {
+  const db = requireDb()
+  await deleteDoc(doc(db, 'violenceInstigatorSubmissions', submissionId))
 }
 
 export async function getAllDownloadStats(): Promise<DownloadStat[]> {

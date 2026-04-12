@@ -63,8 +63,8 @@ function parseDate(dateStr) {
 
 const landingPayload = {
   id: 'landing',
-  pageTitle: 'WTP Political',
-  heroTitle: 'A New Political Party Rooted in Constitutionalism',
+  pageTitle: 'NTA Political',
+  heroTitle: 'National Transition Authority',
   heroSubtitle:
     'This initiative aims to bring people together to share ideas, skills, and strategies that can help transform Zimbabwe into a world-class economy.',
   foundingStatement:

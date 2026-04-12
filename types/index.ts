@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase/firestore'
+import type { ViolenceInstigatorCategory } from '@/lib/violence-instigator-submissions'
 
 export type UserRole = 'supporter' | 'member' | 'moderator' | 'admin'
 export type MembershipTier = 'free' | 'basic' | 'premium' | 'champion'
@@ -630,6 +631,22 @@ export interface IncidentReport {
   description?: string
   status: IncidentReportStatus
   errorMessage?: string
+  createdAt: Timestamp | Date
+  updatedAt: Timestamp | Date
+}
+
+// Violence instigator — X/Twitter link intake (public submit, admin activates)
+export type ViolenceInstigatorSubmissionStatus = 'pending' | 'active' | 'rejected'
+
+export type { ViolenceInstigatorCategory } from '@/lib/violence-instigator-submissions'
+
+export interface ViolenceInstigatorSubmission {
+  id: string
+  tweetUrl: string
+  category: ViolenceInstigatorCategory
+  status: ViolenceInstigatorSubmissionStatus
+  reviewedBy?: string
+  reviewNote?: string
   createdAt: Timestamp | Date
   updatedAt: Timestamp | Date
 }
