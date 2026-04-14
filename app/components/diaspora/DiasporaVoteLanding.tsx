@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Globe2, Landmark, Megaphone, Newspaper, Users } from 'lucide-react'
+import { Globe2, Landmark, Mail, Megaphone, Newspaper, Users } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { createNewsletterSubscription, getLeaders, getNews } from '@/lib/firebase/firestore'
 import type { Leader, News } from '@/types'
@@ -79,6 +79,9 @@ export default function DiasporaVoteLanding() {
   const [newsLoading, setNewsLoading] = useState(true)
   const [leaders, setLeaders] = useState<Leader[]>([])
   const [leadersLoading, setLeadersLoading] = useState(true)
+  const [newsletterBandEmail, setNewsletterBandEmail] = useState('')
+  const [newsletterBandLoading, setNewsletterBandLoading] = useState(false)
+  const [newsletterBandMsg, setNewsletterBandMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   useEffect(() => {
     reduceMotionRef.current =
@@ -177,6 +180,29 @@ export default function DiasporaVoteLanding() {
       setMsg({ type: 'err', text: 'Something went wrong. Please try again.' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function onNewsletterBandSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setNewsletterBandMsg(null)
+    const trimmed = newsletterBandEmail.trim()
+    if (!trimmed) {
+      setNewsletterBandMsg({ type: 'err', text: 'Please enter your email address.' })
+      return
+    }
+    setNewsletterBandLoading(true)
+    try {
+      await createNewsletterSubscription({
+        email: trimmed,
+        ...(user?.uid ? { userId: user.uid } : {}),
+      })
+      setNewsletterBandMsg({ type: 'ok', text: "You're on the list. Thank you!" })
+      setNewsletterBandEmail('')
+    } catch {
+      setNewsletterBandMsg({ type: 'err', text: 'Something went wrong. Please try again.' })
+    } finally {
+      setNewsletterBandLoading(false)
     }
   }
 
@@ -395,6 +421,53 @@ export default function DiasporaVoteLanding() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      <section
+        id="newsletter-signup"
+        className="scroll-mt-24 w-full border-t border-slate-200/90 bg-gradient-to-b from-dv-sky via-dv-sky-deep/90 to-white py-14 sm:py-20"
+      >
+        <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-6">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 ring-1 ring-dv-navy/10 shadow-sm">
+            <Mail className="h-6 w-6 text-dv-navy" strokeWidth={1.75} aria-hidden />
+          </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Stay informed</p>
+          <h2 className="mt-2 text-2xl font-bold text-dv-navy sm:text-3xl">Newsletter sign up</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+            Get diaspora voting updates, announcements, and news from {SITE_NAME} in your inbox.
+          </p>
+          <form onSubmit={onNewsletterBandSubmit} className="mt-8 text-left">
+            <label htmlFor="dv-newsletter-band-email" className="sr-only">
+              Email address
+            </label>
+            <div className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row">
+              <input
+                id="dv-newsletter-band-email"
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="Enter your email address"
+                value={newsletterBandEmail}
+                onChange={(e) => setNewsletterBandEmail(e.target.value)}
+                className="min-h-[48px] w-full min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/25"
+              />
+              <button
+                type="submit"
+                disabled={newsletterBandLoading}
+                className="min-h-[48px] shrink-0 rounded-xl bg-dv-red px-6 text-sm font-semibold text-white shadow-md transition-colors hover:bg-dv-red-hover disabled:opacity-60 sm:px-8"
+              >
+                {newsletterBandLoading ? '…' : 'Subscribe'}
+              </button>
+            </div>
+            {newsletterBandMsg && (
+              <p
+                className={`mt-3 text-center text-sm ${newsletterBandMsg.type === 'ok' ? 'text-emerald-700' : 'text-red-600'}`}
+              >
+                {newsletterBandMsg.text}
+              </p>
+            )}
+          </form>
         </div>
       </section>
 
