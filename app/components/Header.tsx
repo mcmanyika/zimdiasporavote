@@ -179,16 +179,12 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
       <div className={`mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 transition-all duration-500 ${
         isScrolled ? 'py-2' : 'py-4 sm:py-5'
       }`}>
-        <Link href="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
-          <img 
-            src="/images/logo.png" 
-            alt="Diaspora Vote" 
-            className="h-11 w-11 rounded-md object-contain sm:h-12 sm:w-12"
+        <Link href="/" className="flex shrink-0 items-center hover:opacity-80 transition-opacity">
+          <img
+            src="/images/logo.png"
+            alt="Diaspora Vote"
+            className="h-9 w-auto object-contain object-left sm:h-10"
           />
-          <div className="hidden leading-tight sm:block">
-            <p className="text-xs font-bold text-dv-navy">Diaspora Vote</p>
-            <p className="text-[10px] text-slate-500">Our Constitution. Our Future</p>
-          </div>
         </Link>
 
         {/* Desktop Navigation */}

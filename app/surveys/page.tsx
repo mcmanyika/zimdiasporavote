@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getSurveys } from '@/lib/firebase/firestore'
 import type { Survey, SurveyCategory } from '@/types'
 
@@ -97,7 +96,6 @@ export default function SurveysPage() {
             <p className="text-sm text-slate-500">Loading surveys...</p>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -276,7 +274,6 @@ export default function SurveysPage() {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import DonationModal from '@/app/components/DonationModal'
 import { getPetitions, getPetitionById, signPetition } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
@@ -54,7 +53,6 @@ export default function PetitionsPage() {
             <p className="text-slate-600">Loading petitions...</p>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -117,7 +115,6 @@ export default function PetitionsPage() {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

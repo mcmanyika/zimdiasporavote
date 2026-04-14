@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getPublicHearings } from '@/lib/firebase/firestore'
 import type { PublicHearing } from '@/types'
 
@@ -181,7 +180,6 @@ Contact:`
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   )

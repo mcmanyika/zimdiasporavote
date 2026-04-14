@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getSurveyById, submitSurveyResponse, getSurveyResponses, hasUserRespondedToSurvey } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Survey, SurveyQuestion, SurveyAnswer, SurveyResponse, SurveyCategory } from '@/types'
@@ -260,7 +259,6 @@ export default function SurveyDetailPage() {
             <p className="text-sm text-slate-500">Loading survey...</p>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -286,7 +284,6 @@ export default function SurveyDetailPage() {
             </Link>
           </div>
         </section>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -340,7 +337,6 @@ export default function SurveyDetailPage() {
             </div>
           </div>
         </section>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -374,7 +370,6 @@ export default function SurveyDetailPage() {
             </div>
           </div>
         </section>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -405,7 +400,6 @@ export default function SurveyDetailPage() {
             </div>
           </div>
         </section>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -440,7 +434,6 @@ export default function SurveyDetailPage() {
             </div>
           </div>
         </section>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -565,7 +558,6 @@ export default function SurveyDetailPage() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   )

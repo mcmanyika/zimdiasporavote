@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import { Newspaper } from 'lucide-react'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getNewsById, trackArticleView, getArticleViewCount } from '@/lib/firebase/firestore'
 import type { News } from '@/types'
 import Link from 'next/link'
@@ -352,7 +351,6 @@ export default function NewsDetailPage() {
       )}
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

@@ -2,7 +2,6 @@
 
 import Header from '../components/Header';
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 
 export default function OurWorkPage() {
   return (
@@ -40,7 +39,6 @@ export default function OurWorkPage() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   );

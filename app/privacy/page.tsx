@@ -2,7 +2,6 @@
 
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import Link from 'next/link'
 
 export default function PrivacyPolicyPage() {
@@ -188,7 +187,6 @@ export default function PrivacyPolicyPage() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   )

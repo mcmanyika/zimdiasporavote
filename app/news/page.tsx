@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Newspaper } from 'lucide-react'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getNews } from '@/lib/firebase/firestore'
 import type { News } from '@/types'
 
@@ -315,7 +314,6 @@ export default function NewsPage() {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

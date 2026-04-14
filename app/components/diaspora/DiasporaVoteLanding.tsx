@@ -1,14 +1,13 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Globe2, Landmark, Megaphone } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { createNewsletterSubscription } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
 import Chatbot from '../Chatbot'
-import DonationModal from '../DonationModal'
 import Footer from '../Footer'
+import Header from '../Header'
 
 const WHATSAPP_URL = 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z'
 const FACEBOOK_URL = 'https://www.facebook.com/share/1C4G3L4eka/'
@@ -55,8 +54,6 @@ export default function DiasporaVoteLanding() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [donateModalOpen, setDonateModalOpen] = useState(false)
   const heroRef = useRef<HTMLElement>(null)
   const cloudsRef = useRef<HTMLElement>(null)
   const [heroParallaxY, setHeroParallaxY] = useState(0)
@@ -66,18 +63,6 @@ export default function DiasporaVoteLanding() {
   useEffect(() => {
     reduceMotionRef.current =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  }, [])
-
-  useEffect(() => {
-    const syncHash = () => {
-      if (typeof window === 'undefined') return
-      if (window.location.hash === '#donate') {
-        setDonateModalOpen(true)
-      }
-    }
-    syncHash()
-    window.addEventListener('hashchange', syncHash)
-    return () => window.removeEventListener('hashchange', syncHash)
   }, [])
 
   useEffect(() => {
@@ -108,13 +93,6 @@ export default function DiasporaVoteLanding() {
     }
   }, [])
 
-  const nav = [
-    { label: 'About', href: '#about' },
-    { label: 'The Problem', href: '#problem' },
-    { label: 'Get Involved', href: '#get-involved' },
-    { label: 'Updates', href: '/news' },
-  ]
-
   async function onJoinNewsletter(e: React.FormEvent) {
     e.preventDefault()
     setMsg(null)
@@ -140,104 +118,7 @@ export default function DiasporaVoteLanding() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900 antialiased">
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link href="/" className="flex shrink-0 items-center">
-            <Image
-              src="/images/logo.png"
-              alt="DiasporaVote"
-              width={220}
-              height={64}
-              className="h-9 w-auto object-contain object-left sm:h-10"
-              priority
-            />
-          </Link>
-
-          <nav className="hidden items-center gap-6 md:flex">
-            {nav.map((item) =>
-              item.href.startsWith('#') ? (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-dv-navy/90 transition-colors hover:text-blue-600"
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-dv-navy/90 transition-colors hover:text-blue-600"
-                >
-                  {item.label}
-                </Link>
-              )
-            )}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="hidden rounded-full bg-dv-red px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover sm:inline-flex"
-              onClick={() => setDonateModalOpen(true)}
-            >
-              Donate
-            </button>
-            <button
-              type="button"
-              className="inline-flex rounded-lg p-2 text-dv-navy md:hidden"
-              aria-label="Open menu"
-              onClick={() => setMobileOpen((o) => !o)}
-            >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {mobileOpen && (
-          <div className="border-t border-slate-100 bg-white px-4 py-4 md:hidden">
-            <nav className="flex flex-col gap-3">
-              {nav.map((item) =>
-                item.href.startsWith('#') ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="text-base font-medium text-dv-navy"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="text-base font-medium text-dv-navy"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                )
-              )}
-              <button
-                type="button"
-                className="mt-2 inline-flex justify-center rounded-full bg-dv-red py-2.5 text-center text-sm font-semibold text-white"
-                onClick={() => {
-                  setDonateModalOpen(true)
-                  setMobileOpen(false)
-                }}
-              >
-                Donate
-              </button>
-            </nav>
-          </div>
-        )}
-      </header>
+      <Header />
 
       <section
         ref={heroRef}
@@ -488,16 +369,6 @@ export default function DiasporaVoteLanding() {
       </section>
 
       <Footer />
-
-      <DonationModal
-        isOpen={donateModalOpen}
-        onClose={() => {
-          setDonateModalOpen(false)
-          if (typeof window !== 'undefined' && window.location.hash === '#donate') {
-            window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
-          }
-        }}
-      />
 
       <Chatbot hideWhatsApp />
     </main>

@@ -2,7 +2,6 @@
 
 import Header from '../components/Header';
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 
 export default function AboutPage() {
   return (
@@ -140,7 +139,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   );

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getPublicTwitterEmbeds } from '@/lib/firebase/firestore'
 import type { TwitterEmbedPost } from '@/types'
 
@@ -226,7 +225,6 @@ export default function TwitterLivePage() {
         </div>
       </section>
 
-      <CTASection />
       <Footer />
     </main>
   )

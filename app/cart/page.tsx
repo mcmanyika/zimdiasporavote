@@ -7,7 +7,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getProductById } from '@/lib/firebase/firestore'
 
 export default function CartPage() {
@@ -120,7 +119,6 @@ export default function CartPage() {
           </div>
         </section>
 
-        <CTASection />
         <Footer />
       </main>
     )
@@ -271,7 +269,6 @@ export default function CartPage() {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

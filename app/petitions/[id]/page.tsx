@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import DonationModal from '@/app/components/DonationModal'
 import { getPetitionById, signPetition } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
@@ -133,7 +132,6 @@ export default function PetitionDetailPage() {
             <p className="text-slate-600">Loading petition...</p>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -164,7 +162,6 @@ export default function PetitionDetailPage() {
             </div>
           </div>
         </div>
-        <CTASection />
         <Footer />
       </main>
     )
@@ -463,7 +460,6 @@ export default function PetitionDetailPage() {
       <DonationModal isOpen={showDonationModal} onClose={() => setShowDonationModal(false)} />
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

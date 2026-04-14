@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getGalleryCategories, getGalleryImages } from '@/lib/firebase/firestore'
 import type { GalleryCategory, GalleryImage } from '@/types'
 import { getSiteUrl } from '@/lib/branding'
@@ -288,7 +287,6 @@ export default function GalleryPage() {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />

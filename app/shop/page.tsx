@@ -7,7 +7,6 @@ import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
-import CTASection from '@/app/components/CTASection'
 import { getProducts, getProductById } from '@/lib/firebase/firestore'
 import type { Product } from '@/types'
 
@@ -554,7 +553,6 @@ export default function ShopPage() {
         )}
 
       {/* CTA Section */}
-      <CTASection />
 
       {/* Footer */}
       <Footer />
