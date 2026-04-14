@@ -77,6 +77,33 @@ function isContactLink(link: NavLinkItem): boolean {
   return label === 'contact' || url === '#contact' || url === '/#contact';
 }
 
+/** Small Zimbabwe flag (2:3) for header — stripes, hoist triangle, red star */
+function ZimbabweFlagIcon({ className }: { className?: string }) {
+  const sh = 16 / 7;
+  return (
+    <svg
+      viewBox="0 0 24 16"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <rect x="0" y="0" width="24" height={sh} fill="#1E9648" />
+      <rect x="0" y={sh} width="24" height={sh} fill="#FFD200" />
+      <rect x="0" y={sh * 2} width="24" height={sh} fill="#DE0100" />
+      <rect x="0" y={sh * 3} width="24" height={sh} fill="#000000" />
+      <rect x="0" y={sh * 4} width="24" height={sh} fill="#DE0100" />
+      <rect x="0" y={sh * 5} width="24" height={sh} fill="#FFD200" />
+      <rect x="0" y={sh * 6} width="24" height={16 - sh * 6} fill="#1E9648" />
+      <polygon points="0,0 0,16 8,8" fill="#FFFFFF" />
+      <path
+        fill="#DE0100"
+        transform="translate(4.15, 8)"
+        d="M0 -1.1L0.247 -0.34L1.046 -0.34L0.4 0.13L0.647 0.89L0 0.42L-0.647 0.89L-0.4 0.13L-1.046 -0.34L-0.247 -0.34Z"
+      />
+    </svg>
+  );
+}
+
 export default function Header({ onDonateClick, onContactClick, startAtBottom = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -179,7 +206,8 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
       <div className={`mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 transition-all duration-500 ${
         isScrolled ? 'py-2' : 'py-4 sm:py-5'
       }`}>
-        <Link href="/" className="flex shrink-0 items-center hover:opacity-80 transition-opacity">
+        <Link href="/" className="flex shrink-0 items-center gap-2 hover:opacity-80 transition-opacity">
+          <ZimbabweFlagIcon className="h-4 w-6 shrink-0 rounded-sm border border-slate-200/90 shadow-sm sm:h-5 sm:w-[30px]" />
           <img
             src="/images/logo.png"
             alt="Diaspora Vote"
