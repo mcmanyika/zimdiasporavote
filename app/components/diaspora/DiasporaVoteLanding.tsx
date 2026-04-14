@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { Globe2, Landmark, Megaphone } from 'lucide-react'
+import { Globe2, Landmark, Megaphone, Newspaper } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
-import { createNewsletterSubscription } from '@/lib/firebase/firestore'
+import { createNewsletterSubscription, getNews } from '@/lib/firebase/firestore'
+import type { News } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import Chatbot from '../Chatbot'
 import Footer from '../Footer'
@@ -45,6 +46,23 @@ const PARALLAX_STRENGTH = 0.12
 const CAMPAIGN_ICON_WRAP =
   'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white/90 text-slate-700 shadow-sm'
 
+const LANDING_NEWS_LIMIT = 3
+
+function toNewsDate(date: Date | { toDate?: () => Date } | undefined) {
+  if (!date) return undefined
+  return date instanceof Date
+    ? date
+    : typeof (date as { toDate?: () => Date }).toDate === 'function'
+      ? (date as { toDate: () => Date }).toDate()
+      : new Date(date as string)
+}
+
+function formatNewsDate(date: Date | { toDate?: () => Date } | undefined) {
+  const d = toNewsDate(date)
+  if (!d) return ''
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
 export default function DiasporaVoteLanding() {
   const { user } = useAuth()
   const [email, setEmail] = useState('')
@@ -55,6 +73,8 @@ export default function DiasporaVoteLanding() {
   const [heroParallaxY, setHeroParallaxY] = useState(0)
   const [cloudsParallaxY, setCloudsParallaxY] = useState(0)
   const reduceMotionRef = useRef(false)
+  const [newsItems, setNewsItems] = useState<News[]>([])
+  const [newsLoading, setNewsLoading] = useState(true)
 
   useEffect(() => {
     reduceMotionRef.current =
@@ -86,6 +106,28 @@ export default function DiasporaVoteLanding() {
     return () => {
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        setNewsLoading(true)
+        const all = await getNews(true)
+        if (!cancelled) {
+          setNewsItems(all.slice(0, LANDING_NEWS_LIMIT))
+        }
+      } catch (e) {
+        console.error('Error loading landing news:', e)
+        if (!cancelled) setNewsItems([])
+      } finally {
+        if (!cancelled) setNewsLoading(false)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
     }
   }, [])
 
@@ -240,6 +282,93 @@ export default function DiasporaVoteLanding() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      <section id="news" className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-white via-dv-sky/20 to-dv-sky/35 py-14 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Updates</p>
+              <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Latest news</h2>
+              <p className="mt-2 max-w-2xl text-slate-600 sm:text-lg">
+                Articles and announcements from Diaspora Vote.
+              </p>
+            </div>
+            <Link
+              href="/news"
+              className="inline-flex shrink-0 items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
+            >
+              View all articles
+            </Link>
+          </div>
+
+          {newsLoading ? (
+            <div className="mt-10 flex justify-center py-8">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-dv-navy border-r-transparent" />
+            </div>
+          ) : newsItems.length === 0 ? (
+            <div className="mt-10 rounded-2xl border border-slate-200/90 bg-white/90 py-12 text-center shadow-sm">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200/90 bg-dv-sky/40 text-slate-500">
+                <Newspaper className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+              </div>
+              <p className="text-sm text-slate-600">No articles yet. Check back soon.</p>
+              <Link href="/news" className="mt-4 inline-block text-sm font-semibold text-dv-navy underline-offset-4 hover:underline">
+                Go to articles
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-10 grid gap-4 sm:gap-5 md:grid-cols-3">
+              {newsItems.map((newsItem) => (
+                <Link
+                  key={newsItem.id}
+                  href={`/news/${newsItem.id}`}
+                  className="group block rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md sm:p-5"
+                >
+                  <div className="mb-3 overflow-hidden rounded-xl">
+                    {newsItem.image ? (
+                      <img
+                        src={newsItem.image}
+                        alt={newsItem.title}
+                        className="h-36 w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+                      />
+                    ) : (
+                      <div className="flex h-36 w-full items-center justify-center bg-dv-sky/60">
+                        <img
+                          src="/images/logo.png"
+                          alt=""
+                          className="h-14 w-14 object-contain opacity-40"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {newsItem.category && (
+                      <span className="inline-block rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-dv-navy/80 ring-1 ring-slate-200/80">
+                        {newsItem.category}
+                      </span>
+                    )}
+                    <time
+                      dateTime={toNewsDate(newsItem.publishedAt || newsItem.createdAt)?.toISOString()}
+                      className="text-[10px] font-semibold uppercase tracking-wide text-slate-500"
+                    >
+                      {formatNewsDate(newsItem.publishedAt || newsItem.createdAt)}
+                    </time>
+                  </div>
+                  <h3 className="mb-2 text-sm font-bold text-dv-navy transition-colors group-hover:text-blue-700 sm:text-base">
+                    {newsItem.title}
+                  </h3>
+                  <p className="line-clamp-3 text-xs text-slate-600">{newsItem.description}</p>
+                  <span className="mt-3 inline-flex items-center text-xs font-semibold text-dv-navy opacity-0 transition-opacity group-hover:opacity-100">
+                    Read more
+                    <svg className="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
