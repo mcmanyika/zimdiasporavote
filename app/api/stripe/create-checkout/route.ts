@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
               currency: 'usd',
               product_data: {
                 name: 'Donation to Diaspora Vote',
-                description: description || 'Support our mission to oppose 2030 agenda',
+                description: description || 'Support civic education, constitutional advocacy, and diaspora engagement',
               },
               unit_amount: Math.round(amount * 100), // Convert to cents
             },

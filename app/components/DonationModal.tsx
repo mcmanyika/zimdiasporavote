@@ -17,7 +17,7 @@ export default function DonationModal({
   onClose,
   initialMessage = '',
   variant = 'center',
-  description = 'Donations will help oppose 2030 Agenda and campaign for implementation of Constitution',
+  description,
 }: DonationModalProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -71,9 +71,9 @@ export default function DonationModal({
             <h2 id="donation-modal-title" className="text-2xl font-bold">
               Make a Donation
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-1 text-sm text-slate-600">{description}</p>
+            ) : null}
           </div>
           <button
             type="button"
