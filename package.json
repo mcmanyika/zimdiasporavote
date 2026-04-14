@@ -24,6 +24,7 @@
     "@stripe/react-stripe-js": "^2.4.0",
     "@stripe/stripe-js": "^2.4.0",
     "firebase": "^10.7.1",
+    "lucide-react": "^0.468.0",
     "next": "^14.2.35",
     "openai": "^6.17.0",
     "react": "^18.3.1",

@@ -2,10 +2,13 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { Globe2, Landmark, Megaphone } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { createNewsletterSubscription } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
 import Chatbot from '../Chatbot'
+import DonationModal from '../DonationModal'
+import Footer from '../Footer'
 
 const WHATSAPP_URL = 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z'
 const FACEBOOK_URL = 'https://www.facebook.com/share/1C4G3L4eka/'
@@ -20,42 +23,6 @@ function ZimbabweSilhouette() {
       fill="currentColor"
     >
       <path d="M60 8 L95 22 L108 55 L100 95 L72 128 L38 115 L18 78 L22 38 Z" opacity="0.85" />
-    </svg>
-  )
-}
-
-function IconSpeaker({ className = 'h-6 w-6' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"
-      />
-    </svg>
-  )
-}
-
-function IconLightBulb({ className = 'h-6 w-6' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V5.25a3 3 0 116 0v7.5a3 3 0 01-3 3z"
-      />
-    </svg>
-  )
-}
-
-function IconBuilding({ className = 'h-6 w-6' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 013 13.125v-3.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-3.75a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 21v-8.25M19.875 21v-8.25M21 12.75c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125v3.75c0 .621.504 1.125 1.125 1.125h3.75c.621 0 1.125-.504 1.125-1.125v-3.75z"
-      />
     </svg>
   )
 }
@@ -80,12 +47,16 @@ const HERO_BG = "url('/images/hero_section.png')"
 const CLOUDS_BG = "url('/images/clouds.png')"
 const PARALLAX_STRENGTH = 0.12
 
+const CAMPAIGN_ICON_WRAP =
+  'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white/90 text-slate-700 shadow-sm'
+
 export default function DiasporaVoteLanding() {
   const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [donateModalOpen, setDonateModalOpen] = useState(false)
   const heroRef = useRef<HTMLElement>(null)
   const cloudsRef = useRef<HTMLElement>(null)
   const [heroParallaxY, setHeroParallaxY] = useState(0)
@@ -95,6 +66,18 @@ export default function DiasporaVoteLanding() {
   useEffect(() => {
     reduceMotionRef.current =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }, [])
+
+  useEffect(() => {
+    const syncHash = () => {
+      if (typeof window === 'undefined') return
+      if (window.location.hash === '#donate') {
+        setDonateModalOpen(true)
+      }
+    }
+    syncHash()
+    window.addEventListener('hashchange', syncHash)
+    return () => window.removeEventListener('hashchange', syncHash)
   }, [])
 
   useEffect(() => {
@@ -193,12 +176,13 @@ export default function DiasporaVoteLanding() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/membership-application"
+            <button
+              type="button"
               className="hidden rounded-full bg-dv-red px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover sm:inline-flex"
+              onClick={() => setDonateModalOpen(true)}
             >
-              Join the Movement
-            </Link>
+              Donate
+            </button>
             <button
               type="button"
               className="inline-flex rounded-lg p-2 text-dv-navy md:hidden"
@@ -240,13 +224,16 @@ export default function DiasporaVoteLanding() {
                   </Link>
                 )
               )}
-              <Link
-                href="/membership-application"
+              <button
+                type="button"
                 className="mt-2 inline-flex justify-center rounded-full bg-dv-red py-2.5 text-center text-sm font-semibold text-white"
-                onClick={() => setMobileOpen(false)}
+                onClick={() => {
+                  setDonateModalOpen(true)
+                  setMobileOpen(false)
+                }}
               >
-                Join the Movement
-              </Link>
+                Donate
+              </button>
             </nav>
           </div>
         )}
@@ -254,7 +241,7 @@ export default function DiasporaVoteLanding() {
 
       <section
         ref={heroRef}
-        className="relative flex min-h-[min(100vh,720px)] items-center overflow-hidden py-14 sm:min-h-[560px] sm:py-20"
+        className="relative flex min-h-[100dvh] items-center overflow-hidden py-14 sm:py-20"
       >
         {/* Taller layer + translate3d parallax (avoids gaps when image shifts) */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -360,7 +347,7 @@ export default function DiasporaVoteLanding() {
             <ZimbabweSilhouette />
           </div>
           <h2 className="relative max-w-3xl text-2xl font-bold text-dv-navy sm:text-3xl">
-            The Problem: No Voting Rights for Zimbabweans Abroad
+            No Voting Rights for Zimbabweans Abroad
           </h2>
           <ul className="relative mt-8 max-w-2xl space-y-5">
             {[
@@ -398,14 +385,11 @@ export default function DiasporaVoteLanding() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-sky-50/20 to-white/35" aria-hidden />
         <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-4 sm:gap-16 sm:px-6 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">The Solution: DiasporaVote&apos;s Campaign</h2>
+            <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">DiasporaVote&apos;s Campaign</h2>
             <ul className="mt-8 space-y-8">
               <li className="flex gap-4">
-                <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-800"
-                  aria-hidden
-                >
-                  <IconSpeaker className="h-6 w-6" />
+                <span className={CAMPAIGN_ICON_WRAP} aria-hidden>
+                  <Megaphone className="h-6 w-6" strokeWidth={1.75} />
                 </span>
                 <div>
                   <h3 className="font-bold text-dv-navy">Advocacy</h3>
@@ -413,11 +397,8 @@ export default function DiasporaVoteLanding() {
                 </div>
               </li>
               <li className="flex gap-4">
-                <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800"
-                  aria-hidden
-                >
-                  <IconLightBulb className="h-6 w-6" />
+                <span className={CAMPAIGN_ICON_WRAP} aria-hidden>
+                  <Globe2 className="h-6 w-6" strokeWidth={1.75} />
                 </span>
                 <div>
                   <h3 className="font-bold text-dv-navy">Awareness</h3>
@@ -425,11 +406,8 @@ export default function DiasporaVoteLanding() {
                 </div>
               </li>
               <li className="flex gap-4">
-                <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-200 text-slate-700"
-                  aria-hidden
-                >
-                  <IconBuilding className="h-6 w-6" />
+                <span className={CAMPAIGN_ICON_WRAP} aria-hidden>
+                  <Landmark className="h-6 w-6" strokeWidth={1.75} />
                 </span>
                 <div>
                   <h3 className="font-bold text-dv-navy">Policy Engagement</h3>
@@ -509,51 +487,17 @@ export default function DiasporaVoteLanding() {
         </div>
       </section>
 
-      <footer className="bg-dv-navy text-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <Link href="/" className="inline-flex shrink-0 items-center rounded-md bg-white/10 p-2 ring-1 ring-white/15">
-            <Image
-              src="/images/logo.png"
-              alt="DiasporaVote"
-              width={220}
-              height={64}
-              className="h-8 w-auto max-w-[200px] object-contain object-left sm:h-9"
-            />
-          </Link>
-          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-blue-100/90">
-            <a href="#about" className="hover:text-white">
-              About
-            </a>
-            <a href="#get-involved" className="hover:text-white">
-              Get involved
-            </a>
-            <Link href="/news" className="hover:text-white">
-              Updates
-            </Link>
-            <a href="mailto:contact@diasporavote.org" className="hover:text-white">
-              Contact
-            </a>
-            <Link href="/privacy" className="hover:text-white">
-              Privacy Policy
-            </Link>
-          </nav>
-          <div className="flex gap-4">
-            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="text-blue-200 hover:text-white" aria-label="Facebook">
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </a>
-            <a href={X_URL} target="_blank" rel="noopener noreferrer" className="text-blue-200 hover:text-white" aria-label="X">
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-        <div className="border-t border-white/10 py-4 text-center text-xs text-blue-200/60">
-          © {new Date().getFullYear()} DiasporaVote Initiative. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
+
+      <DonationModal
+        isOpen={donateModalOpen}
+        onClose={() => {
+          setDonateModalOpen(false)
+          if (typeof window !== 'undefined' && window.location.hash === '#donate') {
+            window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+          }
+        }}
+      />
 
       <Chatbot hideWhatsApp />
     </main>

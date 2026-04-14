@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
 import { getSiteLinks } from '@/lib/firebase/firestore';
+import DonationModal from './DonationModal';
 
 interface HeaderProps {
   onDonateClick?: () => void;
@@ -23,11 +24,35 @@ interface NavLinkItem {
 
 const fallbackHeaderLinks: NavLinkItem[] = [
   { id: 'header-about', label: 'About', url: '/about', style: 'link', order: 1 },
-  { id: 'header-petitions', label: 'Petitions', url: '/petitions', style: 'link', order: 2 },
-  { id: 'header-articles', label: 'Articles', url: '/news', style: 'link', order: 3 },
-  { id: 'header-join', label: 'Join Diaspora Vote', url: '/membership-application', style: 'button', order: 4 },
-  { id: 'header-contact', label: 'Contact', url: '/#contact', style: 'link', order: 5 },
+  { id: 'header-problem', label: 'The Problem', url: '/#problem', style: 'link', order: 2 },
+  { id: 'header-get-involved', label: 'Get Involved', url: '/#get-involved', style: 'link', order: 3 },
+  { id: 'header-articles', label: 'Articles', url: '/news', style: 'link', order: 4 },
 ];
+
+/** Strips removed items so Firestore header config cannot re-show them. */
+function filterRemovedNavItems(links: NavLinkItem[]): NavLinkItem[] {
+  return links.filter((link) => {
+    const label = link.label.trim().toLowerCase();
+    const url = link.url.trim().toLowerCase();
+    if (label === 'petitions' || url === '/petitions') return false;
+    if (label === 'contact' || url === '/#contact' || url === '#contact') return false;
+    if (link.id === 'header-join' || label === 'join diaspora vote') return false;
+    return true;
+  });
+}
+
+/** Overlay Firestore links onto defaults so new fallback items still appear when the DB is stale. */
+function mergeHeaderWithDb(dbLinks: NavLinkItem[]): NavLinkItem[] {
+  const db = filterRemovedNavItems(dbLinks);
+  const map = new Map<string, NavLinkItem>();
+  for (const item of fallbackHeaderLinks) {
+    map.set(item.id, item);
+  }
+  for (const item of db) {
+    map.set(item.id, item);
+  }
+  return filterRemovedNavItems(Array.from(map.values())).sort((a, b) => a.order - b.order);
+}
 
 function normalizeNavLinks(raw: any[]): NavLinkItem[] {
   return raw
@@ -59,17 +84,23 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
   const { user, userProfile, logout } = useAuth();
   const { getTotalItems } = useCart();
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const [headerLinks, setHeaderLinks] = useState<NavLinkItem[]>(fallbackHeaderLinks);
+  const [headerLinks, setHeaderLinks] = useState<NavLinkItem[]>(() => filterRemovedNavItems(fallbackHeaderLinks));
+  const [donateModalOpen, setDonateModalOpen] = useState(false);
   const cartItemCount = getTotalItems();
+
+  const closeDonateModal = () => {
+    setDonateModalOpen(false);
+    if (typeof window !== 'undefined' && window.location.hash === '#donate') {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    }
+  };
 
   const handleDonateClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onDonateClick) {
-      onDonateClick();
-    } else {
-      // Fallback to hash navigation if no handler provided
-      window.location.href = '#donate';
-    }
+    e.stopPropagation();
+    setDonateModalOpen(true);
+    setMobileMenuOpen(false);
+    onDonateClick?.();
   };
 
   useEffect(() => {
@@ -110,9 +141,9 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
     const loadLinks = async () => {
       try {
         const dbLinks = await getSiteLinks('header');
-        const normalized = normalizeNavLinks(dbLinks as any[]);
-        if (isMounted && normalized.length > 0) {
-          setHeaderLinks(normalized);
+        const merged = mergeHeaderWithDb(normalizeNavLinks(dbLinks as any[]));
+        if (isMounted) {
+          setHeaderLinks(merged);
         }
       } catch (error) {
         console.error('Failed to load header links:', error);
@@ -124,9 +155,22 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
     };
   }, []);
 
+  useEffect(() => {
+    const syncHash = () => {
+      if (typeof window === 'undefined') return;
+      if (window.location.hash === '#donate') {
+        setDonateModalOpen(true);
+      }
+    };
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, []);
+
   return (
-    <header 
-      className={`fixed left-0 right-0 z-50 border-b border-blue-900/70 bg-blue-950 backdrop-blur-sm transition-all duration-500 ${
+    <>
+    <header
+      className={`fixed left-0 right-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md transition-all duration-500 ${
         isScrolled
           ? 'safe-top md:top-0 bottom-auto animate-slide-down'
           : 'safe-top bottom-auto md:bottom-0 md:top-auto'
@@ -141,9 +185,9 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
             alt="Diaspora Vote" 
             className="h-11 w-11 rounded-md object-contain sm:h-12 sm:w-12"
           />
-          <div className="leading-tight hidden sm:block">
-            <p className="text-xs font-bold text-white">Diaspora Vote</p>
-            <p className="text-[10px] text-slate-400">Our Constitution. Our Future</p>
+          <div className="hidden leading-tight sm:block">
+            <p className="text-xs font-bold text-dv-navy">Diaspora Vote</p>
+            <p className="text-[10px] text-slate-500">Our Constitution. Our Future</p>
           </div>
         </Link>
 
@@ -162,7 +206,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                       window.location.href = '/#contact';
                     }
                   }}
-                  className="text-xs font-medium text-blue-100/80 hover:text-yellow-300 transition-colors sm:text-sm"
+                  className="text-xs font-medium text-dv-navy/90 transition-colors hover:text-blue-600 sm:text-sm"
                 >
                   {link.label}
                 </button>
@@ -176,7 +220,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                   href={link.url}
                   target={link.openInNewTab ? '_blank' : undefined}
                   rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                  className="rounded-full bg-yellow-500 px-4 py-1.5 text-xs font-bold text-slate-900 hover:bg-yellow-400 transition-colors sm:text-sm"
+                  className="rounded-full bg-dv-red px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover sm:text-sm"
                 >
                   {link.label}
                 </Link>
@@ -189,7 +233,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 href={link.url}
                 target={link.openInNewTab ? '_blank' : undefined}
                 rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                className="text-xs font-medium text-blue-100/80 hover:text-yellow-300 transition-colors sm:text-sm"
+                className="text-xs font-medium text-dv-navy/90 transition-colors hover:text-blue-600 sm:text-sm"
               >
                 {link.label}
               </Link>
@@ -201,14 +245,14 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           {/* Cart Icon */}
           <Link
             href="/cart"
-            className="relative rounded-md p-1.5 text-white hover:bg-blue-900/60 transition-colors"
+            className="relative rounded-md p-1.5 text-dv-navy transition-colors hover:bg-dv-sky/60"
             aria-label="Shopping cart"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             {cartItemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-900">
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-dv-red text-[10px] font-bold text-white">
                 {cartItemCount > 9 ? '9+' : cartItemCount}
               </span>
             )}
@@ -219,7 +263,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="hidden items-center gap-2 rounded-lg border border-blue-800/70 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-900/60 transition-colors sm:px-4 sm:py-2 sm:text-sm md:flex"
+                  className="hidden items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-dv-navy transition-colors hover:bg-dv-sky/50 sm:px-4 sm:py-2 sm:text-sm md:flex"
                 >
                   <span>{userProfile?.name || user.email?.split('@')[0] || 'Account'}</span>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,36 +271,36 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                   </svg>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-blue-800/70 bg-blue-950 shadow-lg">
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg">
                     <div className="py-1">
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                        className="block px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-dv-sky/50 hover:text-dv-navy"
                       >
                         Dashboard
                       </Link>
                       <Link
                         href="/dashboard/profile"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                        className="block px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-dv-sky/50 hover:text-dv-navy"
                       >
                         Profile
                       </Link>
                       <Link
                         href="/dashboard/membership"
                         onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                        className="block px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-dv-sky/50 hover:text-dv-navy"
                       >
                         Membership
                       </Link>
-                      <hr className="my-1 border-blue-800/70" />
+                      <hr className="my-1 border-slate-100" />
                       <button
                         onClick={() => {
                           logout();
                           setUserMenuOpen(false);
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                        className="block w-full px-4 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-dv-sky/50 hover:text-dv-navy"
                       >
                         Sign Out
                       </button>
@@ -265,8 +309,9 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 )}
               </div>
               <button
+                type="button"
                 onClick={handleDonateClick}
-                className="inline-flex rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-medium text-slate-900 hover:bg-yellow-400 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-full bg-dv-red px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover sm:px-4 sm:py-2 sm:text-sm"
               >
                 Donate
               </button>
@@ -275,13 +320,14 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
             <>
               <Link
                 href="/login"
-                className="inline-flex rounded-lg border border-blue-800/70 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-900/60 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-dv-navy transition-colors hover:bg-dv-sky/50 sm:px-4 sm:py-2 sm:text-sm"
               >
                 Sign In
               </Link>
               <button
+                type="button"
                 onClick={handleDonateClick}
-                className="inline-flex rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-medium text-slate-900 hover:bg-yellow-400 transition-colors sm:px-4 sm:py-2 sm:text-sm"
+                className="inline-flex rounded-full bg-dv-red px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover sm:px-4 sm:py-2 sm:text-sm"
               >
                 Donate
               </button>
@@ -291,7 +337,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="ml-2 inline-flex items-center justify-center rounded-lg p-2 text-white hover:bg-blue-900/60 md:hidden"
+            className="ml-2 inline-flex items-center justify-center rounded-lg p-2 text-dv-navy transition-colors hover:bg-dv-sky/60 md:hidden"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -309,7 +355,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-blue-900/70 bg-blue-950 md:hidden">
+        <div className="border-t border-slate-200 bg-white md:hidden">
           <nav className="flex flex-col space-y-1 px-4 py-4">
             {headerLinks.map((link) => {
               if (isContactLink(link)) {
@@ -324,7 +370,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                         window.location.href = '/#contact';
                       }
                     }}
-                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-dv-navy transition-colors hover:bg-dv-sky/50"
                   >
                     {link.label}
                   </button>
@@ -339,7 +385,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                     target={link.openInNewTab ? '_blank' : undefined}
                     rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="mx-4 mt-2 rounded-full bg-yellow-500 px-4 py-3 text-center text-sm font-bold text-slate-900 hover:bg-yellow-400 transition-colors"
+                    className="mx-4 mt-2 rounded-full bg-dv-red px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-dv-red-hover"
                   >
                     {link.label}
                   </Link>
@@ -353,7 +399,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                   target={link.openInNewTab ? '_blank' : undefined}
                   rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                   onClick={() => setMobileMenuOpen(false)}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-blue-100/80 hover:bg-blue-900/60 hover:text-yellow-300 transition-colors"
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-dv-navy transition-colors hover:bg-dv-sky/50"
                 >
                   {link.label}
                 </Link>
@@ -364,7 +410,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
+                  className="mt-2 rounded-lg border border-slate-200 px-4 py-3 text-center text-sm font-medium text-dv-navy transition-colors hover:bg-dv-sky/50"
                 >
                   Dashboard
                 </Link>
@@ -373,7 +419,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="mt-2 w-full rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
+                  className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-3 text-center text-sm font-medium text-dv-navy transition-colors hover:bg-dv-sky/50"
                 >
                   Sign Out
                 </button>
@@ -383,7 +429,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-lg border border-blue-800/70 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-900/60 transition-colors"
+                  className="mt-2 rounded-lg border border-slate-200 px-4 py-3 text-center text-sm font-medium text-dv-navy transition-colors hover:bg-dv-sky/50"
                 >
                   Sign In
                 </Link>
@@ -393,6 +439,8 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
         </div>
       )}
     </header>
+    <DonationModal isOpen={donateModalOpen} onClose={closeDonateModal} />
+    </>
   );
 }
 

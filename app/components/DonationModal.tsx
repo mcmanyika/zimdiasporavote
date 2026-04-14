@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import DonationForm from './DonationForm'
 
 interface DonationModalProps {
@@ -18,6 +19,12 @@ export default function DonationModal({
   variant = 'center',
   description = 'Donations will help oppose 2030 Agenda and campaign for implementation of Constitution',
 }: DonationModalProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -33,12 +40,17 @@ export default function DonationModal({
     onClose()
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
   const isDrawer = variant === 'drawer-right'
 
-  return (
-    <div className={`fixed inset-0 z-50 flex ${isDrawer ? 'items-stretch justify-end' : 'items-center justify-center p-4'}`}>
+  const modal = (
+    <div
+      className={`fixed inset-0 z-[200] flex ${isDrawer ? 'items-stretch justify-end' : 'items-center justify-center p-4'}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="donation-modal-title"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -56,12 +68,15 @@ export default function DonationModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
-            <h2 className="text-2xl font-bold">Make a Donation</h2>
+            <h2 id="donation-modal-title" className="text-2xl font-bold">
+              Make a Donation
+            </h2>
             <p className="mt-1 text-sm text-slate-600">
               {description}
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors"
             aria-label="Close modal"
@@ -89,5 +104,7 @@ export default function DonationModal({
       </div>
     </div>
   )
+
+  return createPortal(modal, document.body)
 }
 
