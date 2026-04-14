@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { getSiteLinks } from '@/lib/firebase/firestore';
 import DonationModal from './DonationModal';
 import ZimbabweFlagIcon from './ZimbabweFlagIcon';
+import { SITE_NAME } from '@/lib/branding';
 
 interface HeaderProps {
   onDonateClick?: () => void;
@@ -27,7 +28,7 @@ const fallbackHeaderLinks: NavLinkItem[] = [
   { id: 'header-about', label: 'About', url: '/about', style: 'link', order: 1 },
   { id: 'header-problem', label: 'The Problem', url: '/#problem', style: 'link', order: 2 },
   { id: 'header-get-involved', label: 'Get Involved', url: '/#get-involved', style: 'link', order: 3 },
-  { id: 'header-articles', label: 'Articles', url: '/news', style: 'link', order: 4 },
+  { id: 'header-articles', label: 'Articles', url: '/#news', style: 'link', order: 4 },
 ];
 
 /** Strips removed items so Firestore header config cannot re-show them. */
@@ -42,6 +43,13 @@ function filterRemovedNavItems(links: NavLinkItem[]): NavLinkItem[] {
   });
 }
 
+/** Articles always opens the Latest news block on the home page (Firestore may still say /news). */
+function ensureArticlesLandingSection(links: NavLinkItem[]): NavLinkItem[] {
+  return links.map((link) =>
+    link.id === 'header-articles' ? { ...link, url: '/#news' } : link
+  );
+}
+
 /** Overlay Firestore links onto defaults so new fallback items still appear when the DB is stale. */
 function mergeHeaderWithDb(dbLinks: NavLinkItem[]): NavLinkItem[] {
   const db = filterRemovedNavItems(dbLinks);
@@ -52,7 +60,9 @@ function mergeHeaderWithDb(dbLinks: NavLinkItem[]): NavLinkItem[] {
   for (const item of db) {
     map.set(item.id, item);
   }
-  return filterRemovedNavItems(Array.from(map.values())).sort((a, b) => a.order - b.order);
+  return ensureArticlesLandingSection(
+    filterRemovedNavItems(Array.from(map.values())).sort((a, b) => a.order - b.order)
+  );
 }
 
 function normalizeNavLinks(raw: any[]): NavLinkItem[] {
@@ -85,7 +95,9 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
   const { user, userProfile, logout } = useAuth();
   const { getTotalItems } = useCart();
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const [headerLinks, setHeaderLinks] = useState<NavLinkItem[]>(() => filterRemovedNavItems(fallbackHeaderLinks));
+  const [headerLinks, setHeaderLinks] = useState<NavLinkItem[]>(() =>
+    ensureArticlesLandingSection(filterRemovedNavItems(fallbackHeaderLinks))
+  );
   const [donateModalOpen, setDonateModalOpen] = useState(false);
   const cartItemCount = getTotalItems();
 
@@ -184,7 +196,7 @@ export default function Header({ onDonateClick, onContactClick, startAtBottom = 
           <ZimbabweFlagIcon className="h-4 w-6 shrink-0 rounded-sm border border-slate-200/90 shadow-sm sm:h-5 sm:w-[30px]" />
           <img
             src="/images/logo.png"
-            alt="Diaspora Vote"
+            alt={SITE_NAME}
             className="h-9 w-auto object-contain object-left sm:h-10"
           />
         </Link>

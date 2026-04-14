@@ -3,6 +3,7 @@
 import { Suspense } from 'react'
 import LoginForm from '@/app/components/LoginForm'
 import ZimbabweFlagIcon from '@/app/components/ZimbabweFlagIcon'
+import { SITE_NAME } from '@/lib/branding'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -20,7 +21,7 @@ function LoginContent() {
             <Link href="/" className="inline-block">
               <img
                 src="/images/logo.png"
-                alt="Diaspora Vote"
+                alt={SITE_NAME}
                 className="h-12 w-auto rounded-md object-contain sm:h-16"
               />
             </Link>

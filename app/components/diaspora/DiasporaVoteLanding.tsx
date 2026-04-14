@@ -1,14 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { Globe2, Landmark, Megaphone, Newspaper } from 'lucide-react'
+import { Globe2, Landmark, Megaphone, Newspaper, Users } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
-import { createNewsletterSubscription, getNews } from '@/lib/firebase/firestore'
-import type { News } from '@/types'
+import { createNewsletterSubscription, getLeaders, getNews } from '@/lib/firebase/firestore'
+import type { Leader, News } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import Chatbot from '../Chatbot'
 import Footer from '../Footer'
 import Header from '../Header'
+import { SITE_NAME } from '@/lib/branding'
 
 function ZimbabweSilhouette() {
   return (
@@ -47,6 +48,7 @@ const CAMPAIGN_ICON_WRAP =
   'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white/90 text-slate-700 shadow-sm'
 
 const LANDING_NEWS_LIMIT = 3
+const LANDING_LEADERS_LIMIT = 8
 
 function toNewsDate(date: Date | { toDate?: () => Date } | undefined) {
   if (!date) return undefined
@@ -75,6 +77,8 @@ export default function DiasporaVoteLanding() {
   const reduceMotionRef = useRef(false)
   const [newsItems, setNewsItems] = useState<News[]>([])
   const [newsLoading, setNewsLoading] = useState(true)
+  const [leaders, setLeaders] = useState<Leader[]>([])
+  const [leadersLoading, setLeadersLoading] = useState(true)
 
   useEffect(() => {
     reduceMotionRef.current =
@@ -123,6 +127,28 @@ export default function DiasporaVoteLanding() {
         if (!cancelled) setNewsItems([])
       } finally {
         if (!cancelled) setNewsLoading(false)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        setLeadersLoading(true)
+        const all = await getLeaders(true)
+        if (!cancelled) {
+          setLeaders(all.slice(0, LANDING_LEADERS_LIMIT))
+        }
+      } catch (e) {
+        console.error('Error loading landing leadership:', e)
+        if (!cancelled) setLeaders([])
+      } finally {
+        if (!cancelled) setLeadersLoading(false)
       }
     }
     void load()
@@ -207,7 +233,7 @@ export default function DiasporaVoteLanding() {
 
       <section id="about" className="scroll-mt-24 border-t border-slate-100 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">About DiasporaVote Initiative</h2>
+          <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">About {SITE_NAME}</h2>
           <p className="mt-3 max-w-3xl text-slate-600 sm:text-lg">
             We are committed to fair representation for every Zimbabwean—at home and across the diaspora—through
             peaceful advocacy and democratic participation.
@@ -292,7 +318,7 @@ export default function DiasporaVoteLanding() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Updates</p>
               <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Latest news</h2>
               <p className="mt-2 max-w-2xl text-slate-600 sm:text-lg">
-                Articles and announcements from Diaspora Vote.
+                Articles and announcements from {SITE_NAME}.
               </p>
             </div>
             <Link
@@ -373,6 +399,89 @@ export default function DiasporaVoteLanding() {
       </section>
 
       <section
+        id="leadership"
+        className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-dv-sky/25 via-white to-white py-14 sm:py-20"
+      >
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Our people</p>
+              <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Leadership</h2>
+              <p className="mt-2 max-w-2xl text-slate-600 sm:text-lg">
+                Meet the team guiding {SITE_NAME}.
+              </p>
+            </div>
+            <Link
+              href="/leadership"
+              className="inline-flex shrink-0 items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
+            >
+              View full team
+            </Link>
+          </div>
+
+          {leadersLoading ? (
+            <div className="mt-10 flex justify-center py-8">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-dv-navy border-r-transparent" />
+            </div>
+          ) : leaders.length === 0 ? (
+            <div className="mt-10 rounded-2xl border border-slate-200/90 bg-white/90 py-12 text-center shadow-sm">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200/90 bg-dv-sky/40 text-slate-500">
+                <Users className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+              </div>
+              <p className="text-sm text-slate-600">Leadership profiles coming soon.</p>
+              <Link
+                href="/leadership"
+                className="mt-4 inline-block text-sm font-semibold text-dv-navy underline-offset-4 hover:underline"
+              >
+                Leadership page
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {leaders.map((leader) => (
+                <div
+                  key={leader.id}
+                  className="rounded-2xl border border-slate-200/90 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <div className="mx-auto mb-4 h-28 w-28 overflow-hidden rounded-full bg-dv-sky/50 ring-1 ring-slate-200/80 sm:h-32 sm:w-32">
+                    {leader.imageUrl ? (
+                      <img
+                        src={leader.imageUrl}
+                        alt={leader.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-dv-navy/35">
+                        {leader.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-base font-bold text-dv-navy">{leader.name}</h3>
+                  <p className="mt-1 text-sm font-semibold text-slate-600">{leader.title}</p>
+                  {leader.bio ? (
+                    <p className="mt-3 text-left text-sm leading-relaxed text-slate-600 line-clamp-4">{leader.bio}</p>
+                  ) : null}
+                  {leader.xHandle ? (
+                    <a
+                      href={`https://x.com/${leader.xHandle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-dv-navy/80 hover:text-blue-700"
+                    >
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                      @{leader.xHandle}
+                    </a>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section
         ref={cloudsRef}
         id="get-involved"
         className="relative scroll-mt-24 overflow-hidden border-t border-slate-200/80 py-14 sm:py-20"
@@ -391,7 +500,7 @@ export default function DiasporaVoteLanding() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-sky-50/20 to-white/35" aria-hidden />
         <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-4 sm:gap-16 sm:px-6 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">DiasporaVote&apos;s Campaign</h2>
+            <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">{SITE_NAME}&apos;s campaign</h2>
             <ul className="mt-8 space-y-8">
               <li className="flex gap-4">
                 <span className={CAMPAIGN_ICON_WRAP} aria-hidden>

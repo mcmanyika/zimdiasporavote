@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react'
 import SignupForm from '@/app/components/SignupForm'
+import { SITE_NAME, SITE_TAGLINE } from '@/lib/branding'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -15,9 +16,9 @@ function SignupContent() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <Link href="/"><img src="/images/logo.png" alt="Diaspora Vote" className="mx-auto mb-4 h-16 w-16 rounded-md object-contain hover:opacity-80 transition-opacity cursor-pointer" /></Link>
+          <Link href="/"><img src="/images/logo.png" alt={SITE_NAME} className="mx-auto mb-4 h-16 w-16 rounded-md object-contain hover:opacity-80 transition-opacity cursor-pointer" /></Link>
           <h1 className="mb-2 text-3xl font-bold">Create Account</h1>
-          <p className="text-slate-600">Join Diaspora Vote — Think Local, go global!</p>
+          <p className="text-slate-600">Join {SITE_NAME} — {SITE_TAGLINE}</p>
           {refCode && (
             <p className="mt-2 text-sm text-emerald-600 font-medium">You&apos;ve been invited! Sign up to get started.</p>
           )}

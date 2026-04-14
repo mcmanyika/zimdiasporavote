@@ -1,9 +1,10 @@
 /**
- * Site-wide branding for Diaspora Vote.
+ * Site-wide branding for Diaspora Vote Initiative.
  * Set NEXT_PUBLIC_BASE_URL and NEXT_PUBLIC_CONTACT_EMAIL in .env for production.
  */
 
-export const SITE_NAME = 'Diaspora Vote'
+/** Full public name of the organization / app */
+export const SITE_NAME = 'Diaspora Vote Initiative'
 export const SITE_NAME_SHORT = 'DV'
 export const SITE_HASHTAG = '#DiasporaVote'
 export const SITE_TAGLINE = 'Think Local, go global!'

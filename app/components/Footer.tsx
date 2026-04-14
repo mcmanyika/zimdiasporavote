@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { CONTACT_EMAIL } from '@/lib/branding'
+import { CONTACT_EMAIL, SITE_NAME } from '@/lib/branding'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -11,7 +11,7 @@ export default function Footer() {
         <Link href="/" className="inline-flex shrink-0 items-center rounded-md bg-white/10 p-2 ring-1 ring-white/15">
           <Image
             src="/images/logo.png"
-            alt="DiasporaVote"
+            alt={SITE_NAME}
             width={220}
             height={64}
             className="h-8 w-auto max-w-[200px] object-contain object-left sm:h-9"
@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs text-blue-200/60">
-        © {year} DiasporaVote Initiative. All rights reserved.
+        © {year} {SITE_NAME}. All rights reserved.
       </div>
     </footer>
   )
