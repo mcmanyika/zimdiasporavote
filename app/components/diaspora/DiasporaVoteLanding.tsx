@@ -9,10 +9,6 @@ import Chatbot from '../Chatbot'
 import Footer from '../Footer'
 import Header from '../Header'
 
-const WHATSAPP_URL = 'https://whatsapp.com/channel/0029VbCeX3FATRSwXmceVg3z'
-const FACEBOOK_URL = 'https://www.facebook.com/share/1C4G3L4eka/'
-const X_URL = 'https://x.com/DiasporaVote'
-
 function ZimbabweSilhouette() {
   return (
     <svg
@@ -147,14 +143,14 @@ export default function DiasporaVoteLanding() {
               Let Zimbabweans Abroad Have Their Voice
             </h1>
             <p className="mt-4 max-w-xl text-lg text-slate-600 sm:text-xl">
-              Join the movement for diaspora voting rights! Your voice matters.
+              Sign up to our newsletter for diaspora voting rights updates. Your voice matters.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/membership-application"
                 className="inline-flex items-center justify-center rounded-full bg-dv-navy px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-dv-navy/90"
               >
-                Join the Movement
+                Apply for Membership
               </Link>
               <a
                 href="#about"
@@ -299,7 +295,7 @@ export default function DiasporaVoteLanding() {
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-dv-sky/50 p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-dv-navy sm:text-2xl">Get Involved: join the Movement</h2>
+            <h2 className="text-xl font-bold text-dv-navy sm:text-2xl">Sign Up to Our Newsletter</h2>
             <form onSubmit={onJoinNewsletter} className="mt-6">
               <label htmlFor="dv-email" className="sr-only">
                 Email address
@@ -319,7 +315,7 @@ export default function DiasporaVoteLanding() {
                   disabled={loading}
                   className="min-h-[48px] shrink-0 rounded-l-xl rounded-r-xl bg-dv-red px-5 text-sm font-semibold text-white transition-colors hover:bg-dv-red-hover disabled:opacity-60 sm:rounded-l-none sm:rounded-r-xl"
                 >
-                  {loading ? '…' : 'Join the Movement'}
+                  {loading ? '…' : 'Sign Up'}
                 </button>
               </div>
               {msg && (
@@ -328,41 +324,24 @@ export default function DiasporaVoteLanding() {
             </form>
 
             <div className="mt-8 text-sm">
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-medium text-dv-navy underline decoration-blue-300 underline-offset-4 hover:text-blue-700"
-              >
+              <div className="inline-flex items-center gap-2 font-medium text-dv-navy">
                 <IconWhatsApp className="h-5 w-5 shrink-0 text-[#25D366]" aria-hidden />
                 WhatsApp Group
-              </a>
+              </div>
             </div>
 
             <p className="mt-8 text-sm font-medium text-dv-navy">Follow us for the latest updates!</p>
             <div className="mt-3 flex gap-4">
-              <a
-                href={FACEBOOK_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#1877F2] transition-opacity hover:opacity-80"
-                aria-label="Facebook"
-              >
+              <span className="text-[#1877F2]" aria-label="Facebook">
                 <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
-              </a>
-              <a
-                href={X_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-dv-navy transition-opacity hover:opacity-80"
-                aria-label="X (Twitter)"
-              >
+              </span>
+              <span className="text-dv-navy" aria-label="X (Twitter)">
                 <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-              </a>
+              </span>
             </div>
           </div>
         </div>

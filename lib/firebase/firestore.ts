@@ -1730,38 +1730,28 @@ export async function createNewsletterSubscription(
   subscription: Omit<NewsletterSubscription, 'id' | 'createdAt' | 'updatedAt' | 'subscribed'>
 ): Promise<string> {
   const db = requireDb()
-  const subscriptionRef = doc(collection(db, 'newsletterSubscriptions'))
+  const normalizedEmail = subscription.email.toLowerCase().trim()
+  // Use deterministic document IDs by email to keep writes idempotent without read/query.
+  const subscriptionRef = doc(db, 'newsletterSubscriptions', normalizedEmail)
 
   try {
-    // Check if email already exists
-    const existingQuery = query(
-      collection(db, 'newsletterSubscriptions'),
-      where('email', '==', subscription.email.toLowerCase().trim())
-    )
-    const existingSnapshot = await getDocs(existingQuery)
-
-    if (!existingSnapshot.empty) {
-      // Update existing subscription to subscribed
-      const existingDoc = existingSnapshot.docs[0]
-      await updateDoc(existingDoc.ref, {
-        subscribed: true,
-        updatedAt: Timestamp.now(),
-        userId: subscription.userId || null,
-      })
-      return existingDoc.id
-    }
-
-    // Create new subscription
     const subscriptionData = {
-      email: subscription.email.toLowerCase().trim(),
+      email: normalizedEmail,
       userId: subscription.userId || null,
       subscribed: true,
-      id: subscriptionRef.id,
-      createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     }
 
-    await setDoc(subscriptionRef, subscriptionData)
+    await setDoc(
+      subscriptionRef,
+      {
+        ...subscriptionData,
+        id: subscriptionRef.id,
+        // Keep original signup time when the subscriber already exists.
+        createdAt: Timestamp.now(),
+      },
+      { merge: true }
+    )
     console.log('Newsletter subscription created successfully:', subscriptionRef.id)
     return subscriptionRef.id
   } catch (error: any) {
