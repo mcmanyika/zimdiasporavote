@@ -50,6 +50,10 @@ const CAMPAIGN_ICON_WRAP =
 const LANDING_NEWS_LIMIT = 3
 const LANDING_LEADERS_LIMIT = 8
 
+function getStaggerDelay(index: number) {
+  return `${Math.min(index, 4) * 90}ms`
+}
+
 function toNewsDate(date: Date | { toDate?: () => Date } | undefined) {
   if (!date) return undefined
   return date instanceof Date
@@ -137,6 +141,26 @@ export default function DiasporaVoteLanding() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-scroll-reveal]'))
+    if (nodes.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    )
+
+    for (const node of nodes) observer.observe(node)
+    return () => observer.disconnect()
+  }, [newsItems.length, leaders.length])
 
   useEffect(() => {
     let cancelled = false
@@ -232,7 +256,7 @@ export default function DiasporaVoteLanding() {
           aria-hidden
         />
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="max-w-xl">
+          <div className="max-w-xl scroll-reveal" data-scroll-reveal style={{ transitionDelay: '90ms' }}>
             <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-dv-navy sm:text-4xl lg:text-[2.75rem] lg:leading-[1.12]">
               Let Zimbabweans Abroad Have Their Voice
             </h1>
@@ -259,12 +283,18 @@ export default function DiasporaVoteLanding() {
 
       <section id="about" className="scroll-mt-24 border-t border-slate-100 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-2xl font-bold text-dv-navy sm:text-3xl">About {SITE_NAME}</h2>
-          <p className="mt-3 max-w-3xl text-slate-600 sm:text-lg">
+          <h2 className="scroll-reveal text-2xl font-bold text-dv-navy sm:text-3xl" data-scroll-reveal>
+            About {SITE_NAME}
+          </h2>
+          <p
+            className="mt-3 max-w-3xl text-slate-600 sm:text-lg scroll-reveal"
+            data-scroll-reveal
+            style={{ transitionDelay: '90ms' }}
+          >
             We are committed to fair representation for every Zimbabwean—at home and across the diaspora—through
             peaceful advocacy and democratic participation.
           </p>
-          <div className="mt-10 max-w-3xl">
+          <div className="mt-10 max-w-3xl scroll-reveal" data-scroll-reveal style={{ transitionDelay: '180ms' }}>
             <ul className="space-y-6">
               <li className="flex gap-4">
                 <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
@@ -317,10 +347,14 @@ export default function DiasporaVoteLanding() {
           <div className="pointer-events-none absolute right-4 top-8 opacity-40 sm:right-10 lg:right-16">
             <ZimbabweSilhouette />
           </div>
-          <h2 className="relative max-w-3xl text-2xl font-bold text-dv-navy sm:text-3xl">
+          <h2 className="relative max-w-3xl text-2xl font-bold text-dv-navy sm:text-3xl scroll-reveal" data-scroll-reveal>
             No Voting Rights for Zimbabweans Abroad
           </h2>
-          <ul className="relative mt-8 max-w-2xl space-y-5">
+          <ul
+            className="relative mt-8 max-w-2xl space-y-5 scroll-reveal"
+            data-scroll-reveal
+            style={{ transitionDelay: '90ms' }}
+          >
             {[
               'Millions of Zimbabweans live abroad but cannot vote',
               'Lack of voting rights violates democratic principles',
@@ -339,7 +373,7 @@ export default function DiasporaVoteLanding() {
 
       <section id="news" className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-white via-dv-sky/20 to-dv-sky/35 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex flex-col items-center gap-2 text-center scroll-reveal" data-scroll-reveal>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Updates</p>
               <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Latest news</h2>
@@ -362,11 +396,13 @@ export default function DiasporaVoteLanding() {
             </div>
           ) : (
             <div className="mt-10 grid gap-4 sm:gap-5 md:grid-cols-3">
-              {newsItems.map((newsItem) => (
+              {newsItems.map((newsItem, index) => (
                 <Link
                   key={newsItem.id}
                   href={`/news/${newsItem.id}`}
-                  className="group block rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md sm:p-5"
+                  className="group block rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md sm:p-5 scroll-reveal"
+                  data-scroll-reveal
+                  style={{ transitionDelay: getStaggerDelay(index) }}
                 >
                   <div className="mb-3 overflow-hidden rounded-xl">
                     {newsItem.image ? (
@@ -412,7 +448,7 @@ export default function DiasporaVoteLanding() {
               ))}
             </div>
           )}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex justify-center scroll-reveal" data-scroll-reveal style={{ transitionDelay: '180ms' }}>
             <Link
               href="/news"
               className="inline-flex items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
@@ -427,7 +463,7 @@ export default function DiasporaVoteLanding() {
         id="newsletter-signup"
         className="scroll-mt-24 w-full border-t border-slate-200/90 bg-gradient-to-b from-dv-sky via-dv-sky-deep/90 to-white py-14 sm:py-20"
       >
-        <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-6">
+        <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-6 scroll-reveal" data-scroll-reveal>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 ring-1 ring-dv-navy/10 shadow-sm">
             <Mail className="h-6 w-6 text-dv-navy" strokeWidth={1.75} aria-hidden />
           </div>
@@ -475,7 +511,7 @@ export default function DiasporaVoteLanding() {
         className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-dv-sky/25 via-white to-white py-14 sm:py-20"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex flex-col items-center gap-2 text-center scroll-reveal" data-scroll-reveal>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Our people</p>
               <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Leadership</h2>
@@ -501,10 +537,12 @@ export default function DiasporaVoteLanding() {
             </div>
           ) : (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {leaders.map((leader) => (
+              {leaders.map((leader, index) => (
                 <div
                   key={leader.id}
-                  className="rounded-2xl border border-slate-200/90 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md"
+                  className="rounded-2xl border border-slate-200/90 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md scroll-reveal"
+                  data-scroll-reveal
+                  style={{ transitionDelay: getStaggerDelay(index) }}
                 >
                   <div className="mx-auto mb-4 h-28 w-28 overflow-hidden rounded-full bg-dv-sky/50 ring-1 ring-slate-200/80 sm:h-32 sm:w-32">
                     {leader.imageUrl ? (
@@ -541,7 +579,7 @@ export default function DiasporaVoteLanding() {
               ))}
             </div>
           )}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex justify-center scroll-reveal" data-scroll-reveal style={{ transitionDelay: '180ms' }}>
             <Link
               href="/leadership"
               className="inline-flex items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
