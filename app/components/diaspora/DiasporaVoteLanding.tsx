@@ -339,20 +339,11 @@ export default function DiasporaVoteLanding() {
 
       <section id="news" className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-white via-dv-sky/20 to-dv-sky/35 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col items-center gap-2 text-center">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Updates</p>
               <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Latest news</h2>
-              <p className="mt-2 max-w-2xl text-slate-600 sm:text-lg">
-                Articles and announcements from {SITE_NAME}.
-              </p>
             </div>
-            <Link
-              href="/news"
-              className="inline-flex shrink-0 items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
-            >
-              View all articles
-            </Link>
           </div>
 
           {newsLoading ? (
@@ -421,6 +412,14 @@ export default function DiasporaVoteLanding() {
               ))}
             </div>
           )}
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/news"
+              className="inline-flex items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
+            >
+              View all articles
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -476,20 +475,11 @@ export default function DiasporaVoteLanding() {
         className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-dv-sky/25 via-white to-white py-14 sm:py-20"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col items-center gap-2 text-center">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dv-navy/55">Our people</p>
               <h2 className="mt-1 text-2xl font-bold text-dv-navy sm:text-3xl">Leadership</h2>
-              <p className="mt-2 max-w-2xl text-slate-600 sm:text-lg">
-                Meet the team guiding {SITE_NAME}.
-              </p>
             </div>
-            <Link
-              href="/leadership"
-              className="inline-flex shrink-0 items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
-            >
-              View full team
-            </Link>
           </div>
 
           {leadersLoading ? (
@@ -551,6 +541,14 @@ export default function DiasporaVoteLanding() {
               ))}
             </div>
           )}
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/leadership"
+              className="inline-flex items-center justify-center rounded-full border border-dv-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-dv-navy shadow-sm transition-colors hover:bg-dv-sky/50"
+            >
+              View full team
+            </Link>
+          </div>
         </div>
       </section>
 
