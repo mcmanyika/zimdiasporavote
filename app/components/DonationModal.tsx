@@ -8,6 +8,7 @@ interface DonationModalProps {
   isOpen: boolean
   onClose: () => void
   initialMessage?: string
+  initialAmount?: number
   variant?: 'center' | 'drawer-right'
   description?: string
 }
@@ -16,6 +17,7 @@ export default function DonationModal({
   isOpen,
   onClose,
   initialMessage = '',
+  initialAmount,
   variant = 'center',
   description,
 }: DonationModalProps) {
@@ -99,7 +101,7 @@ export default function DonationModal({
 
         {/* Content */}
         <div className={`${isDrawer ? 'h-[calc(100vh-88px)]' : 'max-h-[calc(100vh-200px)]'} overflow-y-auto p-6`}>
-          <DonationForm onSuccess={handleSuccess} initialMessage={initialMessage} />
+          <DonationForm onSuccess={handleSuccess} initialMessage={initialMessage} initialAmount={initialAmount} />
         </div>
       </div>
     </div>

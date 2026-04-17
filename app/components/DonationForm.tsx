@@ -5,21 +5,22 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { stripePromise } from '@/lib/stripe/config'
-import { createDonation, createStripeCustomerId, createNotification } from '@/lib/firebase/firestore'
+import { createDonation, createNotification } from '@/lib/firebase/firestore'
 
 interface DonationFormContentProps {
   onSuccess?: () => void
   initialMessage?: string
+  initialAmount?: number
 }
 
-function DonationFormContent({ onSuccess, initialMessage = '' }: DonationFormContentProps) {
+function DonationFormContent({ onSuccess, initialMessage = '', initialAmount }: DonationFormContentProps) {
   const [amount, setAmount] = useState('')
   const [customAmount, setCustomAmount] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [clientSecret, setClientSecret] = useState('')
-  const { user, userProfile } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
   const stripe = useStripe()
   const elements = useElements()
@@ -29,6 +30,13 @@ function DonationFormContent({ onSuccess, initialMessage = '' }: DonationFormCon
   useEffect(() => {
     setDescription(initialMessage)
   }, [initialMessage])
+
+  useEffect(() => {
+    if (typeof initialAmount === 'number' && Number.isFinite(initialAmount) && initialAmount > 0) {
+      setAmount(initialAmount.toString())
+      setCustomAmount('')
+    }
+  }, [initialAmount])
 
   useEffect(() => {
     // Create payment intent when amount is selected
@@ -270,12 +278,13 @@ function DonationFormContent({ onSuccess, initialMessage = '' }: DonationFormCon
 interface DonationFormProps {
   onSuccess?: () => void
   initialMessage?: string
+  initialAmount?: number
 }
 
-export default function DonationForm({ onSuccess, initialMessage = '' }: DonationFormProps) {
+export default function DonationForm({ onSuccess, initialMessage = '', initialAmount }: DonationFormProps) {
   return (
     <Elements stripe={stripePromise}>
-      <DonationFormContent onSuccess={onSuccess} initialMessage={initialMessage} />
+      <DonationFormContent onSuccess={onSuccess} initialMessage={initialMessage} initialAmount={initialAmount} />
     </Elements>
   )
 }
