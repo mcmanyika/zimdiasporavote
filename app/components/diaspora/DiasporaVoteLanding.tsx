@@ -382,7 +382,7 @@ export default function DiasporaVoteLanding() {
       <section
         ref={donateRef}
         id="get-involved"
-        className="relative scroll-mt-24 overflow-hidden border-t border-slate-100 py-14 sm:py-20"
+        className="relative scroll-mt-24 overflow-hidden py-14 sm:py-20"
       >
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
           <div
