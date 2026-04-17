@@ -17,7 +17,7 @@ const DONATE_BG = "url('/images/team.png')"
 const PARALLAX_STRENGTH = 0.12
 
 const LANDING_NEWS_LIMIT = 3
-const LANDING_LEADERS_LIMIT = 8
+const LANDING_LEADERS_LIMIT = 3
 const LANDING_DONATION_AMOUNTS = [5, 10, 25, 50, 100]
 
 function getStaggerDelay(index: number) {
@@ -325,7 +325,7 @@ export default function DiasporaVoteLanding() {
               </Link>
             </div>
           ) : (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {leaders.map((leader, index) => (
                 <div
                   key={leader.id}
