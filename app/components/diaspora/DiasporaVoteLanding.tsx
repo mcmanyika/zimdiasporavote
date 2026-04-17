@@ -398,7 +398,7 @@ export default function DiasporaVoteLanding() {
         <div className="pointer-events-none absolute inset-0 bg-black/65" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-4xl text-center text-white scroll-reveal" data-scroll-reveal>
-            <h2 className="text-3xl font-extrabold sm:text-4xl">Donate Today</h2>
+            <h2 className="text-3xl font-extrabold sm:text-4xl">Support Our Work</h2>
             <div className="mx-auto mt-3 flex w-full max-w-xs items-center justify-center gap-3">
               <span className="h-px flex-1 bg-white/40" />
               <span className="text-white/80" aria-hidden>
