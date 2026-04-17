@@ -2,146 +2,98 @@
 
 import Header from '../components/Header'
 import Footer from '@/app/components/Footer'
-import { SITE_NAME, SITE_NAME_SHORT } from '@/lib/branding'
+
+const OBJECTIVES: { id: string; text: string }[] = [
+  {
+    id: 'a',
+    text: 'To Initiate Dialogue with the Office of the President of Zimbabwe to remind the Office about the Presidential commitment to the Diaspora Vote made on the side lines of the United Nations General Conference in 2018;',
+  },
+  {
+    id: 'b',
+    text: 'To Appeal to the Parliament of Zimbabwe to make legislative changes that allow Zimbabwean citizens living abroad to cast their vote from their domiciled countries;',
+  },
+  {
+    id: 'c',
+    text: 'To create awareness among Zimbabweans living outside Zimbabwe on the need for the fulfilment of their constitutional right to vote, and join hands in lobbying for the right of citizens living outside Zimbabwe to vote;',
+  },
+  {
+    id: 'd',
+    text: 'To work with all other initiatives working to achieve the diaspora vote for Zimbabweans living abroad;',
+  },
+  {
+    id: 'e',
+    text: 'To create awareness among Zimbabweans living in Zimbabwe on how the absence of the Diaspora Vote takes away the voting rights of their family members and friends living abroad;',
+  },
+  {
+    id: 'f',
+    text: 'To appeal to businesses benefiting from Diaspora remittances to support the call by the citizens abroad who bankroll their businesses;',
+  },
+  {
+    id: 'g',
+    text: 'To appeal to regional, continental and international organisations which Zimbabwe is affiliated to, to encourage Zimbabwean authorities to implement the Diaspora vote for Zimbabwean citizens living abroad;',
+  },
+  {
+    id: 'h',
+    text: 'To mobilize resources to sustain the work of the Diaspora Vote lobby;',
+  },
+  {
+    id: 'i',
+    text: 'To use the media as a tool to communicate the diaspora vote message;',
+  },
+]
 
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <Header />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 pt-24 pb-8 text-white sm:pb-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">About {SITE_NAME}</p>
-            <h1 className="mb-2 text-2xl font-bold sm:text-3xl md:text-4xl">Why {SITE_NAME}</h1>
-            <p className="text-sm text-slate-300 sm:text-base">Non-partisan inclusive political organization</p>
-          </div>
+      <section className="bg-gradient-to-r from-slate-900 to-slate-800 pt-24 pb-10 text-white sm:pb-12">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">About</p>
+          <h1 className="text-2xl font-bold sm:text-3xl md:text-4xl">Zimbabwe Diaspora Vote Initiative</h1>
+          <p className="mt-2 text-sm text-slate-300 sm:text-base">ZDVI</p>
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="bg-white py-8 sm:py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
-            {/* Left Column - Content */}
-            <div className="animate-fade-in-up">
-              <p className="mb-4 text-sm leading-relaxed text-slate-700 sm:text-base">
-                Zimbabwe's Constitution was adopted by the people to limit power, protect rights and guarantee democratic governance.
-              </p>
-              <p className="mb-4 text-sm font-semibold leading-relaxed text-slate-900 sm:text-base">
-                Today, that constitutional promise is under threat.
-              </p>
-              <p className="mb-4 text-sm leading-relaxed text-slate-700 sm:text-base">
-                {SITE_NAME} ({SITE_NAME_SHORT}) exists to ensure that Zimbabwe is governed according to its Constitution — not political convenience.
-              </p>
-              <p className="text-sm leading-relaxed text-slate-700 sm:text-base">
-                {SITE_NAME} is a non-partisan, inclusive national platform bringing together citizens from across political parties, civic movements and social bases to defend constitutional supremacy through lawful, peaceful and organised action.
-              </p>
-            </div>
-
-            {/* Right Column - Image */}
-            <div className="animate-fade-in-up animate-delay-200">
-              <div className="overflow-hidden rounded-lg">
-                <img
-                  src="/images/hero.png"
-                  alt={SITE_NAME}
-                  className="h-auto w-full object-cover"
-                />
-              </div>
-            </div>
+      <section className="bg-white py-10 sm:py-14">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <div className="space-y-6 text-sm leading-relaxed text-slate-700 sm:text-base">
+            <p>
+              The Zimbabwe Diaspora Vote Initiative (ZDVI) is a voluntary grouping of Zimbabweans living abroad
+              concerned with the lack of provision arrangements that allow them to vote from their domiciled countries in
+              elections that take place in Zimbabwe, and their exclusion from governance issues relating to their
+              country. Currently, only diplomats and government employees on external missions can vote, despite the
+              constitution granting voting rights to all Zimbabweans.
+            </p>
+            <p>
+              The ZDVI came into being in 2022, and registered as a Community Group in Australia under Australian
+              Business Number 14608339944. It hopes to register in other countries in due course.
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Our Core Belief & Our Strength Section */}
-      <section className="bg-white py-8 sm:py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Our Core Belief */}
-            <div className="animate-fade-in-up rounded-lg bg-slate-50 p-4 sm:p-6">
-              <h3 className="mb-3 text-lg font-bold text-slate-900 sm:text-xl">Our Core Belief</h3>
-              <p className="text-sm leading-relaxed text-slate-700 sm:text-base">
-                A Constitution adopted by the people cannot be amended, suspended or manipulated by elites acting in their own interests.
-              </p>
-            </div>
+          <h2 className="mt-10 text-lg font-bold text-slate-900 sm:text-xl">
+            The objectives of the organisation as stated in its articles of association are:
+          </h2>
+          <ol className="mt-6 space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base">
+            {OBJECTIVES.map((item) => (
+              <li key={item.id} className="flex gap-3">
+                <span className="shrink-0 font-semibold text-dv-navy">{item.id})</span>
+                <span>{item.text}</span>
+              </li>
+            ))}
+          </ol>
 
-            {/* Our Strength */}
-            <div className="animate-fade-in-up animate-delay-200">
-              <h3 className="mb-4 text-lg font-bold text-slate-900 sm:text-xl">Our Strength</h3>
-              <ul className="space-y-2.5 text-sm leading-relaxed text-slate-700 sm:text-base">
-                <li className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">•</span>
-                  <span>We are rooted in real social bases — students, workers, communities, faith groups, liberation war veterans, women, youth, and the diaspora.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">•</span>
-                  <span>We are cross-party, bringing together members of different political parties, including those represented in Parliament.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">•</span>
-                  <span>We combine civic mobilisation with parliamentary action.</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">•</span>
-                  <span>We prioritise youth and student leadership as guardians of generational democracy.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What We Stand For & Our Campaign Section */}
-      <section className="bg-white py-8 sm:py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* What We Stand For */}
-            <div className="animate-fade-in-up rounded-lg border-2 border-slate-200 bg-white p-4 sm:p-6">
-              <h3 className="mb-4 text-lg font-bold text-slate-900 sm:text-xl">What We Stand For</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">✓</span>
-                  <span className="text-sm text-slate-700 sm:text-base">Constitutional term limits</span>
-                </div>
-                <div className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">✓</span>
-                  <span className="text-sm text-slate-700 sm:text-base">Regular, credible elections</span>
-                </div>
-                <div className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">✓</span>
-                  <span className="text-sm text-slate-700 sm:text-base">Full implementation of the Constitution</span>
-                </div>
-                <div className="flex items-start">
-                  <span className="mr-2 mt-0.5 text-slate-900">✓</span>
-                  <span className="text-sm text-slate-700 sm:text-base">Peaceful civic participation</span>
-                </div>
-                <div className="flex items-start sm:col-span-2">
-                  <span className="mr-2 mt-0.5 text-slate-900">✓</span>
-                  <span className="text-sm text-slate-700 sm:text-base">National unity grounded in law</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Our Campaign */}
-            <div className="animate-fade-in-up animate-delay-200 rounded-lg bg-slate-900 p-4 text-white sm:p-6">
-              <h3 className="mb-3 text-lg font-bold sm:text-xl">Our Campaign</h3>
-              <p className="mb-3 text-sm leading-relaxed text-slate-200 sm:text-base">
-                The People's Resolution is a citizen-led constitutional campaign that will be taken to the streets, communities, workplaces, campuses, farms and places of worship across Zimbabwe.
-              </p>
-              <p className="text-sm leading-relaxed text-slate-200 sm:text-base">
-                <strong>{SITE_NAME} is not about replacing parties or competing for power.</strong>
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-slate-200 sm:text-base">
-                <strong>It is about defending the rules that govern power.</strong>
-              </p>
-            </div>
+          <div className="mt-10 space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base">
+            <p>
+              ZDVI invites all Zimbabweans living in the Diaspora to actively support all efforts to lobby for the
+              Diaspora Vote to ensure fulfilment of the democratic right to vote. The more the merrier. Our collective
+              efforts will deliver the desired results.
+            </p>
           </div>
         </div>
       </section>
 
       <Footer />
     </main>
-  );
+  )
 }
-
