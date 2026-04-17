@@ -13,7 +13,7 @@ import Header from '../Header'
 import { SITE_NAME } from '@/lib/branding'
 
 const HERO_BG = "url('/images/hero_section.png')"
-const DONATE_BG = "url('/images/hero_section_3.png')"
+const DONATE_BG = "url('/images/team.png')"
 const PARALLAX_STRENGTH = 0.12
 
 const LANDING_NEWS_LIMIT = 3

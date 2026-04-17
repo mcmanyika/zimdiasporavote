@@ -26,9 +26,8 @@ interface NavLinkItem {
 
 const fallbackHeaderLinks: NavLinkItem[] = [
   { id: 'header-about', label: 'About', url: '/about', style: 'link', order: 1 },
-  { id: 'header-problem', label: 'The Problem', url: '/#problem', style: 'link', order: 2 },
-  { id: 'header-get-involved', label: 'Get Involved', url: '/#get-involved', style: 'link', order: 3 },
-  { id: 'header-articles', label: 'Articles', url: '/#news', style: 'link', order: 4 },
+  { id: 'header-get-involved', label: 'Get Involved', url: '/#get-involved', style: 'link', order: 2 },
+  { id: 'header-articles', label: 'Articles', url: '/#news', style: 'link', order: 3 },
 ];
 
 /** Strips removed items so Firestore header config cannot re-show them. */
@@ -36,6 +35,7 @@ function filterRemovedNavItems(links: NavLinkItem[]): NavLinkItem[] {
   return links.filter((link) => {
     const label = link.label.trim().toLowerCase();
     const url = link.url.trim().toLowerCase();
+    if (label === 'the problem' || url === '/#problem' || url === '#problem') return false;
     if (label === 'petitions' || url === '/petitions') return false;
     if (label === 'contact' || url === '/#contact' || url === '#contact') return false;
     if (link.id === 'header-join' || label === 'join diaspora vote') return false;
