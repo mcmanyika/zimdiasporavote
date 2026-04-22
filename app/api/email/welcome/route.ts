@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendWelcomeEmail } from '@/lib/email'
+import { SITE_NAME } from '@/lib/branding'
 import { createEmailLog } from '@/lib/firebase/firestore'
 
 function getErrorMessage(error: unknown): string {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const trimmedEmail = email.trim()
     const trimmedName = name.trim()
-    const subject = 'Welcome to Diaspora Vote!'
+    const subject = `Welcome to ${SITE_NAME}!`
 
     // Check if Resend API key is configured
     if (!process.env.RESEND_API_KEY) {

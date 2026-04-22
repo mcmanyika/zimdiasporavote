@@ -227,7 +227,7 @@ export default function DiasporaVoteLanding() {
         </div>
       </section>
 
-      <section id="about" className="scroll-mt-24 border-t border-slate-100 bg-slate-50 py-14 sm:py-20">
+      <section id="about" className="scroll-mt-24 border-t border-slate-100 bg-slate-50 py-8 sm:py-10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="text-center scroll-reveal" data-scroll-reveal>
             <h2 className="text-3xl font-extrabold text-slate-800 sm:text-5xl">What We Do</h2>
@@ -287,7 +287,7 @@ export default function DiasporaVoteLanding() {
                     <h3 className="text-xl font-semibold text-slate-800 sm:text-2xl">{item.title}</h3>
                   </div>
                   <div className="mt-3 h-px w-full bg-slate-200" aria-hidden />
-                  <p className="mt-3 px-8 pb-8 text-base leading-relaxed text-slate-600 sm:px-9 sm:pb-9 sm:text-lg">
+                  <p className="mt-3 px-8 pb-2 text-base leading-relaxed text-slate-600 sm:px-9 sm:pb-3 sm:text-lg">
                     {item.copy}
                   </p>
                 </article>
@@ -299,7 +299,7 @@ export default function DiasporaVoteLanding() {
 
       <section
         id="leadership"
-        className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-dv-sky/25 via-white to-white py-14 sm:py-20"
+        className="scroll-mt-24 border-t border-slate-100 bg-gradient-to-b from-dv-sky/25 via-white to-white py-8 sm:py-10"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-col items-center gap-2 text-center scroll-reveal" data-scroll-reveal>

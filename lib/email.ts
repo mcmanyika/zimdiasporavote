@@ -155,7 +155,7 @@ function buildCustomEmailHtml({ name, subject, body, htmlBody }: { name: string;
                       Warm regards,
                     </p>
                     <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0;">
-                      <strong>${APP_NAME}</strong>
+                      <strong>Zimbabwe Diaspora Vote Initiative team</strong>
                     </p>
                   </td>
                   <td valign="top" style="padding:28px 20px;background-color:#1e3a8a;width:32%;color:#ffffff;">
@@ -339,14 +339,8 @@ function buildWelcomeEmailHtml({
               <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">
                 Warm regards,
               </p>
-              <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0 0 2px;">
-                <strong>Senator Jameson Zvidzai Timba</strong>
-              </p>
-              <p style="color:#64748b;font-size:13px;line-height:1.5;margin:0 0 2px;">
-                Convenor
-              </p>
-              <p style="color:#64748b;font-size:13px;line-height:1.5;margin:0;">
-                ${APP_NAME}
+              <p style="color:#0f172a;font-size:15px;line-height:1.5;margin:0;">
+                <strong>Zimbabwe Diaspora Vote Initiative team</strong>
               </p>
             </td>
           </tr>
